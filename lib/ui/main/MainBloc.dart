@@ -1,0 +1,39 @@
+
+import 'dart:async';
+
+import 'package:rxdart/rxdart.dart';
+import 'package:rxdart/subjects.dart';
+import 'package:yellow_box/entity/NavigationBarItem.dart';
+import 'package:yellow_box/ui/App.dart';
+import 'package:yellow_box/ui/BaseBloc.dart';
+import 'package:yellow_box/ui/main/MainState.dart';
+
+class MainBloc extends BaseBloc {
+
+  final _state = BehaviorSubject<MainState>.seeded(MainState());
+  MainState getInitialState() => _state.value;
+  Stream<MainState> observeState() => _state.distinct();
+
+  final _childScreenRepository = dependencies.childScreenRepository;
+
+  CompositeSubscription _subscriptions = CompositeSubscription();
+
+  MainBloc() {
+    _subscriptions.add(_childScreenRepository.observeCurrentChildScreenKey()
+      .listen((key) {
+      _state.value = _state.value.buildNew(
+        currentChildScreenKey: key,
+      );
+    }));
+  }
+
+  @override
+  void dispose() {
+    _subscriptions.dispose();
+  }
+
+  void onNavigationBarItemClicked(NavigationBarItem item) {
+    _childScreenRepository.setCurrentChildScreenKey(item.key);
+  }
+
+}

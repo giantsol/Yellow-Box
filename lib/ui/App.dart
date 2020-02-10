@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:yellow_box/Dependencies.dart';
 import 'package:yellow_box/Localization.dart';
-import 'package:yellow_box/ui/home/HomeScreen.dart';
+import 'package:yellow_box/ui/main/MainScreen.dart';
 
 import '../AppColors.dart';
 
@@ -52,7 +52,7 @@ class App extends StatelessWidget {
         }
         return widget;
       },
-      home: Scaffold(body: HomeScreen()),
+      home: Scaffold(body: MainScreen()),
       debugShowCheckedModeBanner: false,
     );
   }
