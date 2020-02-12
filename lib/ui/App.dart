@@ -26,7 +26,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Yellow Box',
       theme: ThemeData(
-        canvasColor: AppColors.BACKGROUND_WHITE,
+        canvasColor: Colors.transparent,
         splashColor: AppColors.RIPPLE,
         textTheme: TextTheme(
           subhead: TextStyle(
@@ -52,7 +52,7 @@ class App extends StatelessWidget {
         }
         return widget;
       },
-      home: Scaffold(body: MainScreen()),
+      home: MainScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

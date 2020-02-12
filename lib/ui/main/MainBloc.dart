@@ -15,6 +15,7 @@ class MainBloc extends BaseBloc {
   Stream<MainState> observeState() => _state.distinct();
 
   final _childScreenRepository = dependencies.childScreenRepository;
+  final _themeRepository = dependencies.themeRepository;
 
   CompositeSubscription _subscriptions = CompositeSubscription();
 
@@ -23,6 +24,13 @@ class MainBloc extends BaseBloc {
       .listen((key) {
       _state.value = _state.value.buildNew(
         currentChildScreenKey: key,
+      );
+    }));
+
+    _subscriptions.add(_themeRepository.observeCurrentAppTheme()
+      .listen((appTheme) {
+      _state.value = _state.value.buildNew(
+        appTheme: appTheme,
       );
     }));
   }

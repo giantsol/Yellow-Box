@@ -50,21 +50,25 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildUI(MainState state) {
     final currentChildScreenKey = state.currentChildScreenKey;
+    final appTheme = state.appTheme;
 
-    return SafeArea(
-      child: Scaffold(
-        key: _scaffoldKey,
-        body: Column(
-          children: <Widget>[
-            _ChildScreen(
-              widget: _getOrCreateChildScreenWidget(currentChildScreenKey),
-            ),
-            _NavigationBar(
-              bloc: _bloc,
-              items: state.navigationBarItems,
-              currentKey: currentChildScreenKey,
-            ),
-          ],
+    return Scaffold(
+      backgroundColor: appTheme.bgColor,
+      body: SafeArea(
+        child: Scaffold(
+          key: _scaffoldKey,
+          body: Column(
+            children: <Widget>[
+              _ChildScreen(
+                widget: _getOrCreateChildScreenWidget(currentChildScreenKey),
+              ),
+              _NavigationBar(
+                bloc: _bloc,
+                items: state.navigationBarItems,
+                currentKey: currentChildScreenKey,
+              ),
+            ],
+          ),
         ),
       ),
     );
