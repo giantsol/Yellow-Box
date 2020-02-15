@@ -3,7 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 class AppLocalizations {
-  static const NEW_PASSWORD = 'newPassword';
+  static const CANCEL = 'cancel';
+  static const ADD = 'add';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -11,10 +12,12 @@ class AppLocalizations {
 
   static Map<String, Map<String, String>> _localizedValues = {
     'en': {
-      NEW_PASSWORD: 'New Password',
+      CANCEL: 'Cancel',
+      ADD: 'Add',
     },
     'ko': {
-      NEW_PASSWORD: '새 비밀번호 생성',
+      CANCEL: '취소',
+      ADD: '추가',
     },
   };
 
@@ -22,7 +25,8 @@ class AppLocalizations {
 
   AppLocalizations(this.locale);
 
-  String get newPassword => _localizedValues[locale.languageCode][NEW_PASSWORD];
+  String get cancel => _localizedValues[locale.languageCode][CANCEL];
+  String get add => _localizedValues[locale.languageCode][ADD];
 
 }
 

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yellow_box/AppColors.dart';
+import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/history/HistoryScreen.dart';
@@ -20,8 +21,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   MainBloc _bloc;
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   final Map<ChildScreenKey, Widget> _childScreenWidgets = {};
 
@@ -53,23 +52,18 @@ class _MainScreenState extends State<MainScreen> {
     final appTheme = state.appTheme;
 
     return Scaffold(
-      backgroundColor: appTheme.bgColor,
-      body: SafeArea(
-        child: Scaffold(
-          key: _scaffoldKey,
-          body: Column(
-            children: <Widget>[
-              _ChildScreen(
-                widget: _getOrCreateChildScreenWidget(currentChildScreenKey),
-              ),
-              _NavigationBar(
-                bloc: _bloc,
-                items: state.navigationBarItems,
-                currentKey: currentChildScreenKey,
-              ),
-            ],
+      backgroundColor: appTheme.lightColor,
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          _BackgroundDeco(
+            appTheme: appTheme,
           ),
-        ),
+          _ChildScreen(
+            widget: _getOrCreateChildScreenWidget(currentChildScreenKey),
+          ),
+        ],
       ),
     );
   }
@@ -96,6 +90,41 @@ class _MainScreenState extends State<MainScreen> {
 
 }
 
+class _BackgroundDeco extends StatelessWidget {
+  final AppTheme appTheme;
+
+  _BackgroundDeco({
+    @required this.appTheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: Image.asset(
+              appTheme.topBackgroundDeco,
+              fit: BoxFit.fitWidth,
+              alignment: Alignment.topCenter,
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Image.asset(
+              appTheme.bottomBackgroundDeco,
+              fit: BoxFit.fitWidth,
+              alignment: Alignment.bottomCenter,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+}
+
 class _ChildScreen extends StatelessWidget {
   final Widget widget;
 
@@ -105,53 +134,8 @@ class _ChildScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: widget,
-    );
+    return widget;
   }
 
 }
 
-class _NavigationBar extends StatelessWidget {
-  final MainBloc bloc;
-  final List<NavigationBarItem> items;
-  final ChildScreenKey currentKey;
-
-  _NavigationBar({
-    @required this.bloc,
-    @required this.items,
-    @required this.currentKey,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        color: AppColors.BACKGROUND_WHITE,
-        child: Row(
-          children: List.generate(items.length, (index) {
-            final item = items[index];
-            return Expanded(
-              child: Material(
-                child: InkWell(
-                  onTap: () => bloc.onNavigationBarItemClicked(item),
-                  child: Container(
-                    height: 60,
-                    alignment: Alignment.center,
-                    child: Image.asset(item.iconPath,
-                      width: 24,
-                      height: 24,
-                      color: currentKey == item.key ? AppColors.TEXT_BLACK : AppColors.TEXT_BLACK_LIGHT,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-        ),
-      )
-    );
-  }
-
-}

@@ -1,5 +1,6 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
 import 'package:yellow_box/ui/home/HomeState.dart';
@@ -11,6 +12,7 @@ class HomeBloc extends BaseBloc {
   Stream<HomeState> observeState() => _state.distinct();
 
   final _themeRepository = dependencies.themeRepository;
+  final _childScreenRepository = dependencies.childScreenRepository;
 
   CompositeSubscription _subscriptions = CompositeSubscription();
 
@@ -21,6 +23,14 @@ class HomeBloc extends BaseBloc {
         appTheme: appTheme,
       );
     }));
+  }
+
+  void onAddWordClicked() {
+
+  }
+
+  void onNavigationBarItemClicked(NavigationBarItem item) {
+    _childScreenRepository.setCurrentChildScreenKey(item.key);
   }
 
   @override
