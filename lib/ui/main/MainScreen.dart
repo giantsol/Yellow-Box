@@ -112,10 +112,13 @@ class _BackgroundDeco extends StatelessWidget {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: Image.asset(
-              appTheme.bottomBackgroundDeco,
-              fit: BoxFit.fitWidth,
-              alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 60),
+              child: Image.asset(
+                appTheme.bottomBackgroundDeco,
+                fit: BoxFit.fitWidth,
+                alignment: Alignment.bottomCenter,
+              ),
             ),
           ),
         ],

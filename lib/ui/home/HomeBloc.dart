@@ -26,11 +26,47 @@ class HomeBloc extends BaseBloc {
   }
 
   void onAddWordClicked() {
-
+    final isShown = _state.value.isWordEditorShown;
+    if (!isShown) {
+      _state.value = _state.value.buildNew(
+        isWordEditorShown: true
+      );
+    }
   }
 
   void onNavigationBarItemClicked(NavigationBarItem item) {
     _childScreenRepository.setCurrentChildScreenKey(item.key);
+  }
+
+  void onEditingWordChanged(String s) {
+    _state.value = _state.value.buildNew(
+      editingWord: s
+    );
+  }
+
+  void onWordEditingCancelClicked() {
+    _state.value = _state.value.buildNew(
+      isWordEditorShown: false,
+      editingWord: '',
+    );
+  }
+
+  void onWordEditingAddClicked() {
+    _state.value = _state.value.buildNew(
+      isWordEditorShown: false,
+      editingWord: '',
+    );
+
+    // todo: Add adding logic
+  }
+
+  bool handleBackPress() {
+    if (_state.value.isWordEditorShown) {
+      onWordEditingCancelClicked();
+      return true;
+    }
+
+    return false;
   }
 
   @override

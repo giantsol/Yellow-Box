@@ -8,6 +8,7 @@ import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/home/HomeBloc.dart';
 import 'package:yellow_box/ui/home/HomeState.dart';
+import 'package:yellow_box/ui/widget/AppTextField.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -45,16 +46,22 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildUI(HomeState state) {
     final appTheme = state.appTheme;
 
-    return Stack(
-      children: <Widget>[
-        _MainUI(
-          appTheme: appTheme,
-          bloc: _bloc,
-        ),
-        state.isWordEditorShown ? _WordEditor(
-          appTheme: appTheme,
-        ) : const SizedBox.shrink(),
-      ],
+    return WillPopScope(
+      onWillPop: () async => !_bloc.handleBackPress(),
+      child: Stack(
+        children: <Widget>[
+          _MainUI(
+            appTheme: appTheme,
+            bloc: _bloc,
+            isWordEditorShown: state.isWordEditorShown,
+          ),
+          state.isWordEditorShown ? _WordEditor(
+            bloc: _bloc,
+            appTheme: appTheme,
+            text: state.editingWord,
+          ) : const SizedBox.shrink(),
+        ],
+      ),
     );
   }
 
@@ -63,10 +70,12 @@ class _HomeScreenState extends State<HomeScreen> {
 class _MainUI extends StatelessWidget {
   final AppTheme appTheme;
   final HomeBloc bloc;
+  final bool isWordEditorShown;
 
   _MainUI({
     @required this.appTheme,
     @required this.bloc,
+    @required this.isWordEditorShown,
   });
 
   @override
@@ -77,6 +86,7 @@ class _MainUI extends StatelessWidget {
         children: <Widget>[
           _NavigationBar(
             bloc: bloc,
+            isWordEditorShown: isWordEditorShown
           ),
           Expanded(
             child: Center(
@@ -112,15 +122,17 @@ class _MainUI extends StatelessWidget {
 
 class _NavigationBar extends StatelessWidget {
   final HomeBloc bloc;
+  final bool isWordEditorShown;
 
   _NavigationBar({
     @required this.bloc,
+    @required this.isWordEditorShown,
   });
 
   @override
   Widget build(BuildContext context) {
     final items = NavigationBarItem.ITEMS;
-    return Align(
+    return !isWordEditorShown ? Align(
       alignment: Alignment.bottomCenter,
       child: Container(
         color: AppColors.BACKGROUND_WHITE,
@@ -146,16 +158,20 @@ class _NavigationBar extends StatelessWidget {
           }),
         ),
       )
-    );
+    ) : const SizedBox(height: 60,);
   }
 
 }
 
 class _WordEditor extends StatelessWidget {
+  final HomeBloc bloc;
   final AppTheme appTheme;
+  final String text;
 
   _WordEditor({
+    @required this.bloc,
     @required this.appTheme,
+    @required this.text,
   });
 
   @override
@@ -167,71 +183,96 @@ class _WordEditor extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             color: AppColors.BACKGROUND_WHITE,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
           ),
-          child: Row(
-            children: <Widget>[
-              const SizedBox(width: 6,),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 11),
-                  decoration: BoxDecoration(
-                    color: appTheme.darkColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Image.asset('assets/ic_mic.png'),
-                ),
-              ),
-              const SizedBox(width: 6,),
-              Expanded(
-                child: TextField(
-
-                ),
-              ),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  minWidth: 52,
-                  minHeight: 36,
-                ),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
-                  child: Text(
-                    AppLocalizations.of(context).cancel,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.TEXT_BLACK_LIGHT,
-                      fontSize: 12,
-                    ),
-                    strutStyle: StrutStyle(
-                      fontSize: 12,
+          child: Material(
+            child: Row(
+              children: <Widget>[
+                const SizedBox(width: 6,),
+                InkWell(
+                  onTap: () { },
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 11),
+                      decoration: BoxDecoration(
+                        color: appTheme.darkColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Image.asset('assets/ic_mic.png'),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 4,),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  minWidth: 52,
-                  minHeight: 36,
-                ),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
-                  child: Text(
-                    AppLocalizations.of(context).add,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: appTheme.darkColor,
-                      fontSize: 12,
-                    ),
-                    strutStyle: StrutStyle(
-                      fontSize: 12,
+                const SizedBox(width: 6,),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8,),
+                    child: AppTextField(
+                      text: text,
+                      textSize: 16,
+                      textColor: AppColors.TEXT_BLACK,
+                      hintText: AppLocalizations.of(context).wordEditorHint,
+                      hintTextSize: 16,
+                      hintTextColor: AppColors.TEXT_BLACK_LIGHT,
+                      cursorColor: appTheme.darkColor,
+                      autoFocus: true,
+                      onChanged: (s) => bloc.onEditingWordChanged(s),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 1,),
-            ],
+                const SizedBox(width: 8,),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: 52,
+                    minHeight: 36,
+                  ),
+                  child: InkWell(
+                    onTap: () => bloc.onWordEditingCancelClicked(),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
+                      child: Text(
+                        AppLocalizations.of(context).cancel,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.TEXT_BLACK_LIGHT,
+                          fontSize: 12,
+                        ),
+                        strutStyle: StrutStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4,),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: 52,
+                    minHeight: 36,
+                  ),
+                  child: InkWell(
+                    onTap: () => bloc.onWordEditingAddClicked(),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
+                      child: Text(
+                        AppLocalizations.of(context).add,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: appTheme.darkColor,
+                          fontSize: 12,
+                        ),
+                        strutStyle: StrutStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 1,),
+              ],
+            ),
           ),
         ),
       ),

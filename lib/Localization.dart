@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 class AppLocalizations {
   static const CANCEL = 'cancel';
   static const ADD = 'add';
+  static const WORD_EDITOR_HINT = 'wordEditorHint';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -14,10 +15,12 @@ class AppLocalizations {
     'en': {
       CANCEL: 'Cancel',
       ADD: 'Add',
+      WORD_EDITOR_HINT: 'Add word',
     },
     'ko': {
       CANCEL: '취소',
       ADD: '추가',
+      WORD_EDITOR_HINT: '추가할 단어',
     },
   };
 
@@ -27,6 +30,7 @@ class AppLocalizations {
 
   String get cancel => _localizedValues[locale.languageCode][CANCEL];
   String get add => _localizedValues[locale.languageCode][ADD];
+  String get wordEditorHint => _localizedValues[locale.languageCode][WORD_EDITOR_HINT];
 
 }
 
