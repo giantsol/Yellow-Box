@@ -6,6 +6,8 @@ class AppLocalizations {
   static const CANCEL = 'cancel';
   static const ADD = 'add';
   static const WORD_EDITOR_HINT = 'wordEditorHint';
+  static const EDITING_WORD_EMPTY = 'editingWordEmpty';
+  static const EDITING_WORD_ALREADY_EXISTS = 'editingWordAlreadyExists';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -16,11 +18,15 @@ class AppLocalizations {
       CANCEL: 'Cancel',
       ADD: 'Add',
       WORD_EDITOR_HINT: 'Add word',
+      EDITING_WORD_EMPTY: 'Word is empty',
+      EDITING_WORD_ALREADY_EXISTS: 'This word is already saved',
     },
     'ko': {
       CANCEL: '취소',
       ADD: '추가',
       WORD_EDITOR_HINT: '추가할 단어',
+      EDITING_WORD_EMPTY: '단어를 입력해주세요',
+      EDITING_WORD_ALREADY_EXISTS: '이미 저장된 단어입니다',
     },
   };
 
@@ -31,6 +37,8 @@ class AppLocalizations {
   String get cancel => _localizedValues[locale.languageCode][CANCEL];
   String get add => _localizedValues[locale.languageCode][ADD];
   String get wordEditorHint => _localizedValues[locale.languageCode][WORD_EDITOR_HINT];
+  String get editingWordEmpty => _localizedValues[locale.languageCode][EDITING_WORD_EMPTY];
+  String get editingWordAlreadyExists => _localizedValues[locale.languageCode][EDITING_WORD_ALREADY_EXISTS];
 
 }
 

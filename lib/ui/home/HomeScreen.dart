@@ -1,12 +1,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:yellow_box/AppColors.dart';
 import 'package:yellow_box/Localization.dart';
 import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/home/HomeBloc.dart';
+import 'package:yellow_box/ui/home/HomeNavigator.dart';
 import 'package:yellow_box/ui/home/HomeState.dart';
 import 'package:yellow_box/ui/widget/AppTextField.dart';
 
@@ -17,13 +19,13 @@ class HomeScreen extends StatefulWidget {
 
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
   HomeBloc _bloc;
 
   @override
   void initState() {
     super.initState();
-    _bloc = HomeBloc();
+    _bloc = HomeBloc(this);
   }
 
   @override
@@ -60,9 +62,27 @@ class _HomeScreenState extends State<HomeScreen> {
             appTheme: appTheme,
             text: state.editingWord,
           ) : const SizedBox.shrink(),
+          state.isProgressShown ? _OverlayProgress(
+            appTheme: appTheme,
+          ) : const SizedBox.shrink(),
         ],
       ),
     );
+  }
+
+  @override
+  void showEditingWordEmptyMessage() {
+    _showToast(AppLocalizations.of(context).editingWordEmpty);
+  }
+
+  void _showToast(String msg) {
+    Fluttertoast.cancel();
+    Fluttertoast.showToast(msg: msg);
+  }
+
+  @override
+  void showEditingWordAlreadyExists() {
+    _showToast(AppLocalizations.of(context).editingWordAlreadyExists);
   }
 
 }
@@ -281,3 +301,20 @@ class _WordEditor extends StatelessWidget {
 
 }
 
+class _OverlayProgress extends StatelessWidget {
+  final AppTheme appTheme;
+
+  _OverlayProgress({
+    @required this.appTheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation(appTheme.darkColor),
+      ),
+    );
+  }
+
+}
