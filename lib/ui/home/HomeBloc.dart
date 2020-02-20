@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
@@ -83,6 +85,32 @@ class HomeBloc extends BaseBloc {
     );
   }
 
+  void onMicIconClicked() async {
+    final stt = SpeechToText();
+    final available = await stt.initialize(onStatus: (status) {
+      debugPrint('stt status: $status');
+    }, onError: (errorNotification) {
+      debugPrint('stt error: ${errorNotification.errorMsg}');
+    });
+
+    if (available) {
+      stt.listen(onResult: (result) {
+        debugPrint('stt recognizedWords: ${result.recognizedWords}');
+      });
+    } else {
+      debugPrint('stt not available');
+    }
+  }
+
+  bool handleBackPress() {
+    if (_state.value.isWordEditorShown) {
+      onWordEditingCancelClicked();
+      return true;
+    }
+
+    return false;
+  }
+
   bool _isProgressShown() {
     return _state.value.isProgressShown;
   }
@@ -97,15 +125,6 @@ class HomeBloc extends BaseBloc {
     _state.value = _state.value.buildNew(
       isProgressShown: false,
     );
-  }
-
-  bool handleBackPress() {
-    if (_state.value.isWordEditorShown) {
-      onWordEditingCancelClicked();
-      return true;
-    }
-
-    return false;
   }
 
   @override

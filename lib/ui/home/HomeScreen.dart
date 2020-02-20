@@ -210,7 +210,7 @@ class _WordEditor extends StatelessWidget {
               children: <Widget>[
                 const SizedBox(width: 6,),
                 InkWell(
-                  onTap: () { },
+                  onTap: () => bloc.onMicIconClicked(),
                   child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: Container(
