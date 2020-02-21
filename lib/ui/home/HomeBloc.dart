@@ -22,7 +22,19 @@ class HomeBloc extends BaseBloc {
 
   CompositeSubscription _subscriptions = CompositeSubscription();
 
+  final _stt = SpeechToText();
+
   HomeBloc(this._navigator) {
+    _stt.initialize(onStatus: (status) {
+      _state.value = _state.value.buildNew(
+        isListeningToSpeech: status == SpeechToText.listeningStatus,
+      );
+    }, onError: (error) {
+      _state.value = _state.value.buildNew(
+        isListeningToSpeech: false,
+      );
+    });
+
     _subscriptions.add(_themeRepository.observeCurrentAppTheme()
       .listen((appTheme) {
       _state.value = _state.value.buildNew(
@@ -86,20 +98,24 @@ class HomeBloc extends BaseBloc {
   }
 
   void onMicIconClicked() async {
-    final stt = SpeechToText();
-    final available = await stt.initialize(onStatus: (status) {
-      debugPrint('stt status: $status');
-    }, onError: (errorNotification) {
-      debugPrint('stt error: ${errorNotification.errorMsg}');
-    });
-
-    if (available) {
-      stt.listen(onResult: (result) {
-        debugPrint('stt recognizedWords: ${result.recognizedWords}');
+    if (_stt.isAvailable && !_state.value.isListeningToSpeech) {
+      _stt.listen(onResult: (result) {
+        if (result.finalResult) {
+          final recognizedWord = result.recognizedWords;
+          if (recognizedWord.isNotEmpty) {
+            _state.value = _state.value.buildNew(
+              editingWord: _state.value.editingWord + recognizedWord,
+            );
+          }
+        }
       });
     } else {
-      debugPrint('stt not available');
+      _navigator.showSpeechToTextNotReady();
     }
+  }
+
+  void onStopSpeechRecognizerClicked() {
+    _stt.cancel();
   }
 
   bool handleBackPress() {

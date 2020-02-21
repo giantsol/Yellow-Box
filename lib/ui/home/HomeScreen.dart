@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -65,6 +67,10 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
           state.isProgressShown ? _OverlayProgress(
             appTheme: appTheme,
           ) : const SizedBox.shrink(),
+          state.isListeningToSpeech ? _ListeningToSpeechView(
+            bloc: _bloc,
+            appTheme: appTheme,
+          ) : const SizedBox.shrink(),
         ],
       ),
     );
@@ -83,6 +89,11 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
   @override
   void showEditingWordAlreadyExists() {
     _showToast(AppLocalizations.of(context).editingWordAlreadyExists);
+  }
+
+  @override
+  void showSpeechToTextNotReady() {
+    _showToast(AppLocalizations.of(context).speechToTextNotReady);
   }
 
 }
@@ -317,4 +328,166 @@ class _OverlayProgress extends StatelessWidget {
     );
   }
 
+}
+
+class _ListeningToSpeechView extends StatelessWidget {
+  final HomeBloc bloc;
+  final AppTheme appTheme;
+
+  _ListeningToSpeechView({
+    @required this.bloc,
+    @required this.appTheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          Container(
+            color: AppColors.SCRIM,
+          ),
+          SafeArea(
+            child: Stack(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => bloc.onStopSpeechRecognizerClicked(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(29),
+                      child: Image.asset('assets/ic_close.png'),
+                    ),
+                  ),
+                ),
+                _SpeechAnimatingView(
+                  color: appTheme.darkColor,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SpeechAnimatingView extends StatefulWidget {
+  final Color color;
+
+  _SpeechAnimatingView({
+    @required this.color,
+  });
+
+  @override
+  State createState() => _SpeechAnimatingViewState();
+
+}
+
+class _SpeechAnimatingViewState extends State<_SpeechAnimatingView> with SingleTickerProviderStateMixin {
+  AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
+
+    return Center(
+      child: Container(
+        width: 72,
+        height: 72,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.TEXT_WHITE,
+            width: 2,
+          ),
+          color: widget.color,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            _WhiteDot(
+              animation: Tween<double>(
+                begin: 0,
+                end: pi * 2,
+              ).animate(CurvedAnimation(
+                parent: CurvedAnimation(
+                  parent: _controller,
+                  curve: Interval(0, 0.8),
+                ),
+                curve: Curves.fastOutSlowIn,
+              )),
+            ),
+            const SizedBox(width: 4,),
+            _WhiteDot(
+              animation: Tween<double>(
+                begin: 0,
+                end: pi * 2,
+              ).animate(CurvedAnimation(
+                parent: CurvedAnimation(
+                  parent: _controller,
+                  curve: Interval(0.1, 0.9),
+                ),
+                curve: Curves.fastOutSlowIn,
+              )),
+            ),
+            const SizedBox(width: 4,),
+            _WhiteDot(
+              animation: Tween<double>(
+                begin: 0,
+                end: pi * 2,
+              ).animate(CurvedAnimation(
+                parent: CurvedAnimation(
+                  parent: _controller,
+                  curve: Interval(0.2, 1.0),
+                ),
+                curve: Curves.fastOutSlowIn,
+              )),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _WhiteDot extends AnimatedWidget {
+  _WhiteDot({
+    Animation<double> animation,
+  }) : super(listenable: animation);
+
+  @override
+  Widget build(BuildContext context) {
+    final anim = listenable as Animation<double>;
+    return FractionalTranslation(
+      translation: Offset(0, 0.6 * sin(anim.value)),
+      child: Container(
+        width: 8,
+        height: 8,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColors.TEXT_WHITE,
+        ),
+      ),
+    );
+  }
 }
