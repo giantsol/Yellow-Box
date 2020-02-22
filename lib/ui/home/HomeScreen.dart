@@ -8,6 +8,7 @@ import 'package:yellow_box/AppColors.dart';
 import 'package:yellow_box/Localization.dart';
 import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
+import 'package:yellow_box/entity/CombinationPopUpData.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/home/HomeBloc.dart';
 import 'package:yellow_box/ui/home/HomeNavigator.dart';
@@ -49,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
 
   Widget _buildUI(HomeState state) {
     final appTheme = state.appTheme;
+    final isScrimVisible = state.isListeningToSpeech
+      || state.combinationPopUpData.isValid();
 
     return WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress(),
@@ -64,11 +67,17 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
             appTheme: appTheme,
             text: state.editingWord,
           ) : const SizedBox.shrink(),
-          state.isProgressShown ? _OverlayProgress(
-            appTheme: appTheme,
-          ) : const SizedBox.shrink(),
+          isScrimVisible ? _Scrim() : const SizedBox.shrink(),
           state.isListeningToSpeech ? _ListeningToSpeechView(
             bloc: _bloc,
+            appTheme: appTheme,
+          ) : const SizedBox.shrink(),
+          state.combinationPopUpData.isValid() ? _CombinationPopUpBox(
+            bloc: _bloc,
+            data: state.combinationPopUpData,
+            appTheme: appTheme,
+          ) : const SizedBox.shrink(),
+          state.isProgressShown ? _OverlayProgress(
             appTheme: appTheme,
           ) : const SizedBox.shrink(),
         ],
@@ -96,6 +105,10 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
     _showToast(AppLocalizations.of(context).speechToTextNotReady);
   }
 
+  @override
+  void showAddMoreWordsForCombination() {
+    _showToast(AppLocalizations.of(context).addMoreWordsForCombination);
+  }
 }
 
 class _MainUI extends StatelessWidget {
@@ -130,10 +143,14 @@ class _MainUI extends StatelessWidget {
                     child: Placeholder(),
                   ),
                   const SizedBox(height: 32,),
-                  SizedBox(
-                    width: 160,
-                    height: 160,
-                    child: Placeholder(),
+                  GestureDetector(
+                    onTap: () => bloc.onLogoClicked(),
+                    behavior: HitTestBehavior.opaque,
+                    child: SizedBox(
+                      width: 160,
+                      height: 160,
+                      child: Placeholder(),
+                    ),
                   ),
                   const SizedBox(height: 68,),
                   FloatingActionButton(
@@ -330,6 +347,16 @@ class _OverlayProgress extends StatelessWidget {
 
 }
 
+class _Scrim extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.SCRIM,
+    );
+  }
+}
+
 class _ListeningToSpeechView extends StatelessWidget {
   final HomeBloc bloc;
   final AppTheme appTheme;
@@ -342,32 +369,25 @@ class _ListeningToSpeechView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Container(
-            color: AppColors.SCRIM,
-          ),
-          SafeArea(
-            child: Stack(
-              children: <Widget>[
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => bloc.onStopSpeechRecognizerClicked(),
-                    child: Padding(
-                      padding: const EdgeInsets.all(29),
-                      child: Image.asset('assets/ic_close.png'),
-                    ),
-                  ),
+      body: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            Align(
+              alignment: Alignment.topLeft,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => bloc.onStopSpeechRecognizerClicked(),
+                child: Padding(
+                  padding: const EdgeInsets.all(29),
+                  child: Image.asset('assets/ic_close.png'),
                 ),
-                _SpeechAnimatingView(
-                  color: appTheme.darkColor,
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+            _SpeechAnimatingView(
+              color: appTheme.darkColor,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -487,6 +507,200 @@ class _WhiteDot extends AnimatedWidget {
           shape: BoxShape.circle,
           color: AppColors.TEXT_WHITE,
         ),
+      ),
+    );
+  }
+}
+
+class _CombinationPopUpBox extends StatelessWidget {
+  final HomeBloc bloc;
+  final CombinationPopUpData data;
+  final AppTheme appTheme;
+
+  _CombinationPopUpBox({
+    @required this.bloc,
+    @required this.data,
+    @required this.appTheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isNew = data.isNew;
+    final combination = data.combination;
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 90, horizontal: 32),
+        child: Stack(
+          children: <Widget>[
+            Container(
+              height: 225,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: appTheme.lightColor,
+              ),
+              padding: const EdgeInsets.only(top: 16),
+              child: isNew ? _HappyLogo() : _SadLogo(),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 192,),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.BACKGROUND_WHITE,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      isNew ? AppLocalizations.of(context).newCombination
+                        : AppLocalizations.of(context).goodOldOne,
+                      style: TextStyle(
+                        color: AppColors.TEXT_BLACK,
+                        fontSize: 14,
+                      ),
+                      strutStyle: StrutStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 16,),
+                    Text(
+                      combination,
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppColors.TEXT_BLACK,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      strutStyle: StrutStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16,),
+                    isNew ? Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Material(
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(24),
+                              onTap: () => bloc.onNahClicked(),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(
+                                    color: AppColors.TEXT_BLACK_LIGHT,
+                                    width: 2,
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.symmetric(vertical: 11),
+                                child: Text(
+                                  AppLocalizations.of(context).nah,
+                                  style: TextStyle(
+                                    color: AppColors.TEXT_BLACK_LIGHT,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  strutStyle: StrutStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8,),
+                        Expanded(
+                          child: Material(
+                            color: appTheme.darkColor,
+                            borderRadius: BorderRadius.circular(24),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(24),
+                              onTap: () => bloc.onCleverClicked(),
+                              child: Container(
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.symmetric(vertical: 11),
+                                child: Text(
+                                  AppLocalizations.of(context).clever,
+                                  style: TextStyle(
+                                    color: AppColors.TEXT_WHITE,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  strutStyle: StrutStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ) : Material(
+                      color: appTheme.darkColor,
+                      borderRadius: BorderRadius.circular(24),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(24),
+                        onTap: () => bloc.onCloseCombinationPopUpClicked(),
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(vertical: 11),
+                          child: Text(
+                            AppLocalizations.of(context).close,
+                            style: TextStyle(
+                              color: AppColors.TEXT_WHITE,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            strutStyle: StrutStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      )
+    );
+  }
+}
+
+class _HappyLogo extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: SizedBox(
+        width: 160,
+        height: 160,
+        child: Placeholder(),
+      ),
+    );
+  }
+}
+
+class _SadLogo extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: SizedBox(
+        width: 160,
+        height: 160,
+        child: Placeholder(),
       ),
     );
   }

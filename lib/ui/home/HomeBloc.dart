@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:yellow_box/entity/CombinationPopUpData.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
@@ -19,6 +20,7 @@ class HomeBloc extends BaseBloc {
   final _themeRepository = dependencies.themeRepository;
   final _childScreenRepository = dependencies.childScreenRepository;
   final _wordRepository = dependencies.wordRepository;
+  final _combinationRepository = dependencies.combinationRepository;
 
   CompositeSubscription _subscriptions = CompositeSubscription();
 
@@ -116,6 +118,62 @@ class HomeBloc extends BaseBloc {
 
   void onStopSpeechRecognizerClicked() {
     _stt.cancel();
+  }
+
+  void onLogoClicked() async {
+    if (_isProgressShown()) {
+      return;
+    }
+
+    _showProgress();
+
+    final savedWordCount = await _wordRepository.getCount();
+    if (savedWordCount < 2) {
+      _navigator.showAddMoreWordsForCombination();
+      _hideProgress();
+      return;
+    }
+
+    final combination = (await _wordRepository.getRandomWords(2)).join(" ");
+    final isAlreadySavedCombination = await _combinationRepository.hasCombination(combination);
+    if (isAlreadySavedCombination) {
+      _state.value = _state.value.buildNew(
+        combinationPopUpData: CombinationPopUpData(combination, false),
+      );
+    } else {
+      _state.value = _state.value.buildNew(
+        combinationPopUpData: CombinationPopUpData(combination, true),
+      );
+    }
+
+    _hideProgress();
+  }
+
+  void onNahClicked() {
+    _state.value = _state.value.buildNew(
+      combinationPopUpData: CombinationPopUpData.NONE,
+    );
+  }
+
+  void onCleverClicked() async {
+    if (_isProgressShown()) {
+      return;
+    }
+
+    _showProgress();
+    final combination = _state.value.combinationPopUpData.combination;
+    await _combinationRepository.addCombination(combination);
+
+    _state.value = _state.value.buildNew(
+      combinationPopUpData: CombinationPopUpData.NONE,
+      isProgressShown: false,
+    );
+  }
+
+  void onCloseCombinationPopUpClicked() {
+    _state.value = _state.value.buildNew(
+      combinationPopUpData: CombinationPopUpData.NONE,
+    );
   }
 
   bool handleBackPress() {

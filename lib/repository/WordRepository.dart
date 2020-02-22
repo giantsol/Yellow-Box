@@ -14,4 +14,12 @@ class WordRepository {
     return _database.addWord(word);
   }
 
+  Future<int> getCount() {
+    return _database.getWordsCount();
+  }
+
+  Future<List<String>> getRandomWords(int count) {
+    return _database.getRandomWords(count);
+  }
+
 }

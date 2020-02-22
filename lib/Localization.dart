@@ -9,6 +9,12 @@ class AppLocalizations {
   static const EDITING_WORD_EMPTY = 'editingWordEmpty';
   static const EDITING_WORD_ALREADY_EXISTS = 'editingWordAlreadyExists';
   static const SPEECH_TO_TEXT_NOT_READY = 'speechToTextNotReady';
+  static const ADD_MORE_WORDS_FOR_COMBINATION = 'addMoreWordsForCombination';
+  static const NEW_COMBINATION = 'newCombination';
+  static const GOOD_OLD_ONE = 'goodOldOne';
+  static const NAH = 'nah';
+  static const CLEVER = 'clever';
+  static const CLOSE = 'close';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -22,6 +28,12 @@ class AppLocalizations {
       EDITING_WORD_EMPTY: 'Word is empty',
       EDITING_WORD_ALREADY_EXISTS: 'This word is already saved',
       SPEECH_TO_TEXT_NOT_READY: 'Speech recognizer is not yet ready',
+      ADD_MORE_WORDS_FOR_COMBINATION: 'Add more words for combination',
+      NEW_COMBINATION: 'New combination!',
+      GOOD_OLD_ONE: 'Good old one...',
+      NAH: 'Nah...',
+      CLEVER: 'Clever!',
+      CLOSE: 'Close',
     },
     'ko': {
       CANCEL: '취소',
@@ -30,6 +42,12 @@ class AppLocalizations {
       EDITING_WORD_EMPTY: '단어를 입력해주세요',
       EDITING_WORD_ALREADY_EXISTS: '이미 저장된 단어입니다',
       SPEECH_TO_TEXT_NOT_READY: '음성 인식기가 아직 준비중입니다',
+      ADD_MORE_WORDS_FOR_COMBINATION: '단어 갯수를 더 추가해보세요',
+      NEW_COMBINATION: '새로운 조합!',
+      GOOD_OLD_ONE: '익숙한 조합이네요...',
+      NAH: '별로...',
+      CLEVER: '좋아요!',
+      CLOSE: '닫기',
     },
   };
 
@@ -43,6 +61,12 @@ class AppLocalizations {
   String get editingWordEmpty => _localizedValues[locale.languageCode][EDITING_WORD_EMPTY];
   String get editingWordAlreadyExists => _localizedValues[locale.languageCode][EDITING_WORD_ALREADY_EXISTS];
   String get speechToTextNotReady => _localizedValues[locale.languageCode][SPEECH_TO_TEXT_NOT_READY];
+  String get addMoreWordsForCombination => _localizedValues[locale.languageCode][ADD_MORE_WORDS_FOR_COMBINATION];
+  String get newCombination => _localizedValues[locale.languageCode][NEW_COMBINATION];
+  String get goodOldOne => _localizedValues[locale.languageCode][GOOD_OLD_ONE];
+  String get nah => _localizedValues[locale.languageCode][NAH];
+  String get clever => _localizedValues[locale.languageCode][CLEVER];
+  String get close => _localizedValues[locale.languageCode][CLOSE];
 
 }
 
