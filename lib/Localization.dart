@@ -15,6 +15,9 @@ class AppLocalizations {
   static const NAH = 'nah';
   static const CLEVER = 'clever';
   static const CLOSE = 'close';
+  static const WORD = 'word';
+  static const COMBINATION = 'combination';
+  static const NO_HISTORY = 'noHistory';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -34,6 +37,9 @@ class AppLocalizations {
       NAH: 'Nah...',
       CLEVER: 'Clever!',
       CLOSE: 'Close',
+      WORD: 'Word',
+      COMBINATION: 'Combination',
+      NO_HISTORY: 'No history',
     },
     'ko': {
       CANCEL: '취소',
@@ -48,6 +54,9 @@ class AppLocalizations {
       NAH: '별로...',
       CLEVER: '좋아요!',
       CLOSE: '닫기',
+      WORD: '단어',
+      COMBINATION: '조합',
+      NO_HISTORY: '기록이 없습니다',
     },
   };
 
@@ -67,6 +76,9 @@ class AppLocalizations {
   String get nah => _localizedValues[locale.languageCode][NAH];
   String get clever => _localizedValues[locale.languageCode][CLEVER];
   String get close => _localizedValues[locale.languageCode][CLOSE];
+  String get word => _localizedValues[locale.languageCode][WORD];
+  String get combination => _localizedValues[locale.languageCode][COMBINATION];
+  String get noHistory => _localizedValues[locale.languageCode][NO_HISTORY];
 
 }
 

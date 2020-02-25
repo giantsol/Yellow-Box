@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -43,6 +42,11 @@ class HomeBloc extends BaseBloc {
         appTheme: appTheme,
       );
     }));
+  }
+
+  @override
+  void dispose() {
+    _subscriptions.dispose();
   }
 
   void onAddWordClicked() {
@@ -134,7 +138,7 @@ class HomeBloc extends BaseBloc {
       return;
     }
 
-    final combination = (await _wordRepository.getRandomWords(2)).join(" ");
+    final combination = (await _wordRepository.getRandomWordStrings(2)).join(" ");
     final isAlreadySavedCombination = await _combinationRepository.hasCombination(combination);
     if (isAlreadySavedCombination) {
       _state.value = _state.value.buildNew(
@@ -199,11 +203,6 @@ class HomeBloc extends BaseBloc {
     _state.value = _state.value.buildNew(
       isProgressShown: false,
     );
-  }
-
-  @override
-  void dispose() {
-    _subscriptions.dispose();
   }
 
 }

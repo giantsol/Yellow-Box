@@ -1,16 +1,38 @@
 
+import 'package:rxdart/rxdart.dart';
 import 'package:yellow_box/datasource/AppDatabase.dart';
+import 'package:yellow_box/entity/Combination.dart';
 
 class CombinationRepository {
-  AppDatabase _database;
+  final AppDatabase _database;
 
-  CombinationRepository(this._database);
+  final _combinations = BehaviorSubject<List<Combination>>.seeded([]);
 
-  Future<bool> hasCombination(String combination) {
-    return _database.hasCombination(combination);
+  CombinationRepository(this._database) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    final combinations = await _database.getCombinations();
+    _combinations.value = combinations;
+  }
+
+  Future<bool> hasCombination(String str) async {
+    return _combinations.value.any((comb) => comb.combination == str);
   }
 
   Future<void> addCombination(String combination) {
-    return _database.addCombination(combination);
+    final combEntity = Combination(combination, DateTime.now().millisecondsSinceEpoch, false);
+
+    final list = _combinations.value;
+    list.insert(0, combEntity);
+    _combinations.value = list;
+
+    return _database.addCombination(combEntity);
   }
+
+  Stream<List<Combination>> observeCombinations() {
+    return _combinations.distinct();
+  }
+
 }

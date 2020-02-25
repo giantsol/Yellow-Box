@@ -180,32 +180,29 @@ class _NavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = NavigationBarItem.ITEMS;
-    return !isWordEditorShown ? Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        color: AppColors.BACKGROUND_WHITE,
-        child: Row(
-          children: List.generate(items.length, (index) {
-            final item = items[index];
-            return Expanded(
-              child: Material(
-                child: InkWell(
-                  onTap: () => bloc.onNavigationBarItemClicked(item),
-                  child: Container(
-                    height: 60,
-                    alignment: Alignment.center,
-                    child: Image.asset(item.iconPath,
-                      width: 24,
-                      height: 24,
-                      color: item.key == ChildScreenKey.HOME ? AppColors.TEXT_BLACK : AppColors.TEXT_BLACK_LIGHT,
-                    ),
+    return !isWordEditorShown ? Container(
+      color: AppColors.BACKGROUND_WHITE,
+      child: Row(
+        children: List.generate(items.length, (index) {
+          final item = items[index];
+          return Expanded(
+            child: Material(
+              child: InkWell(
+                onTap: () => bloc.onNavigationBarItemClicked(item),
+                child: Container(
+                  height: 60,
+                  alignment: Alignment.center,
+                  child: Image.asset(item.iconPath,
+                    width: 24,
+                    height: 24,
+                    color: item.key == ChildScreenKey.HOME ? AppColors.TEXT_BLACK : AppColors.TEXT_BLACK_LIGHT,
                   ),
                 ),
               ),
-            );
-          }),
-        ),
-      )
+            ),
+          );
+        }),
+      ),
     ) : const SizedBox(height: 60,);
   }
 
