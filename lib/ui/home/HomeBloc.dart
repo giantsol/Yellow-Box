@@ -181,8 +181,18 @@ class HomeBloc extends BaseBloc {
   }
 
   bool handleBackPress() {
+    if (_state.value.isListeningToSpeech) {
+      onStopSpeechRecognizerClicked();
+      return true;
+    }
+
     if (_state.value.isWordEditorShown) {
       onWordEditingCancelClicked();
+      return true;
+    }
+
+    if (_state.value.combinationPopUpData.isValid()) {
+      onCloseCombinationPopUpClicked();
       return true;
     }
 
