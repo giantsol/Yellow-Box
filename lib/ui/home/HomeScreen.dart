@@ -262,6 +262,7 @@ class _WordEditor extends StatelessWidget {
                       cursorColor: appTheme.darkColor,
                       autoFocus: true,
                       onChanged: (s) => bloc.onEditingWordChanged(s),
+                      onEditingComplete: () => bloc.onWordEditingAddClicked(),
                     ),
                   ),
                 ),
