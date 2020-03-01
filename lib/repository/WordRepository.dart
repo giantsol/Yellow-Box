@@ -31,6 +31,19 @@ class WordRepository {
     return _database.addWord(wordEntity);
   }
 
+  Future<void> deleteWord(Word item) async {
+    final list = _words.value;
+    final index = list.indexWhere((it) => it.word == item.word);
+    if (index < 0) {
+      return;
+    }
+
+    list.removeAt(index);
+    _words.value = list;
+
+    return _database.removeWord(item);
+  }
+
   Future<int> getCount() async {
     return _words.value.length;
   }

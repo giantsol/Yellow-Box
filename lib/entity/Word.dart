@@ -2,6 +2,8 @@
 import 'package:yellow_box/datasource/AppDatabase.dart';
 
 class Word {
+  static const NONE = Word('', 0);
+
   final String word;
   final int dateMillis;
 
@@ -16,4 +18,6 @@ class Word {
     this.word,
     this.dateMillis,
     );
+
+  bool isValid() => word.isNotEmpty && dateMillis > 0;
 }

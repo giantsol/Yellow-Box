@@ -2,6 +2,8 @@
 import 'package:yellow_box/datasource/AppDatabase.dart';
 
 class Combination {
+  static const NONE = Combination('', 0, false);
+
   final String combination;
   final int dateMillis;
   final bool isFavorite;
@@ -29,4 +31,6 @@ class Combination {
       isFavorite ?? this.isFavorite,
     );
   }
+
+  bool isValid() => combination.isNotEmpty && dateMillis > 0;
 }

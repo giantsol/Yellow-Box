@@ -66,7 +66,23 @@ class HistoryBloc extends BaseBloc {
   }
 
   void onWordItemClicked(Word item) {
+    _state.value = _state.value.buildNew(
+      wordItemDialog: item,
+    );
+  }
 
+  void onWordItemDialogCancelClicked() {
+    _state.value = _state.value.buildNew(
+      wordItemDialog: Word.NONE,
+    );
+  }
+
+  void onWordItemDialogDeleteClicked(Word item) {
+    _wordRepository.deleteWord(item);
+
+    _state.value = _state.value.buildNew(
+      wordItemDialog: Word.NONE,
+    );
   }
 
   void onCombinationItemClicked(Combination item) {

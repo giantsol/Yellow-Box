@@ -69,6 +69,15 @@ class AppDatabase {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+  
+  Future<void> removeWord(Word item) async {
+    final db = await _database.first;
+    return db.delete(
+      TABLE_WORDS,
+      where: '$COLUMN_WORD = ?',
+      whereArgs: [item.word],
+    );
+  }
 
   Future<int> getWordsCount() async {
     final db = await _database.first;

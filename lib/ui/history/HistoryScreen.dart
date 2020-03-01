@@ -47,7 +47,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _buildUI(HistoryState state) {
     final appTheme = state.appTheme;
-    final isScrimVisible = false;
+    final isScrimVisible = state.wordItemDialog.isValid() || state.combinationItemDialog.isValid();
 
     return WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress(),
@@ -61,6 +61,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
             combinations: state.combinations,
           ),
           isScrimVisible ? _Scrim() : const SizedBox.shrink(),
+          state.wordItemDialog.isValid() ? _WordItemDialog(
+            appTheme: appTheme,
+            bloc: _bloc,
+            item: state.wordItemDialog,
+          ) : const SizedBox.shrink(),
         ],
       ),
     );
@@ -493,13 +498,123 @@ class _CombinationItem extends StatelessWidget {
   }
 }
 
-
-
 class _Scrim extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
       color: AppColors.SCRIM,
+    );
+  }
+}
+
+class _WordItemDialog extends StatelessWidget {
+  final AppTheme appTheme;
+  final HistoryBloc bloc;
+  final Word item;
+
+  _WordItemDialog({
+    @required this.appTheme,
+    @required this.bloc,
+    @required this.item,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: AppColors.BACKGROUND_WHITE,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  item.word,
+                  style: TextStyle(
+                    color: AppColors.TEXT_BLACK,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  strutStyle: StrutStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 16,),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Material(
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(24),
+                          onTap: () => bloc.onWordItemDialogCancelClicked(),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: AppColors.TEXT_BLACK_LIGHT,
+                                width: 2,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(vertical: 11),
+                            child: Text(
+                              AppLocalizations.of(context).cancel,
+                              style: TextStyle(
+                                color: AppColors.TEXT_BLACK_LIGHT,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              strutStyle: StrutStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8,),
+                    Expanded(
+                      child: Material(
+                        color: appTheme.darkColor,
+                        borderRadius: BorderRadius.circular(24),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(24),
+                          onTap: () => bloc.onWordItemDialogDeleteClicked(item),
+                          child: Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(vertical: 11),
+                            child: Text(
+                              AppLocalizations.of(context).delete,
+                              style: TextStyle(
+                                color: AppColors.TEXT_WHITE,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              strutStyle: StrutStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

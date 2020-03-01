@@ -18,6 +18,7 @@ class AppLocalizations {
   static const WORD = 'word';
   static const COMBINATION = 'combination';
   static const NO_HISTORY = 'noHistory';
+  static const DELETE = 'delete';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -40,6 +41,7 @@ class AppLocalizations {
       WORD: 'Word',
       COMBINATION: 'Combination',
       NO_HISTORY: 'No history',
+      DELETE: 'Delete',
     },
     'ko': {
       CANCEL: '취소',
@@ -57,6 +59,7 @@ class AppLocalizations {
       WORD: '단어',
       COMBINATION: '조합',
       NO_HISTORY: '기록이 없습니다',
+      DELETE: '삭제',
     },
   };
 
@@ -79,6 +82,7 @@ class AppLocalizations {
   String get word => _localizedValues[locale.languageCode][WORD];
   String get combination => _localizedValues[locale.languageCode][COMBINATION];
   String get noHistory => _localizedValues[locale.languageCode][NO_HISTORY];
+  String get delete => _localizedValues[locale.languageCode][DELETE];
 
 }
 
