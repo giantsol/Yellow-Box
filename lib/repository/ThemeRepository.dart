@@ -6,6 +6,6 @@ class ThemeRepository {
   final _currentAppTheme = BehaviorSubject<AppTheme>.seeded(AppTheme.DEFAULT);
 
   Stream<AppTheme> observeCurrentAppTheme() {
-    return _currentAppTheme.distinct();
+    return _currentAppTheme;
   }
 }

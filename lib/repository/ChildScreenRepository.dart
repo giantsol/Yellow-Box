@@ -8,7 +8,7 @@ class ChildScreenRepository {
   final _currentChildScreenKey = BehaviorSubject<ChildScreenKey>.seeded(ChildScreenKey.HOME);
 
   Stream<ChildScreenKey> observeCurrentChildScreenKey() {
-    return _currentChildScreenKey.distinct();
+    return _currentChildScreenKey;
   }
 
   void setCurrentChildScreenKey(ChildScreenKey key) {

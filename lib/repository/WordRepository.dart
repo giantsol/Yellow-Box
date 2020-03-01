@@ -40,7 +40,7 @@ class WordRepository {
   }
 
   Stream<List<Word>> observeWords() {
-    return _words.distinct();
+    return _words;
   }
 
 }

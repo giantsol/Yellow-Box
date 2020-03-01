@@ -73,6 +73,14 @@ class HistoryBloc extends BaseBloc {
 
   }
 
+  void onCombinationItemFavoriteClicked(Combination item) {
+    if (item.isFavorite) {
+      _combinationRepository.unfavoriteItem(item);
+    } else {
+      _combinationRepository.favoriteItem(item);
+    }
+  }
+
   bool handleBackPress() {
     return false;
   }

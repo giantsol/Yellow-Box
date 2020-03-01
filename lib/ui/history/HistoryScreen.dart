@@ -440,11 +440,14 @@ class _CombinationItem extends StatelessWidget {
           child: Row(
             children: <Widget>[
               const SizedBox(width: 8,),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Image.asset(
-                  item.isFavorite ? 'assets/ic_star_fill.png' : 'assets/ic_star_stroke.png',
-                  color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+              InkWell(
+                onTap: () => bloc.onCombinationItemFavoriteClicked(item),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Image.asset(
+                    item.isFavorite ? 'assets/ic_star_fill.png' : 'assets/ic_star_stroke.png',
+                    color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                  ),
                 ),
               ),
               Expanded(

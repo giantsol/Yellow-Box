@@ -19,4 +19,14 @@ class Combination {
     this.dateMillis,
     this.isFavorite,
     );
+
+  Combination buildNew({
+    bool isFavorite,
+  }) {
+    return Combination(
+      this.combination,
+      this.dateMillis,
+      isFavorite ?? this.isFavorite,
+    );
+  }
 }
