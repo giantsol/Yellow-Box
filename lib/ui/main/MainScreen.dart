@@ -51,19 +51,24 @@ class _MainScreenState extends State<MainScreen> {
     final currentChildScreenKey = state.currentChildScreenKey;
     final appTheme = state.appTheme;
 
-    return Scaffold(
-      backgroundColor: appTheme.lightColor,
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          _BackgroundDeco(
-            appTheme: appTheme,
-          ),
-          _ChildScreen(
-            widget: _getOrCreateChildScreenWidget(currentChildScreenKey),
-          ),
-        ],
+    return Theme(
+      data: Theme.of(context).copyWith(
+        accentColor: appTheme.darkColor,
+      ),
+      child: Scaffold(
+        backgroundColor: appTheme.lightColor,
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            _BackgroundDeco(
+              appTheme: appTheme,
+            ),
+            _ChildScreen(
+              widget: _getOrCreateChildScreenWidget(currentChildScreenKey),
+            ),
+          ],
+        ),
       ),
     );
   }
