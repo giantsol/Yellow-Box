@@ -19,6 +19,9 @@ class AppLocalizations {
   static const COMBINATION = 'combination';
   static const NO_HISTORY = 'noHistory';
   static const DELETE = 'delete';
+  static const GENERAL = 'general';
+  static const MINI_BOX_TITLE = 'miniBoxTitle';
+  static const MINI_BOX_SUBTITLE = 'miniBoxSubtitle';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -42,6 +45,9 @@ class AppLocalizations {
       COMBINATION: 'Combination',
       NO_HISTORY: 'No history',
       DELETE: 'Delete',
+      GENERAL: 'General',
+      MINI_BOX_TITLE: 'Mini Box',
+      MINI_BOX_SUBTITLE: 'Quickly add new words using floating button',
     },
     'ko': {
       CANCEL: '취소',
@@ -60,6 +66,9 @@ class AppLocalizations {
       COMBINATION: '조합',
       NO_HISTORY: '기록이 없습니다',
       DELETE: '삭제',
+      GENERAL: '일반',
+      MINI_BOX_TITLE: '미니 박스',
+      MINI_BOX_SUBTITLE: '플로팅 버튼을 사용해 쉽게 새 단어를 추가합니다',
     },
   };
 
@@ -83,6 +92,9 @@ class AppLocalizations {
   String get combination => _localizedValues[locale.languageCode][COMBINATION];
   String get noHistory => _localizedValues[locale.languageCode][NO_HISTORY];
   String get delete => _localizedValues[locale.languageCode][DELETE];
+  String get general => _localizedValues[locale.languageCode][GENERAL];
+  String get miniBoxTitle => _localizedValues[locale.languageCode][MINI_BOX_TITLE];
+  String get miniBoxSubtitle => _localizedValues[locale.languageCode][MINI_BOX_SUBTITLE];
 
 }
 
