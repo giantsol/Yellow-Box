@@ -629,6 +629,13 @@ class _CombinationPopUpBox extends StatelessWidget {
                               borderRadius: BorderRadius.circular(24),
                               onTap: () => bloc.onCleverClicked(),
                               child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(
+                                    color: appTheme.darkColor,
+                                    width: 2,
+                                  ),
+                                ),
                                 alignment: Alignment.center,
                                 padding: const EdgeInsets.symmetric(vertical: 11),
                                 child: Text(
@@ -655,6 +662,13 @@ class _CombinationPopUpBox extends StatelessWidget {
                         borderRadius: BorderRadius.circular(24),
                         onTap: () => bloc.onCloseCombinationPopUpClicked(),
                         child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: appTheme.darkColor,
+                              width: 2,
+                            ),
+                          ),
                           alignment: Alignment.center,
                           padding: const EdgeInsets.symmetric(vertical: 11),
                           child: Text(

@@ -137,6 +137,15 @@ class AppDatabase {
     );
   }
 
+  Future<void> removeCombination(Combination item) async {
+    final db = await _database.first;
+    return db.delete(
+      TABLE_COMBINATIONS,
+      where: '$COLUMN_COMBINATION = ?',
+      whereArgs: [item.combination],
+    );
+  }
+
   Future<List<Combination>> getCombinations() async {
     final db = await _database.first;
     List<Map<String, dynamic>> maps = await db.query(

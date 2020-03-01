@@ -86,7 +86,23 @@ class HistoryBloc extends BaseBloc {
   }
 
   void onCombinationItemClicked(Combination item) {
+    _state.value = _state.value.buildNew(
+      combinationItemDialog: item,
+    );
+  }
 
+  void onCombinationItemDialogCancelClicked() {
+    _state.value = _state.value.buildNew(
+      combinationItemDialog: Combination.NONE,
+    );
+  }
+
+  void onCombinationItemDialogDeleteClicked(Combination item) {
+    _combinationRepository.deleteCombination(item);
+
+    _state.value = _state.value.buildNew(
+      combinationItemDialog: Combination.NONE,
+    );
   }
 
   void onCombinationItemFavoriteClicked(Combination item) {
@@ -98,6 +114,16 @@ class HistoryBloc extends BaseBloc {
   }
 
   bool handleBackPress() {
+    if (_state.value.wordItemDialog.isValid()) {
+      onWordItemDialogCancelClicked();
+      return true;
+    }
+
+    if (_state.value.combinationItemDialog.isValid()) {
+      onCombinationItemDialogCancelClicked();
+      return true;
+    }
+
     return false;
   }
 }

@@ -31,6 +31,19 @@ class CombinationRepository {
     return _database.addCombination(combEntity);
   }
 
+  Future<void> deleteCombination(Combination item) async {
+    final list = _combinations.value;
+    final index = list.indexWhere((it) => it.combination == item.combination);
+    if (index < 0) {
+      return;
+    }
+
+    list.removeAt(index);
+    _combinations.value = list;
+
+    return _database.removeCombination(item);
+  }
+
   Stream<List<Combination>> observeCombinations() {
     return _combinations;
   }
