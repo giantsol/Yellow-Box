@@ -1,11 +1,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:yellow_box/AppColors.dart';
 import 'package:yellow_box/Localization.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/settings/SettingsBloc.dart';
+import 'package:yellow_box/ui/settings/SettingsNavigator.dart';
 import 'package:yellow_box/ui/settings/SettingsState.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -13,13 +15,13 @@ class SettingsScreen extends StatefulWidget {
   State createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavigator {
   SettingsBloc _bloc;
 
   @override
   void initState() {
     super.initState();
-    _bloc = SettingsBloc();
+    _bloc = SettingsBloc(this);
   }
 
   @override
@@ -65,6 +67,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void showMiniBoxLaunchFailedMessage() {
+    _showToast(AppLocalizations.of(context).failedToLaunchMiniBox);
+  }
+
+  void _showToast(String msg) {
+    Fluttertoast.cancel();
+    Fluttertoast.showToast(msg: msg);
   }
 
 }

@@ -22,6 +22,7 @@ class AppLocalizations {
   static const GENERAL = 'general';
   static const MINI_BOX_TITLE = 'miniBoxTitle';
   static const MINI_BOX_SUBTITLE = 'miniBoxSubtitle';
+  static const FAILED_TO_LAUNCH_MINI_BOX = 'failedToLaunchMiniBox';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -48,6 +49,7 @@ class AppLocalizations {
       GENERAL: 'General',
       MINI_BOX_TITLE: 'Mini Box',
       MINI_BOX_SUBTITLE: 'Quickly add new words using floating button',
+      FAILED_TO_LAUNCH_MINI_BOX: 'Failed to launch mini box',
     },
     'ko': {
       CANCEL: '취소',
@@ -69,6 +71,7 @@ class AppLocalizations {
       GENERAL: '일반',
       MINI_BOX_TITLE: '미니 박스',
       MINI_BOX_SUBTITLE: '플로팅 버튼을 사용해 쉽게 새 단어를 추가합니다',
+      FAILED_TO_LAUNCH_MINI_BOX: '미니 박스 실행에 실패하였습니다',
     },
   };
 
@@ -95,6 +98,7 @@ class AppLocalizations {
   String get general => _localizedValues[locale.languageCode][GENERAL];
   String get miniBoxTitle => _localizedValues[locale.languageCode][MINI_BOX_TITLE];
   String get miniBoxSubtitle => _localizedValues[locale.languageCode][MINI_BOX_SUBTITLE];
+  String get failedToLaunchMiniBox => _localizedValues[locale.languageCode][FAILED_TO_LAUNCH_MINI_BOX];
 
 }
 
