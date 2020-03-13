@@ -25,6 +25,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
   HomeBloc _bloc;
 
+  bool _hasShownIdeaBoxFullNoti = false;
+  bool _isIdeaBoxFullNotiVisible = false;
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +56,14 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
     final isScrimVisible = state.isListeningToSpeech
       || state.combinationPopUpData.isValid();
 
+    if (state.isIdeaBoxFull && !_hasShownIdeaBoxFullNoti) {
+      _hasShownIdeaBoxFullNoti = true;
+      _isIdeaBoxFullNotiVisible = true;
+      _hideIdeaBoxFullNotiAfterDelay();
+    } else if (!state.isIdeaBoxFull) {
+      _hasShownIdeaBoxFullNoti = false;
+    }
+
     return WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress(),
       child: Stack(
@@ -80,9 +91,19 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
           state.isProgressShown ? _OverlayProgress(
             appTheme: appTheme,
           ) : const SizedBox.shrink(),
+          _isIdeaBoxFullNotiVisible ? _IdeaBoxFullNoti(
+            bloc: _bloc,
+          ) : const SizedBox.shrink(),
         ],
       ),
     );
+  }
+
+  void _hideIdeaBoxFullNotiAfterDelay() async {
+    await Future.delayed(const Duration(seconds: 5));
+    setState(() {
+      _isIdeaBoxFullNotiVisible = false;
+    });
   }
 
   @override
@@ -729,6 +750,90 @@ class _SadLogo extends StatelessWidget {
         width: 160,
         height: 160,
         child: Placeholder(),
+      ),
+    );
+  }
+}
+
+class _IdeaBoxFullNoti extends StatelessWidget {
+  final HomeBloc bloc;
+
+  _IdeaBoxFullNoti({
+    @required this.bloc,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
+        child: Material(
+          elevation: 2,
+          color: AppColors.BACKGROUND_WHITE,
+          borderRadius: BorderRadius.all(Radius.circular(24)),
+          child: InkWell(
+            borderRadius: BorderRadius.all(Radius.circular(24)),
+            onTap: () { },
+            child: IntrinsicHeight(
+              child: Row(
+                children: <Widget>[
+                  const SizedBox(width: 16,),
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: Placeholder(),
+                  ),
+                  const SizedBox(width: 8,),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          AppLocalizations.of(context).ideaBoxFullTitle,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.TEXT_BLACK,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          strutStyle: StrutStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          AppLocalizations.of(context).ideaBoxFullSubtitle,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.TEXT_BLACK,
+                          ),
+                          strutStyle: StrutStyle(
+                            fontSize: 12,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    AppLocalizations.of(context).history,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.TEXT_BLACK_LIGHT,
+                    ),
+                    strutStyle: StrutStyle(
+                      fontSize: 10,
+                    ),
+                  ),
+                  const SizedBox(width: 16,),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

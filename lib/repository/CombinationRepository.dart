@@ -4,6 +4,8 @@ import 'package:yellow_box/datasource/AppDatabase.dart';
 import 'package:yellow_box/entity/Combination.dart';
 
 class CombinationRepository {
+  static const MAX_COUNT = 1000;
+
   final AppDatabase _database;
 
   final _combinations = BehaviorSubject<List<Combination>>.seeded([]);
@@ -21,7 +23,11 @@ class CombinationRepository {
     return _combinations.value.any((comb) => comb.combination == str);
   }
 
-  Future<void> addCombination(String combination) {
+  Future<void> addCombination(String combination) async {
+    if (_combinations.value.length >= MAX_COUNT) {
+      return;
+    }
+
     final combEntity = Combination(combination, DateTime.now().millisecondsSinceEpoch, false);
 
     final list = _combinations.value;

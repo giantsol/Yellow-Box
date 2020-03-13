@@ -10,6 +10,7 @@ class HomeState {
   final bool isProgressShown;
   final bool isListeningToSpeech;
   final CombinationPopUpData combinationPopUpData;
+  final bool isIdeaBoxFull;
 
   const HomeState({
     this.appTheme = AppTheme.DEFAULT,
@@ -18,6 +19,7 @@ class HomeState {
     this.isProgressShown = false,
     this.isListeningToSpeech = false,
     this.combinationPopUpData = CombinationPopUpData.NONE,
+    this.isIdeaBoxFull = false,
   });
 
   HomeState buildNew({
@@ -27,6 +29,7 @@ class HomeState {
     bool isProgressShown,
     bool isListeningToSpeech,
     CombinationPopUpData combinationPopUpData,
+    bool isIdeaBoxFull,
   }) {
     return HomeState(
       appTheme: appTheme ?? this.appTheme,
@@ -35,6 +38,7 @@ class HomeState {
       isProgressShown: isProgressShown ?? this.isProgressShown,
       isListeningToSpeech: isListeningToSpeech ?? this.isListeningToSpeech,
       combinationPopUpData: combinationPopUpData ?? this.combinationPopUpData,
+      isIdeaBoxFull: isIdeaBoxFull ?? this.isIdeaBoxFull,
     );
   }
 

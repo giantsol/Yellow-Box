@@ -3,6 +3,7 @@ import 'package:rxdart/subjects.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:yellow_box/entity/CombinationPopUpData.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
+import 'package:yellow_box/repository/CombinationRepository.dart';
 import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
 import 'package:yellow_box/ui/home/HomeNavigator.dart';
@@ -26,6 +27,10 @@ class HomeBloc extends BaseBloc {
   final _stt = SpeechToText();
 
   HomeBloc(this._navigator) {
+    _init();
+  }
+
+  void _init() async {
     _stt.initialize(onStatus: (status) {
       _state.value = _state.value.buildNew(
         isListeningToSpeech: status == SpeechToText.listeningStatus,
@@ -40,6 +45,14 @@ class HomeBloc extends BaseBloc {
       .listen((appTheme) {
       _state.value = _state.value.buildNew(
         appTheme: appTheme,
+      );
+    }));
+
+    _subscriptions.add(_combinationRepository.observeCombinations()
+      .listen((combinations) {
+      _state.value = _state.value.buildNew(
+//        isIdeaBoxFull: combinations.length >= CombinationRepository.MAX_COUNT,
+        isIdeaBoxFull: true,
       );
     }));
   }
