@@ -4,4 +4,5 @@ abstract class HomeNavigator {
   void showEditingWordAlreadyExists();
   void showSpeechToTextNotReady();
   void showAddMoreWordsForCombination();
+  void showIdeaBoxFull();
 }

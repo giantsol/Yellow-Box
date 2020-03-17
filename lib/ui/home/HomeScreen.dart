@@ -130,6 +130,12 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
   void showAddMoreWordsForCombination() {
     _showToast(AppLocalizations.of(context).addMoreWordsForCombination);
   }
+
+  @override
+  void showIdeaBoxFull() {
+    _showToast(AppLocalizations.of(context).ideaBoxFullToast);
+  }
+
 }
 
 class _MainUI extends StatelessWidget {
@@ -773,7 +779,7 @@ class _IdeaBoxFullNoti extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(24)),
           child: InkWell(
             borderRadius: BorderRadius.all(Radius.circular(24)),
-            onTap: () { },
+            onTap: () => bloc.onIdeaBoxFullNotiClicked(),
             child: IntrinsicHeight(
               child: Row(
                 children: <Widget>[

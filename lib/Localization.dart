@@ -26,6 +26,7 @@ class AppLocalizations {
   static const IDEA_BOX_FULL_TITLE = 'ideaBoxFullTitle';
   static const IDEA_BOX_FULL_SUBTITLE = 'ideaBoxFullSubtitle';
   static const HISTORY = 'history';
+  static const IDEA_BOX_FULL_TOAST = 'ideaBoxFullToast';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -56,6 +57,7 @@ class AppLocalizations {
       IDEA_BOX_FULL_TITLE: 'Idea box is full!',
       IDEA_BOX_FULL_SUBTITLE: 'Clear some history',
       HISTORY: 'History',
+      IDEA_BOX_FULL_TOAST: 'Idea box is full!',
     },
     'ko': {
       CANCEL: '취소',
@@ -81,6 +83,7 @@ class AppLocalizations {
       IDEA_BOX_FULL_TITLE: '아이디어 박스가 가득 찼습니다!',
       IDEA_BOX_FULL_SUBTITLE: '기록을 정리해보세요',
       HISTORY: '기록',
+      IDEA_BOX_FULL_TOAST: '아이디어 박스가 가득 찼습니다!',
     },
   };
 
@@ -111,6 +114,7 @@ class AppLocalizations {
   String get ideaBoxFullTitle => _localizedValues[locale.languageCode][IDEA_BOX_FULL_TITLE];
   String get ideaBoxFullSubtitle => _localizedValues[locale.languageCode][IDEA_BOX_FULL_SUBTITLE];
   String get history => _localizedValues[locale.languageCode][HISTORY];
+  String get ideaBoxFullToast => _localizedValues[locale.languageCode][IDEA_BOX_FULL_TOAST];
 
 }
 

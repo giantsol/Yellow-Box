@@ -1,6 +1,7 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/entity/CombinationPopUpData.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/repository/CombinationRepository.dart';
@@ -51,8 +52,7 @@ class HomeBloc extends BaseBloc {
     _subscriptions.add(_combinationRepository.observeCombinations()
       .listen((combinations) {
       _state.value = _state.value.buildNew(
-//        isIdeaBoxFull: combinations.length >= CombinationRepository.MAX_COUNT,
-        isIdeaBoxFull: true,
+        isIdeaBoxFull: combinations.length >= CombinationRepository.MAX_COUNT,
       );
     }));
   }
@@ -142,6 +142,11 @@ class HomeBloc extends BaseBloc {
       return;
     }
 
+    if (_state.value.isIdeaBoxFull) {
+      _navigator.showIdeaBoxFull();
+      return;
+    }
+
     _showProgress();
 
     final savedWordCount = await _wordRepository.getCount();
@@ -191,6 +196,10 @@ class HomeBloc extends BaseBloc {
     _state.value = _state.value.buildNew(
       combinationPopUpData: CombinationPopUpData.NONE,
     );
+  }
+
+  void onIdeaBoxFullNotiClicked() {
+    _childScreenRepository.setCurrentChildScreenKey(ChildScreenKey.HISTORY);
   }
 
   bool handleBackPress() {
