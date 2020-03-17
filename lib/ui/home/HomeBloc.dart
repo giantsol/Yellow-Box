@@ -166,30 +166,11 @@ class HomeBloc extends BaseBloc {
       _state.value = _state.value.buildNew(
         ideaPopUpData: IdeaPopUpData(randIdeaTitle, true),
       );
+
+      await _ideaRepository.addIdea(randIdeaTitle);
     }
 
     _hideProgress();
-  }
-
-  void onNahClicked() {
-    _state.value = _state.value.buildNew(
-      ideaPopUpData: IdeaPopUpData.NONE,
-    );
-  }
-
-  void onCleverClicked() async {
-    if (_isProgressShown()) {
-      return;
-    }
-
-    _showProgress();
-    final title = _state.value.ideaPopUpData.title;
-    await _ideaRepository.addIdea(title);
-
-    _state.value = _state.value.buildNew(
-      ideaPopUpData: IdeaPopUpData.NONE,
-      isProgressShown: false,
-    );
   }
 
   void onCloseIdeaPopUpClicked() {

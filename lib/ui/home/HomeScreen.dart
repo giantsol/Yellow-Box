@@ -621,100 +621,30 @@ class _IdeaPopUpBox extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16,),
-                    isNew ? Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Material(
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(24),
-                              onTap: () => bloc.onNahClicked(),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(24),
-                                  border: Border.all(
-                                    color: AppColors.TEXT_BLACK_LIGHT,
-                                    width: 2,
-                                  ),
+                    Center(
+                      child: SizedBox(
+                        width: 152,
+                        child: Material(
+                          color: appTheme.darkColor,
+                          borderRadius: BorderRadius.circular(24),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(24),
+                            onTap: () => bloc.onCloseIdeaPopUpClicked(),
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.symmetric(vertical: 11),
+                              child: Text(
+                                AppLocalizations.of(context).close,
+                                style: TextStyle(
+                                  color: AppColors.TEXT_WHITE,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                alignment: Alignment.center,
-                                padding: const EdgeInsets.symmetric(vertical: 11),
-                                child: Text(
-                                  AppLocalizations.of(context).nah,
-                                  style: TextStyle(
-                                    color: AppColors.TEXT_BLACK_LIGHT,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  strutStyle: StrutStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                strutStyle: StrutStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8,),
-                        Expanded(
-                          child: Material(
-                            color: appTheme.darkColor,
-                            borderRadius: BorderRadius.circular(24),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(24),
-                              onTap: () => bloc.onCleverClicked(),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(24),
-                                  border: Border.all(
-                                    color: appTheme.darkColor,
-                                    width: 2,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                padding: const EdgeInsets.symmetric(vertical: 11),
-                                child: Text(
-                                  AppLocalizations.of(context).clever,
-                                  style: TextStyle(
-                                    color: AppColors.TEXT_WHITE,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  strutStyle: StrutStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ) : Material(
-                      color: appTheme.darkColor,
-                      borderRadius: BorderRadius.circular(24),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(24),
-                        onTap: () => bloc.onCloseIdeaPopUpClicked(),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(
-                              color: appTheme.darkColor,
-                              width: 2,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(vertical: 11),
-                          child: Text(
-                            AppLocalizations.of(context).close,
-                            style: TextStyle(
-                              color: AppColors.TEXT_WHITE,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            strutStyle: StrutStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),

@@ -12,8 +12,6 @@ class AppLocalizations {
   static const ADD_MORE_WORDS_FOR_IDEA = 'addMoreWordsForIdea';
   static const NEW_IDEA = 'newIdea';
   static const GOOD_OLD_ONE = 'goodOldOne';
-  static const NAH = 'nah';
-  static const CLEVER = 'clever';
   static const CLOSE = 'close';
   static const WORD = 'word';
   static const IDEA = 'idea';
@@ -43,8 +41,6 @@ class AppLocalizations {
       ADD_MORE_WORDS_FOR_IDEA: 'Add more words for idea',
       NEW_IDEA: 'New idea!',
       GOOD_OLD_ONE: 'Good old one...',
-      NAH: 'Nah...',
-      CLEVER: 'Clever!',
       CLOSE: 'Close',
       WORD: 'Word',
       IDEA: 'Idea',
@@ -69,8 +65,6 @@ class AppLocalizations {
       ADD_MORE_WORDS_FOR_IDEA: '단어를 더 추가해보세요',
       NEW_IDEA: '새로운 아이디어!',
       GOOD_OLD_ONE: '익숙한 조합이네요...',
-      NAH: '별로...',
-      CLEVER: '좋아요!',
       CLOSE: '닫기',
       WORD: '단어',
       IDEA: '아이디어',
@@ -100,8 +94,6 @@ class AppLocalizations {
   String get addMoreWordsForIdea => _localizedValues[locale.languageCode][ADD_MORE_WORDS_FOR_IDEA];
   String get newIdea => _localizedValues[locale.languageCode][NEW_IDEA];
   String get goodOldOne => _localizedValues[locale.languageCode][GOOD_OLD_ONE];
-  String get nah => _localizedValues[locale.languageCode][NAH];
-  String get clever => _localizedValues[locale.languageCode][CLEVER];
   String get close => _localizedValues[locale.languageCode][CLOSE];
   String get word => _localizedValues[locale.languageCode][WORD];
   String get idea => _localizedValues[locale.languageCode][IDEA];
