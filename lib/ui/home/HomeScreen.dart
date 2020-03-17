@@ -778,43 +778,41 @@ class _IdeaBoxFullNoti extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   const SizedBox(width: 16,),
-                  SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: Placeholder(),
-                  ),
+                  Image.asset('assets/ic_warning.png'),
                   const SizedBox(width: 8,),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          AppLocalizations.of(context).ideaBoxFullTitle,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.TEXT_BLACK,
-                            fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            AppLocalizations.of(context).ideaBoxFullTitle,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.TEXT_BLACK,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            strutStyle: StrutStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          strutStyle: StrutStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                          Text(
+                            AppLocalizations.of(context).ideaBoxFullSubtitle,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.TEXT_BLACK,
+                            ),
+                            strutStyle: StrutStyle(
+                              fontSize: 12,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                        Text(
-                          AppLocalizations.of(context).ideaBoxFullSubtitle,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.TEXT_BLACK,
-                          ),
-                          strutStyle: StrutStyle(
-                            fontSize: 12,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -828,6 +826,8 @@ class _IdeaBoxFullNoti extends StatelessWidget {
                       fontSize: 10,
                     ),
                   ),
+                  const SizedBox(width: 4),
+                  Image.asset('assets/ic_arrow_right.png'),
                   const SizedBox(width: 16,),
                 ],
               ),
