@@ -2,16 +2,15 @@
 import 'package:path/path.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:yellow_box/entity/Combination.dart';
+import 'package:yellow_box/entity/Idea.dart';
 import 'package:yellow_box/entity/Word.dart';
 
 class AppDatabase {
   static const String TABLE_WORDS = 'words';
-  static const String TABLE_COMBINATIONS = 'combinations';
+  static const String TABLE_IDEAS = 'ideas';
 
-  static const String COLUMN_WORD = 'word';
+  static const String COLUMN_TITLE = 'title';
   static const String COLUMN_DATE_MILLIS = 'date_millis';
-  static const String COLUMN_COMBINATION = 'combination';
   static const String COLUMN_FAVORITE = 'favorite';
 
   // ignore: close_sinks
@@ -28,8 +27,8 @@ class AppDatabase {
       onCreate: (db, version) async {
         await db.execute(
           """
-          CREATE TABLE $TABLE_COMBINATIONS(
-            $COLUMN_COMBINATION TEXT NOT NULL PRIMARY KEY,
+          CREATE TABLE $TABLE_IDEAS(
+            $COLUMN_TITLE TEXT NOT NULL PRIMARY KEY,
             $COLUMN_DATE_MILLIS INTEGER NOT NULL,
             $COLUMN_FAVORITE INTEGER NOT NULL
            );
@@ -38,7 +37,7 @@ class AppDatabase {
         return db.execute(
           """
           CREATE TABLE $TABLE_WORDS(
-            $COLUMN_WORD TEXT NOT NULL PRIMARY KEY,
+            $COLUMN_TITLE TEXT NOT NULL PRIMARY KEY,
             $COLUMN_DATE_MILLIS INTEGER NOT NULL
            );
            """
@@ -48,12 +47,12 @@ class AppDatabase {
     );
   }
 
-  Future<bool> hasWord(String word) async {
+  Future<bool> hasWord(String title) async {
     final db = await _database.first;
     final map = await db.query(
       TABLE_WORDS,
-      where: '$COLUMN_WORD = ?',
-      whereArgs: [word],
+      where: '$COLUMN_TITLE = ?',
+      whereArgs: [title],
     );
     return map.isNotEmpty;
   }
@@ -63,7 +62,7 @@ class AppDatabase {
     return db.insert(
       TABLE_WORDS,
       {
-        COLUMN_WORD: entity.word,
+        COLUMN_TITLE: entity.title,
         COLUMN_DATE_MILLIS: entity.dateMillis,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -74,8 +73,8 @@ class AppDatabase {
     final db = await _database.first;
     return db.delete(
       TABLE_WORDS,
-      where: '$COLUMN_WORD = ?',
-      whereArgs: [item.word],
+      where: '$COLUMN_TITLE = ?',
+      whereArgs: [item.title],
     );
   }
 
@@ -89,13 +88,13 @@ class AppDatabase {
   Future<List<String>> getRandomWordStrings(int count) async {
     final db = await _database.first;
     List<Map<String, dynamic>> rows = await db.rawQuery(
-      'SELECT $COLUMN_WORD FROM $TABLE_WORDS ORDER BY RANDOM() LIMIT $count'
+      'SELECT $COLUMN_TITLE FROM $TABLE_WORDS ORDER BY RANDOM() LIMIT $count'
     );
 
     final List<String> result = [];
     for (int i = 0; i < rows.length; i++) {
-      final word = rows[i][COLUMN_WORD];
-      result.add(word);
+      final title = rows[i][COLUMN_TITLE];
+      result.add(title);
     }
     return result;
   }
@@ -114,22 +113,22 @@ class AppDatabase {
     return result;
   }
 
-  Future<bool> hasCombination(String combination) async {
+  Future<bool> hasIdea(String title) async {
     final db = await _database.first;
     final map = await db.query(
-      TABLE_COMBINATIONS,
-      where: '$COLUMN_COMBINATION = ?',
-      whereArgs: [combination],
+      TABLE_IDEAS,
+      where: '$COLUMN_TITLE = ?',
+      whereArgs: [title],
     );
     return map.isNotEmpty;
   }
 
-  Future<void> addCombination(Combination entity) async {
+  Future<void> addIdea(Idea entity) async {
     final db = await _database.first;
     return db.insert(
-      TABLE_COMBINATIONS,
+      TABLE_IDEAS,
       {
-        COLUMN_COMBINATION: entity.combination,
+        COLUMN_TITLE: entity.title,
         COLUMN_DATE_MILLIS: entity.dateMillis,
         COLUMN_FAVORITE: entity.isFavorite ? 1 : 0,
       },
@@ -137,25 +136,25 @@ class AppDatabase {
     );
   }
 
-  Future<void> removeCombination(Combination item) async {
+  Future<void> removeIdea(Idea item) async {
     final db = await _database.first;
     return db.delete(
-      TABLE_COMBINATIONS,
-      where: '$COLUMN_COMBINATION = ?',
-      whereArgs: [item.combination],
+      TABLE_IDEAS,
+      where: '$COLUMN_TITLE = ?',
+      whereArgs: [item.title],
     );
   }
 
-  Future<List<Combination>> getCombinations() async {
+  Future<List<Idea>> getIdeas() async {
     final db = await _database.first;
     List<Map<String, dynamic>> maps = await db.query(
-      TABLE_COMBINATIONS,
+      TABLE_IDEAS,
       orderBy: '$COLUMN_FAVORITE DESC, $COLUMN_DATE_MILLIS DESC'
     );
-    final List<Combination> result = [];
+    final List<Idea> result = [];
     for (int i = 0; i < maps.length; i++) {
-      final combination = Combination.fromDatabase(maps[i]);
-      result.add(combination);
+      final idea = Idea.fromDatabase(maps[i]);
+      result.add(idea);
     }
     return result;
   }

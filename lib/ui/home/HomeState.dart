@@ -1,6 +1,6 @@
 
 import 'package:yellow_box/entity/AppTheme.dart';
-import 'package:yellow_box/entity/CombinationPopUpData.dart';
+import 'package:yellow_box/entity/IdeaPopUpData.dart';
 
 class HomeState {
 
@@ -9,7 +9,7 @@ class HomeState {
   final String editingWord;
   final bool isProgressShown;
   final bool isListeningToSpeech;
-  final CombinationPopUpData combinationPopUpData;
+  final IdeaPopUpData ideaPopUpData;
   final bool isIdeaBoxFull;
 
   const HomeState({
@@ -18,7 +18,7 @@ class HomeState {
     this.editingWord = '',
     this.isProgressShown = false,
     this.isListeningToSpeech = false,
-    this.combinationPopUpData = CombinationPopUpData.NONE,
+    this.ideaPopUpData = IdeaPopUpData.NONE,
     this.isIdeaBoxFull = false,
   });
 
@@ -28,7 +28,7 @@ class HomeState {
     String editingWord,
     bool isProgressShown,
     bool isListeningToSpeech,
-    CombinationPopUpData combinationPopUpData,
+    IdeaPopUpData ideaPopUpData,
     bool isIdeaBoxFull,
   }) {
     return HomeState(
@@ -37,7 +37,7 @@ class HomeState {
       editingWord: editingWord ?? this.editingWord,
       isProgressShown: isProgressShown ?? this.isProgressShown,
       isListeningToSpeech: isListeningToSpeech ?? this.isListeningToSpeech,
-      combinationPopUpData: combinationPopUpData ?? this.combinationPopUpData,
+      ideaPopUpData: ideaPopUpData ?? this.ideaPopUpData,
       isIdeaBoxFull: isIdeaBoxFull ?? this.isIdeaBoxFull,
     );
   }

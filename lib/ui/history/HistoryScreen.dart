@@ -5,7 +5,7 @@ import 'package:yellow_box/AppColors.dart';
 import 'package:yellow_box/Localization.dart';
 import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
-import 'package:yellow_box/entity/Combination.dart';
+import 'package:yellow_box/entity/Idea.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/entity/Word.dart';
 import 'package:yellow_box/ui/history/HistoryBloc.dart';
@@ -47,7 +47,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _buildUI(HistoryState state) {
     final appTheme = state.appTheme;
-    final isScrimVisible = state.wordItemDialog.isValid() || state.combinationItemDialog.isValid();
+    final isScrimVisible = state.wordItemDialog.isValid() || state.ideaItemDialog.isValid();
 
     return WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress(),
@@ -58,7 +58,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             bloc: _bloc,
             isWordTab: state.isWordTab,
             words: state.words,
-            combinations: state.combinations,
+            ideas: state.ideas,
           ),
           isScrimVisible ? _Scrim() : const SizedBox.shrink(),
           state.wordItemDialog.isValid() ? _WordItemDialog(
@@ -66,10 +66,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
             bloc: _bloc,
             item: state.wordItemDialog,
           ) : const SizedBox.shrink(),
-          state.combinationItemDialog.isValid() ? _CombinationItemDialog(
+          state.ideaItemDialog.isValid() ? _IdeaItemDialog(
             appTheme: appTheme,
             bloc: _bloc,
-            item: state.combinationItemDialog,
+            item: state.ideaItemDialog,
           ) : const SizedBox.shrink(),
         ],
       ),
@@ -82,14 +82,14 @@ class _MainUI extends StatelessWidget {
   final HistoryBloc bloc;
   final bool isWordTab;
   final List<Word> words;
-  final List<Combination> combinations;
+  final List<Idea> ideas;
 
   _MainUI({
     @required this.appTheme,
     @required this.bloc,
     @required this.isWordTab,
     @required this.words,
-    @required this.combinations,
+    @required this.ideas,
   });
 
   @override
@@ -105,9 +105,9 @@ class _MainUI extends StatelessWidget {
             bloc: bloc,
             items: words,
             appTheme: appTheme,
-          ) : _CombinationList(
+          ) : _IdeaList(
             bloc: bloc,
-            items: combinations,
+            items: ideas,
             appTheme: appTheme,
           ),
           _TabBar(
@@ -238,7 +238,7 @@ class _TabBar extends StatelessWidget {
               ),
               Expanded(
                 child: InkWell(
-                  onTap: () => bloc.onCombinationTabClicked(),
+                  onTap: () => bloc.onIdeaTabClicked(),
                   child: Container(
                     constraints: BoxConstraints(
                       minHeight: 56,
@@ -251,7 +251,7 @@ class _TabBar extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 8),
                               child: Text(
-                                AppLocalizations.of(context).combination,
+                                AppLocalizations.of(context).idea,
                                 style: TextStyle(
                                   color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
                                   fontSize: 20,
@@ -350,7 +350,7 @@ class _WordItem extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    item.word,
+                    item.title,
                     style: TextStyle(
                       fontSize: 18,
                       color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
@@ -388,12 +388,12 @@ class _WordItem extends StatelessWidget {
   }
 }
 
-class _CombinationList extends StatelessWidget {
+class _IdeaList extends StatelessWidget {
   final HistoryBloc bloc;
-  final List<Combination> items;
+  final List<Idea> items;
   final AppTheme appTheme;
 
-  _CombinationList({
+  _IdeaList({
     @required this.bloc,
     @required this.items,
     @required this.appTheme,
@@ -407,7 +407,7 @@ class _CombinationList extends StatelessWidget {
       child: items.length > 0 ? ListView.builder(
         itemCount: items.length,
         itemBuilder: (context, index) {
-          return _CombinationItem(
+          return _IdeaItem(
             bloc: bloc,
             item: items[index],
             isDarkTheme: isDarkTheme,
@@ -429,12 +429,12 @@ class _CombinationList extends StatelessWidget {
   }
 }
 
-class _CombinationItem extends StatelessWidget {
+class _IdeaItem extends StatelessWidget {
   final HistoryBloc bloc;
-  final Combination item;
+  final Idea item;
   final bool isDarkTheme;
 
-  _CombinationItem({
+  _IdeaItem({
     @required this.bloc,
     @required this.item,
     @required this.isDarkTheme,
@@ -446,12 +446,12 @@ class _CombinationItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         InkWell(
-          onTap: () => bloc.onCombinationItemClicked(item),
+          onTap: () => bloc.onIdeaItemClicked(item),
           child: Row(
             children: <Widget>[
               const SizedBox(width: 8,),
               InkWell(
-                onTap: () => bloc.onCombinationItemFavoriteClicked(item),
+                onTap: () => bloc.onIdeaItemFavoriteClicked(item),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Image.asset(
@@ -464,7 +464,7 @@ class _CombinationItem extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   child: Text(
-                    item.combination,
+                    item.title,
                     style: TextStyle(
                       fontSize: 18,
                       color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
@@ -540,7 +540,7 @@ class _WordItemDialog extends StatelessWidget {
               children: <Widget>[
                 const SizedBox(height: 16,),
                 Text(
-                  item.word,
+                  item.title,
                   style: TextStyle(
                     color: AppColors.TEXT_BLACK,
                     fontSize: 16,
@@ -632,12 +632,12 @@ class _WordItemDialog extends StatelessWidget {
   }
 }
 
-class _CombinationItemDialog extends StatelessWidget {
+class _IdeaItemDialog extends StatelessWidget {
   final AppTheme appTheme;
   final HistoryBloc bloc;
-  final Combination item;
+  final Idea item;
 
-  _CombinationItemDialog({
+  _IdeaItemDialog({
     @required this.appTheme,
     @required this.bloc,
     @required this.item,
@@ -660,7 +660,7 @@ class _CombinationItemDialog extends StatelessWidget {
               children: <Widget>[
                 const SizedBox(height: 16,),
                 Text(
-                  item.combination,
+                  item.title,
                   style: TextStyle(
                     color: AppColors.TEXT_BLACK,
                     fontSize: 16,
@@ -680,7 +680,7 @@ class _CombinationItemDialog extends StatelessWidget {
                       child: Material(
                         child: InkWell(
                           borderRadius: BorderRadius.circular(24),
-                          onTap: () => bloc.onCombinationItemDialogCancelClicked(),
+                          onTap: () => bloc.onIdeaItemDialogCancelClicked(),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(24),
@@ -714,7 +714,7 @@ class _CombinationItemDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(24),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(24),
-                          onTap: () => bloc.onCombinationItemDialogDeleteClicked(item),
+                          onTap: () => bloc.onIdeaItemDialogDeleteClicked(item),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(24),

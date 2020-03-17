@@ -18,7 +18,7 @@ class WordRepository {
   }
 
   Future<bool> hasWord(String wordString) async {
-    return _words.value.any((word) => word.word == wordString);
+    return _words.value.any((word) => word.title == wordString);
   }
 
   Future<void> addWord(String wordString) {
@@ -33,7 +33,7 @@ class WordRepository {
 
   Future<void> deleteWord(Word item) async {
     final list = _words.value;
-    final index = list.indexWhere((it) => it.word == item.word);
+    final index = list.indexWhere((it) => it.title == item.title);
     if (index < 0) {
       return;
     }

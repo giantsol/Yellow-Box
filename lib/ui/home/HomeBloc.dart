@@ -2,9 +2,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
-import 'package:yellow_box/entity/CombinationPopUpData.dart';
+import 'package:yellow_box/entity/IdeaPopUpData.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
-import 'package:yellow_box/repository/CombinationRepository.dart';
+import 'package:yellow_box/repository/IdeaRepository.dart';
 import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
 import 'package:yellow_box/ui/home/HomeNavigator.dart';
@@ -21,7 +21,7 @@ class HomeBloc extends BaseBloc {
   final _themeRepository = dependencies.themeRepository;
   final _childScreenRepository = dependencies.childScreenRepository;
   final _wordRepository = dependencies.wordRepository;
-  final _combinationRepository = dependencies.combinationRepository;
+  final _ideaRepository = dependencies.ideaRepository;
 
   CompositeSubscription _subscriptions = CompositeSubscription();
 
@@ -49,10 +49,10 @@ class HomeBloc extends BaseBloc {
       );
     }));
 
-    _subscriptions.add(_combinationRepository.observeCombinations()
-      .listen((combinations) {
+    _subscriptions.add(_ideaRepository.observeIdeas()
+      .listen((ideas) {
       _state.value = _state.value.buildNew(
-        isIdeaBoxFull: combinations.length >= CombinationRepository.MAX_COUNT,
+        isIdeaBoxFull: ideas.length >= IdeaRepository.MAX_COUNT,
       );
     }));
   }
@@ -151,20 +151,20 @@ class HomeBloc extends BaseBloc {
 
     final savedWordCount = await _wordRepository.getCount();
     if (savedWordCount < 2) {
-      _navigator.showAddMoreWordsForCombination();
+      _navigator.showAddMoreWordsForIdea();
       _hideProgress();
       return;
     }
 
-    final combination = (await _wordRepository.getRandomWordStrings(2)).join(" ");
-    final isAlreadySavedCombination = await _combinationRepository.hasCombination(combination);
-    if (isAlreadySavedCombination) {
+    final randIdeaTitle = (await _wordRepository.getRandomWordStrings(2)).join(" ");
+    final isAlreadySavedIdea = await _ideaRepository.hasIdea(randIdeaTitle);
+    if (isAlreadySavedIdea) {
       _state.value = _state.value.buildNew(
-        combinationPopUpData: CombinationPopUpData(combination, false),
+        ideaPopUpData: IdeaPopUpData(randIdeaTitle, false),
       );
     } else {
       _state.value = _state.value.buildNew(
-        combinationPopUpData: CombinationPopUpData(combination, true),
+        ideaPopUpData: IdeaPopUpData(randIdeaTitle, true),
       );
     }
 
@@ -173,7 +173,7 @@ class HomeBloc extends BaseBloc {
 
   void onNahClicked() {
     _state.value = _state.value.buildNew(
-      combinationPopUpData: CombinationPopUpData.NONE,
+      ideaPopUpData: IdeaPopUpData.NONE,
     );
   }
 
@@ -183,18 +183,18 @@ class HomeBloc extends BaseBloc {
     }
 
     _showProgress();
-    final combination = _state.value.combinationPopUpData.combination;
-    await _combinationRepository.addCombination(combination);
+    final title = _state.value.ideaPopUpData.title;
+    await _ideaRepository.addIdea(title);
 
     _state.value = _state.value.buildNew(
-      combinationPopUpData: CombinationPopUpData.NONE,
+      ideaPopUpData: IdeaPopUpData.NONE,
       isProgressShown: false,
     );
   }
 
-  void onCloseCombinationPopUpClicked() {
+  void onCloseIdeaPopUpClicked() {
     _state.value = _state.value.buildNew(
-      combinationPopUpData: CombinationPopUpData.NONE,
+      ideaPopUpData: IdeaPopUpData.NONE,
     );
   }
 
@@ -213,8 +213,8 @@ class HomeBloc extends BaseBloc {
       return true;
     }
 
-    if (_state.value.combinationPopUpData.isValid()) {
-      onCloseCombinationPopUpClicked();
+    if (_state.value.ideaPopUpData.isValid()) {
+      onCloseIdeaPopUpClicked();
       return true;
     }
 

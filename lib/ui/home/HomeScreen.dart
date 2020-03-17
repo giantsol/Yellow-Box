@@ -8,7 +8,7 @@ import 'package:yellow_box/AppColors.dart';
 import 'package:yellow_box/Localization.dart';
 import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
-import 'package:yellow_box/entity/CombinationPopUpData.dart';
+import 'package:yellow_box/entity/IdeaPopUpData.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/home/HomeBloc.dart';
 import 'package:yellow_box/ui/home/HomeNavigator.dart';
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
   Widget _buildUI(HomeState state) {
     final appTheme = state.appTheme;
     final isScrimVisible = state.isListeningToSpeech
-      || state.combinationPopUpData.isValid();
+      || state.ideaPopUpData.isValid();
 
     if (state.isIdeaBoxFull && !_hasShownIdeaBoxFullNoti) {
       _hasShownIdeaBoxFullNoti = true;
@@ -83,9 +83,9 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
             bloc: _bloc,
             appTheme: appTheme,
           ) : const SizedBox.shrink(),
-          state.combinationPopUpData.isValid() ? _CombinationPopUpBox(
+          state.ideaPopUpData.isValid() ? _IdeaPopUpBox(
             bloc: _bloc,
-            data: state.combinationPopUpData,
+            data: state.ideaPopUpData,
             appTheme: appTheme,
           ) : const SizedBox.shrink(),
           state.isProgressShown ? _OverlayProgress(
@@ -127,8 +127,8 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
   }
 
   @override
-  void showAddMoreWordsForCombination() {
-    _showToast(AppLocalizations.of(context).addMoreWordsForCombination);
+  void showAddMoreWordsForIdea() {
+    _showToast(AppLocalizations.of(context).addMoreWordsForIdea);
   }
 
   @override
@@ -553,12 +553,12 @@ class _WhiteDot extends AnimatedWidget {
   }
 }
 
-class _CombinationPopUpBox extends StatelessWidget {
+class _IdeaPopUpBox extends StatelessWidget {
   final HomeBloc bloc;
-  final CombinationPopUpData data;
+  final IdeaPopUpData data;
   final AppTheme appTheme;
 
-  _CombinationPopUpBox({
+  _IdeaPopUpBox({
     @required this.bloc,
     @required this.data,
     @required this.appTheme,
@@ -567,7 +567,7 @@ class _CombinationPopUpBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isNew = data.isNew;
-    final combination = data.combination;
+    final title = data.title;
 
     return SafeArea(
       child: Padding(
@@ -595,7 +595,7 @@ class _CombinationPopUpBox extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text(
-                      isNew ? AppLocalizations.of(context).newCombination
+                      isNew ? AppLocalizations.of(context).newIdea
                         : AppLocalizations.of(context).goodOldOne,
                       style: TextStyle(
                         color: AppColors.TEXT_BLACK,
@@ -607,7 +607,7 @@ class _CombinationPopUpBox extends StatelessWidget {
                     ),
                     const SizedBox(height: 16,),
                     Text(
-                      combination,
+                      title,
                       maxLines: 4,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -694,7 +694,7 @@ class _CombinationPopUpBox extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(24),
-                        onTap: () => bloc.onCloseCombinationPopUpClicked(),
+                        onTap: () => bloc.onCloseIdeaPopUpClicked(),
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(24),

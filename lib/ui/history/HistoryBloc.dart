@@ -1,7 +1,7 @@
 
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:yellow_box/entity/Combination.dart';
+import 'package:yellow_box/entity/Idea.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/entity/Word.dart';
 import 'package:yellow_box/ui/App.dart';
@@ -17,7 +17,7 @@ class HistoryBloc extends BaseBloc {
   final _themeRepository = dependencies.themeRepository;
   final _childScreenRepository = dependencies.childScreenRepository;
   final _wordRepository = dependencies.wordRepository;
-  final _combinationRepository = dependencies.combinationRepository;
+  final _ideaRepository = dependencies.ideaRepository;
 
   CompositeSubscription _subscriptions = CompositeSubscription();
 
@@ -36,10 +36,10 @@ class HistoryBloc extends BaseBloc {
       );
     }));
 
-    _subscriptions.add(_combinationRepository.observeCombinations()
-      .listen((combinations) {
+    _subscriptions.add(_ideaRepository.observeIdeas()
+      .listen((ideas) {
       _state.value = _state.value.buildNew(
-        combinations: combinations,
+        ideas: ideas,
       );
     }));
   }
@@ -59,7 +59,7 @@ class HistoryBloc extends BaseBloc {
     );
   }
 
-  void onCombinationTabClicked() {
+  void onIdeaTabClicked() {
     _state.value = _state.value.buildNew(
       isWordTab: false,
     );
@@ -85,31 +85,31 @@ class HistoryBloc extends BaseBloc {
     );
   }
 
-  void onCombinationItemClicked(Combination item) {
+  void onIdeaItemClicked(Idea item) {
     _state.value = _state.value.buildNew(
-      combinationItemDialog: item,
+      ideaItemDialog: item,
     );
   }
 
-  void onCombinationItemDialogCancelClicked() {
+  void onIdeaItemDialogCancelClicked() {
     _state.value = _state.value.buildNew(
-      combinationItemDialog: Combination.NONE,
+      ideaItemDialog: Idea.NONE,
     );
   }
 
-  void onCombinationItemDialogDeleteClicked(Combination item) {
-    _combinationRepository.deleteCombination(item);
+  void onIdeaItemDialogDeleteClicked(Idea item) {
+    _ideaRepository.deleteIdea(item);
 
     _state.value = _state.value.buildNew(
-      combinationItemDialog: Combination.NONE,
+      ideaItemDialog: Idea.NONE,
     );
   }
 
-  void onCombinationItemFavoriteClicked(Combination item) {
+  void onIdeaItemFavoriteClicked(Idea item) {
     if (item.isFavorite) {
-      _combinationRepository.unfavoriteItem(item);
+      _ideaRepository.unfavoriteItem(item);
     } else {
-      _combinationRepository.favoriteItem(item);
+      _ideaRepository.favoriteItem(item);
     }
   }
 
@@ -119,8 +119,8 @@ class HistoryBloc extends BaseBloc {
       return true;
     }
 
-    if (_state.value.combinationItemDialog.isValid()) {
-      onCombinationItemDialogCancelClicked();
+    if (_state.value.ideaItemDialog.isValid()) {
+      onIdeaItemDialogCancelClicked();
       return true;
     }
 

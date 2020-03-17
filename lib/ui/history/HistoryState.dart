@@ -1,6 +1,6 @@
 
 import 'package:yellow_box/entity/AppTheme.dart';
-import 'package:yellow_box/entity/Combination.dart';
+import 'package:yellow_box/entity/Idea.dart';
 import 'package:yellow_box/entity/Word.dart';
 
 class HistoryState {
@@ -8,34 +8,34 @@ class HistoryState {
   final AppTheme appTheme;
   final bool isWordTab;
   final List<Word> words;
-  final List<Combination> combinations;
+  final List<Idea> ideas;
   final Word wordItemDialog;
-  final Combination combinationItemDialog;
+  final Idea ideaItemDialog;
 
   const HistoryState({
     this.appTheme = AppTheme.DEFAULT,
     this.isWordTab = true,
     this.words = const [],
-    this.combinations = const [],
+    this.ideas = const [],
     this.wordItemDialog = Word.NONE,
-    this.combinationItemDialog = Combination.NONE,
+    this.ideaItemDialog = Idea.NONE,
   });
 
   HistoryState buildNew({
     AppTheme appTheme,
     bool isWordTab,
     List<Word> words,
-    List<Combination> combinations,
+    List<Idea> ideas,
     Word wordItemDialog,
-    Combination combinationItemDialog,
+    Idea ideaItemDialog,
   }) {
     return HistoryState(
       appTheme: appTheme ?? this.appTheme,
       isWordTab: isWordTab ?? this.isWordTab,
       words: words ?? this.words,
-      combinations: combinations ?? this.combinations,
+      ideas: ideas ?? this.ideas,
       wordItemDialog: wordItemDialog ?? this.wordItemDialog,
-      combinationItemDialog: combinationItemDialog ?? this.combinationItemDialog,
+      ideaItemDialog: ideaItemDialog ?? this.ideaItemDialog,
     );
   }
 }
