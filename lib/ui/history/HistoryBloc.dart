@@ -124,8 +124,7 @@ class HistoryBloc extends BaseBloc {
   }
 
   void onConfirmBlockIdeaClicked(Idea item) {
-    // todo
-//    _ideaRepository.blockIdea(item);
+    _ideaRepository.blockIdea(item);
 
     _state.value = _state.value.buildNew(
       ideaItemDialog: IdeaItemDialog.NONE,

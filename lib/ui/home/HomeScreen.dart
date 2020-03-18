@@ -566,7 +566,7 @@ class _IdeaPopUpBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isNew = data.isNew;
+    final type = data.type;
     final title = data.title;
 
     return SafeArea(
@@ -581,7 +581,7 @@ class _IdeaPopUpBox extends StatelessWidget {
                 color: appTheme.lightColor,
               ),
               padding: const EdgeInsets.only(top: 16),
-              child: isNew ? _HappyLogo() : _SadLogo(),
+              child: type == IdeaPopUpData.TYPE_NEW ? _HappyLogo() : _SadLogo(),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 192,),
@@ -595,8 +595,9 @@ class _IdeaPopUpBox extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text(
-                      isNew ? AppLocalizations.of(context).newIdea
-                        : AppLocalizations.of(context).goodOldOne,
+                      type == IdeaPopUpData.TYPE_NEW ? AppLocalizations.of(context).newIdea
+                        : type == IdeaPopUpData.TYPE_EXISTS ? AppLocalizations.of(context).goodOldOne
+                        : AppLocalizations.of(context).pickedBlockedIdea,
                       style: TextStyle(
                         color: AppColors.TEXT_BLACK,
                         fontSize: 14,
@@ -605,21 +606,23 @@ class _IdeaPopUpBox extends StatelessWidget {
                         fontSize: 14,
                       ),
                     ),
-                    const SizedBox(height: 16,),
-                    Text(
-                      title,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: AppColors.TEXT_BLACK,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    type != IdeaPopUpData.TYPE_BLOCKED ? Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Text(
+                        title,
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: AppColors.TEXT_BLACK,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        strutStyle: StrutStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      strutStyle: StrutStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    ) : const SizedBox.shrink(),
                     const SizedBox(height: 16,),
                     Center(
                       child: SizedBox(

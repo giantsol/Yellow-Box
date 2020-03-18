@@ -8,6 +8,7 @@ class IdeaRepository {
 
   final AppDatabase _database;
 
+  // includes only unblocked ideas
   final _ideas = BehaviorSubject<List<Idea>>.seeded([]);
 
   IdeaRepository(this._database) {
@@ -19,6 +20,7 @@ class IdeaRepository {
     _ideas.value = ideas;
   }
 
+  // returns whether this idea exists and is not blocked
   Future<bool> hasIdea(String title) async {
     return _ideas.value.any((idea) => idea.title == title);
   }
@@ -28,7 +30,7 @@ class IdeaRepository {
       return;
     }
 
-    final idea = Idea(title, DateTime.now().millisecondsSinceEpoch, false);
+    final idea = Idea(title, DateTime.now().millisecondsSinceEpoch, false, false);
 
     final list = _ideas.value;
     list.insert(0, idea);
@@ -48,6 +50,23 @@ class IdeaRepository {
     _ideas.value = list;
 
     return _database.removeIdea(item);
+  }
+
+  Future<void> blockIdea(Idea item) async {
+    final list = _ideas.value;
+    final index = list.indexWhere((it) => it.title == item.title);
+    if (index < 0) {
+      return;
+    }
+
+    list.removeAt(index);
+    _ideas.value = list;
+
+    return _database.blockIdea(item);
+  }
+
+  Future<bool> isBlocked(String title) async {
+    return _database.isBlockedIdea(title);
   }
 
   Stream<List<Idea>> observeIdeas() {

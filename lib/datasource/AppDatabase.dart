@@ -12,6 +12,7 @@ class AppDatabase {
   static const String COLUMN_TITLE = 'title';
   static const String COLUMN_DATE_MILLIS = 'date_millis';
   static const String COLUMN_FAVORITE = 'favorite';
+  static const String COLUMN_BLOCKED = 'blocked';
 
   // ignore: close_sinks
   final _database = BehaviorSubject<Database>();
@@ -30,7 +31,8 @@ class AppDatabase {
           CREATE TABLE $TABLE_IDEAS(
             $COLUMN_TITLE TEXT NOT NULL PRIMARY KEY,
             $COLUMN_DATE_MILLIS INTEGER NOT NULL,
-            $COLUMN_FAVORITE INTEGER NOT NULL
+            $COLUMN_FAVORITE INTEGER NOT NULL,
+            $COLUMN_BLOCKED INTEGER NOT NULL
            );
            """
         );
@@ -131,6 +133,7 @@ class AppDatabase {
         COLUMN_TITLE: entity.title,
         COLUMN_DATE_MILLIS: entity.dateMillis,
         COLUMN_FAVORITE: entity.isFavorite ? 1 : 0,
+        COLUMN_BLOCKED: entity.isBlocked ? 1 : 0,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -145,11 +148,38 @@ class AppDatabase {
     );
   }
 
+  Future<void> blockIdea(Idea item) async {
+    final db = await _database.first;
+    return db.update(
+      TABLE_IDEAS,
+      {
+        COLUMN_FAVORITE: 0,
+        COLUMN_BLOCKED: 1,
+      },
+      where: '$COLUMN_TITLE = ?',
+      whereArgs: [item.title],
+    );
+  }
+
+  Future<bool> isBlockedIdea(String title) async {
+    final db = await _database.first;
+    final map = await db.query(
+      TABLE_IDEAS,
+      where: '$COLUMN_TITLE = ? AND $COLUMN_BLOCKED = ?',
+      whereArgs: [title, 1],
+    );
+
+    return map.isNotEmpty;
+  }
+
+  // returns only unblocked ideas
   Future<List<Idea>> getIdeas() async {
     final db = await _database.first;
     List<Map<String, dynamic>> maps = await db.query(
       TABLE_IDEAS,
-      orderBy: '$COLUMN_FAVORITE DESC, $COLUMN_DATE_MILLIS DESC'
+      where: '$COLUMN_BLOCKED = ?',
+      whereArgs: [0],
+      orderBy: '$COLUMN_FAVORITE DESC, $COLUMN_DATE_MILLIS DESC',
     );
     final List<Idea> result = [];
     for (int i = 0; i < maps.length; i++) {

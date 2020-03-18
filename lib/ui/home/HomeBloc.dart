@@ -160,14 +160,22 @@ class HomeBloc extends BaseBloc {
     final isAlreadySavedIdea = await _ideaRepository.hasIdea(randIdeaTitle);
     if (isAlreadySavedIdea) {
       _state.value = _state.value.buildNew(
-        ideaPopUpData: IdeaPopUpData(randIdeaTitle, false),
+        ideaPopUpData: IdeaPopUpData(randIdeaTitle, IdeaPopUpData.TYPE_EXISTS),
       );
     } else {
-      _state.value = _state.value.buildNew(
-        ideaPopUpData: IdeaPopUpData(randIdeaTitle, true),
-      );
+      final isBlockedIdea = await _ideaRepository.isBlocked(randIdeaTitle);
+      if (isBlockedIdea) {
+        // show oops! you picked out a blocked idea!
+        _state.value = _state.value.buildNew(
+          ideaPopUpData: IdeaPopUpData(randIdeaTitle, IdeaPopUpData.TYPE_BLOCKED),
+        );
+      } else {
+        _state.value = _state.value.buildNew(
+          ideaPopUpData: IdeaPopUpData(randIdeaTitle, IdeaPopUpData.TYPE_NEW),
+        );
 
-      await _ideaRepository.addIdea(randIdeaTitle);
+        await _ideaRepository.addIdea(randIdeaTitle);
+      }
     }
 
     _hideProgress();
