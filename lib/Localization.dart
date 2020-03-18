@@ -108,6 +108,14 @@ class AppLocalizations {
   String get history => _localizedValues[locale.languageCode][HISTORY];
   String get ideaBoxFullToast => _localizedValues[locale.languageCode][IDEA_BOX_FULL_TOAST];
 
+  String getConfirmDeleteTitle(String item) {
+    if (locale.languageCode == 'ko') {
+      return '"$item"을(를) 삭제하시겠습니까?';
+    } else {
+      return 'Delete "$item?"';
+    }
+  }
+
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

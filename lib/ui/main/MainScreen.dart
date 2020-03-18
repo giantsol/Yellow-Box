@@ -1,10 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:yellow_box/AppColors.dart';
 import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
-import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/history/HistoryScreen.dart';
 import 'package:yellow_box/ui/home/HomeScreen.dart';
 import 'package:yellow_box/ui/main/MainBloc.dart';

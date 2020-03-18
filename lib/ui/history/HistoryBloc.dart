@@ -67,21 +67,27 @@ class HistoryBloc extends BaseBloc {
 
   void onWordItemClicked(Word item) {
     _state.value = _state.value.buildNew(
-      wordItemDialog: item,
+      wordItemDialog: WordItemDialog(WordItemDialog.TYPE_LIST, item),
     );
   }
 
-  void onWordItemDialogCancelClicked() {
+  void onWordItemDialogCloseClicked() {
     _state.value = _state.value.buildNew(
-      wordItemDialog: Word.NONE,
+      wordItemDialog: WordItemDialog.NONE,
     );
   }
 
   void onWordItemDialogDeleteClicked(Word item) {
+    _state.value = _state.value.buildNew(
+      wordItemDialog: WordItemDialog(WordItemDialog.TYPE_CONFIRM_DELETE, item),
+    );
+  }
+
+  void onConfirmDeleteWordClicked(Word item) {
     _wordRepository.deleteWord(item);
 
     _state.value = _state.value.buildNew(
-      wordItemDialog: Word.NONE,
+      wordItemDialog: WordItemDialog.NONE,
     );
   }
 
@@ -115,7 +121,7 @@ class HistoryBloc extends BaseBloc {
 
   bool handleBackPress() {
     if (_state.value.wordItemDialog.isValid()) {
-      onWordItemDialogCancelClicked();
+      onWordItemDialogCloseClicked();
       return true;
     }
 

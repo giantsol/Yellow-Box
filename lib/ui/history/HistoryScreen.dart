@@ -64,7 +64,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           state.wordItemDialog.isValid() ? _WordItemDialog(
             appTheme: appTheme,
             bloc: _bloc,
-            item: state.wordItemDialog,
+            data: state.wordItemDialog,
           ) : const SizedBox.shrink(),
           state.ideaItemDialog.isValid() ? _IdeaItemDialog(
             appTheme: appTheme,
@@ -515,12 +515,41 @@ class _Scrim extends StatelessWidget {
 class _WordItemDialog extends StatelessWidget {
   final AppTheme appTheme;
   final HistoryBloc bloc;
-  final Word item;
+  final WordItemDialog data;
 
   _WordItemDialog({
     @required this.appTheme,
     @required this.bloc,
-    @required this.item,
+    @required this.data,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (data.type == WordItemDialog.TYPE_LIST) {
+      return _WordItemListDialog(
+        bloc: bloc,
+        data: data,
+      );
+    } else {
+      return _AppAlertDialog(
+        appTheme: appTheme,
+        title: AppLocalizations.of(context).getConfirmDeleteTitle(data.word.title),
+        primaryButtonText: AppLocalizations.of(context).delete,
+        onPrimaryButtonClicked: () => bloc.onConfirmDeleteWordClicked(data.word),
+        secondaryButtonText: AppLocalizations.of(context).cancel,
+        onSecondaryButtonClicked: bloc.onWordItemDialogCloseClicked,
+      );
+    }
+  }
+}
+
+class _WordItemListDialog extends StatelessWidget {
+  final HistoryBloc bloc;
+  final WordItemDialog data;
+
+  _WordItemListDialog({
+    @required this.bloc,
+    @required this.data,
   });
 
   @override
@@ -530,17 +559,118 @@ class _WordItemDialog extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            width: double.infinity,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(4),
               color: AppColors.BACKGROUND_WHITE,
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                const SizedBox(height: 16,),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 20),
+                  child: Text(
+                    data.word.title,
+                    style: TextStyle(
+                      color: AppColors.TEXT_BLACK,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    strutStyle: StrutStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(height: 9,),
+                Material(
+                  child: InkWell(
+                    onTap: () => bloc.onWordItemDialogDeleteClicked(data.word),
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 20,),
+                      child: Text(
+                        AppLocalizations.of(context).delete,
+                        style: TextStyle(
+                          color: AppColors.TEXT_BLACK,
+                          fontSize: 12,
+                        ),
+                        strutStyle: StrutStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Material(
+                  child: InkWell(
+                    onTap: () => bloc.onWordItemDialogCloseClicked(),
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 20,),
+                      child: Text(
+                        AppLocalizations.of(context).close,
+                        style: TextStyle(
+                          color: AppColors.TEXT_BLACK,
+                          fontSize: 12,
+                        ),
+                        strutStyle: StrutStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 9,),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AppAlertDialog extends StatelessWidget {
+  final AppTheme appTheme;
+  final String title;
+  final String subtitle;
+  final String primaryButtonText;
+  final Function() onPrimaryButtonClicked;
+  final String secondaryButtonText;
+  final Function() onSecondaryButtonClicked;
+
+  _AppAlertDialog({
+    @required this.appTheme,
+    @required this.title,
+    this.subtitle = '',
+    @required this.primaryButtonText,
+    @required this.onPrimaryButtonClicked,
+    @required this.secondaryButtonText,
+    @required this.onSecondaryButtonClicked,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: AppColors.BACKGROUND_WHITE,
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
                 Text(
-                  item.title,
+                  title,
                   style: TextStyle(
                     color: AppColors.TEXT_BLACK,
                     fontSize: 16,
@@ -553,26 +683,39 @@ class _WordItemDialog extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 32,),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Material(
+                subtitle.isNotEmpty ? Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: AppColors.TEXT_BLACK,
+                      fontSize: 12,
+                    ),
+                    strutStyle: StrutStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                ) : const SizedBox.shrink(),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Material(
+                        color: AppColors.BACKGROUND_WHITE,
+                        borderRadius: BorderRadius.circular(4),
                         child: InkWell(
-                          borderRadius: BorderRadius.circular(24),
-                          onTap: () => bloc.onWordItemDialogCancelClicked(),
+                          borderRadius: BorderRadius.circular(4),
+                          onTap: onSecondaryButtonClicked,
                           child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                color: AppColors.TEXT_BLACK_LIGHT,
-                                width: 2,
-                              ),
-                            ),
                             alignment: Alignment.center,
+                            constraints: BoxConstraints(
+                              minWidth: 96,
+                            ),
                             padding: const EdgeInsets.symmetric(vertical: 11),
                             child: Text(
-                              AppLocalizations.of(context).cancel,
+                              secondaryButtonText,
                               style: TextStyle(
                                 color: AppColors.TEXT_BLACK_LIGHT,
                                 fontSize: 12,
@@ -586,27 +729,21 @@ class _WordItemDialog extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8,),
-                    Expanded(
-                      child: Material(
+                      const SizedBox(width: 4),
+                      Material(
                         color: appTheme.darkColor,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(4),
                         child: InkWell(
-                          borderRadius: BorderRadius.circular(24),
-                          onTap: () => bloc.onWordItemDialogDeleteClicked(item),
+                          borderRadius: BorderRadius.circular(4),
+                          onTap: onPrimaryButtonClicked,
                           child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                color: appTheme.darkColor,
-                                width: 2,
-                              ),
-                            ),
                             alignment: Alignment.center,
+                            constraints: BoxConstraints(
+                              minWidth: 96,
+                            ),
                             padding: const EdgeInsets.symmetric(vertical: 11),
                             child: Text(
-                              AppLocalizations.of(context).delete,
+                              primaryButtonText,
                               style: TextStyle(
                                 color: AppColors.TEXT_WHITE,
                                 fontSize: 12,
@@ -619,13 +756,13 @@ class _WordItemDialog extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                  ],
+                      )
+                    ],
+                  ),
                 ),
               ],
-            ),
-          ),
+            )
+          )
         ),
       ),
     );

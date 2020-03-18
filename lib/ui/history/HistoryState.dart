@@ -3,13 +3,28 @@ import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/Idea.dart';
 import 'package:yellow_box/entity/Word.dart';
 
+class WordItemDialog {
+  static const NONE = const WordItemDialog(0, Word.NONE);
+  static const TYPE_LIST = 0;
+  static const TYPE_CONFIRM_DELETE = 1;
+
+  final int type;
+  final Word word;
+
+  const WordItemDialog(this.type, this.word);
+
+  bool isValid() {
+    return word.isValid();
+  }
+}
+
 class HistoryState {
 
   final AppTheme appTheme;
   final bool isWordTab;
   final List<Word> words;
   final List<Idea> ideas;
-  final Word wordItemDialog;
+  final WordItemDialog wordItemDialog;
   final Idea ideaItemDialog;
 
   const HistoryState({
@@ -17,7 +32,7 @@ class HistoryState {
     this.isWordTab = true,
     this.words = const [],
     this.ideas = const [],
-    this.wordItemDialog = Word.NONE,
+    this.wordItemDialog = WordItemDialog.NONE,
     this.ideaItemDialog = Idea.NONE,
   });
 
@@ -26,7 +41,7 @@ class HistoryState {
     bool isWordTab,
     List<Word> words,
     List<Idea> ideas,
-    Word wordItemDialog,
+    WordItemDialog wordItemDialog,
     Idea ideaItemDialog,
   }) {
     return HistoryState(
