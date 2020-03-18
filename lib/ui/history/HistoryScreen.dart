@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yellow_box/AppColors.dart';
+import 'package:yellow_box/IntExtension.dart';
 import 'package:yellow_box/Localization.dart';
 import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
@@ -10,7 +11,8 @@ import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/entity/Word.dart';
 import 'package:yellow_box/ui/history/HistoryBloc.dart';
 import 'package:yellow_box/ui/history/HistoryState.dart';
-import 'package:yellow_box/IntExtension.dart';
+import 'package:yellow_box/ui/widget/AppAlertDialog.dart';
+import 'package:yellow_box/ui/widget/AppChoiceListDialog.dart';
 
 class HistoryScreen extends StatefulWidget {
 
@@ -69,7 +71,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           state.ideaItemDialog.isValid() ? _IdeaItemDialog(
             appTheme: appTheme,
             bloc: _bloc,
-            item: state.ideaItemDialog,
+            data: state.ideaItemDialog,
           ) : const SizedBox.shrink(),
         ],
       ),
@@ -526,12 +528,21 @@ class _WordItemDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data.type == WordItemDialog.TYPE_LIST) {
-      return _WordItemListDialog(
-        bloc: bloc,
-        data: data,
+      return AppChoiceListDialog(
+        title: data.word.title,
+        items: [
+          ChoiceItem(
+            AppLocalizations.of(context).delete,
+              () => bloc.onWordItemDialogDeleteClicked(data.word),
+          ),
+          ChoiceItem(
+            AppLocalizations.of(context).close,
+            bloc.onWordItemDialogCloseClicked,
+          ),
+        ],
       );
     } else {
-      return _AppAlertDialog(
+      return AppAlertDialog(
         appTheme: appTheme,
         title: AppLocalizations.of(context).getConfirmDeleteTitle(data.word.title),
         primaryButtonText: AppLocalizations.of(context).delete,
@@ -543,348 +554,56 @@ class _WordItemDialog extends StatelessWidget {
   }
 }
 
-class _WordItemListDialog extends StatelessWidget {
+class _IdeaItemDialog extends StatelessWidget {
+  final AppTheme appTheme;
   final HistoryBloc bloc;
-  final WordItemDialog data;
+  final IdeaItemDialog data;
 
-  _WordItemListDialog({
+  _IdeaItemDialog({
+    @required this.appTheme,
     @required this.bloc,
     @required this.data,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: AppColors.BACKGROUND_WHITE,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, top: 20),
-                  child: Text(
-                    data.word.title,
-                    style: TextStyle(
-                      color: AppColors.TEXT_BLACK,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    strutStyle: StrutStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(height: 9,),
-                Material(
-                  child: InkWell(
-                    onTap: () => bloc.onWordItemDialogDeleteClicked(data.word),
-                    child: Container(
-                      alignment: Alignment.centerLeft,
-                      padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 20,),
-                      child: Text(
-                        AppLocalizations.of(context).delete,
-                        style: TextStyle(
-                          color: AppColors.TEXT_BLACK,
-                          fontSize: 12,
-                        ),
-                        strutStyle: StrutStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Material(
-                  child: InkWell(
-                    onTap: () => bloc.onWordItemDialogCloseClicked(),
-                    child: Container(
-                      alignment: Alignment.centerLeft,
-                      padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 20,),
-                      child: Text(
-                        AppLocalizations.of(context).close,
-                        style: TextStyle(
-                          color: AppColors.TEXT_BLACK,
-                          fontSize: 12,
-                        ),
-                        strutStyle: StrutStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 9,),
-              ],
-            ),
+    if (data.type == IdeaItemDialog.TYPE_LIST) {
+      return AppChoiceListDialog(
+        title: data.idea.title,
+        items: [
+          ChoiceItem(
+            AppLocalizations.of(context).delete,
+              () => bloc.onIdeaItemDialogDeleteClicked(data.idea),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AppAlertDialog extends StatelessWidget {
-  final AppTheme appTheme;
-  final String title;
-  final String subtitle;
-  final String primaryButtonText;
-  final Function() onPrimaryButtonClicked;
-  final String secondaryButtonText;
-  final Function() onSecondaryButtonClicked;
-
-  _AppAlertDialog({
-    @required this.appTheme,
-    @required this.title,
-    this.subtitle = '',
-    @required this.primaryButtonText,
-    @required this.onPrimaryButtonClicked,
-    @required this.secondaryButtonText,
-    @required this.onSecondaryButtonClicked,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: AppColors.BACKGROUND_WHITE,
-            ),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: AppColors.TEXT_BLACK,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  strutStyle: StrutStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle.isNotEmpty ? Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Text(
-                    subtitle,
-                    style: TextStyle(
-                      color: AppColors.TEXT_BLACK,
-                      fontSize: 12,
-                    ),
-                    strutStyle: StrutStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                ) : const SizedBox.shrink(),
-                const SizedBox(height: 20),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Material(
-                        color: AppColors.BACKGROUND_WHITE,
-                        borderRadius: BorderRadius.circular(4),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(4),
-                          onTap: onSecondaryButtonClicked,
-                          child: Container(
-                            alignment: Alignment.center,
-                            constraints: BoxConstraints(
-                              minWidth: 96,
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 11),
-                            child: Text(
-                              secondaryButtonText,
-                              style: TextStyle(
-                                color: AppColors.TEXT_BLACK_LIGHT,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              strutStyle: StrutStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Material(
-                        color: appTheme.darkColor,
-                        borderRadius: BorderRadius.circular(4),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(4),
-                          onTap: onPrimaryButtonClicked,
-                          child: Container(
-                            alignment: Alignment.center,
-                            constraints: BoxConstraints(
-                              minWidth: 96,
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 11),
-                            child: Text(
-                              primaryButtonText,
-                              style: TextStyle(
-                                color: AppColors.TEXT_WHITE,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              strutStyle: StrutStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            )
-          )
-        ),
-      ),
-    );
-  }
-}
-
-class _IdeaItemDialog extends StatelessWidget {
-  final AppTheme appTheme;
-  final HistoryBloc bloc;
-  final Idea item;
-
-  _IdeaItemDialog({
-    @required this.appTheme,
-    @required this.bloc,
-    @required this.item,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: AppColors.BACKGROUND_WHITE,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const SizedBox(height: 16,),
-                Text(
-                  item.title,
-                  style: TextStyle(
-                    color: AppColors.TEXT_BLACK,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  strutStyle: StrutStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 4,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 32,),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Material(
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(24),
-                          onTap: () => bloc.onIdeaItemDialogCancelClicked(),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                color: AppColors.TEXT_BLACK_LIGHT,
-                                width: 2,
-                              ),
-                            ),
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.symmetric(vertical: 11),
-                            child: Text(
-                              AppLocalizations.of(context).cancel,
-                              style: TextStyle(
-                                color: AppColors.TEXT_BLACK_LIGHT,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              strutStyle: StrutStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8,),
-                    Expanded(
-                      child: Material(
-                        color: appTheme.darkColor,
-                        borderRadius: BorderRadius.circular(24),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(24),
-                          onTap: () => bloc.onIdeaItemDialogDeleteClicked(item),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                color: appTheme.darkColor,
-                                width: 2,
-                              ),
-                            ),
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.symmetric(vertical: 11),
-                            child: Text(
-                              AppLocalizations.of(context).delete,
-                              style: TextStyle(
-                                color: AppColors.TEXT_WHITE,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              strutStyle: StrutStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          ChoiceItem(
+            AppLocalizations.of(context).block,
+              () => bloc.onIdeaItemDialogBlockClicked(data.idea),
           ),
-        ),
-      ),
-    );
+          ChoiceItem(
+            AppLocalizations.of(context).close,
+            bloc.onIdeaItemDialogCloseClicked,
+          ),
+        ],
+      );
+    } else if (data.type == IdeaItemDialog.TYPE_CONFIRM_DELETE) {
+      return AppAlertDialog(
+        appTheme: appTheme,
+        title: AppLocalizations.of(context).getConfirmDeleteTitle(data.idea.title),
+        primaryButtonText: AppLocalizations.of(context).delete,
+        onPrimaryButtonClicked: () => bloc.onConfirmDeleteIdeaClicked(data.idea),
+        secondaryButtonText: AppLocalizations.of(context).cancel,
+        onSecondaryButtonClicked: bloc.onIdeaItemDialogCloseClicked,
+      );
+    } else {
+      return AppAlertDialog(
+        appTheme: appTheme,
+        title: AppLocalizations.of(context).getConfirmBlockTitle(data.idea.title),
+        subtitle: AppLocalizations.of(context).blockIdeaSubtitle,
+        primaryButtonText: AppLocalizations.of(context).block,
+        onPrimaryButtonClicked: () => bloc.onConfirmBlockIdeaClicked(data.idea),
+        secondaryButtonText: AppLocalizations.of(context).cancel,
+        onSecondaryButtonClicked: bloc.onIdeaItemDialogCloseClicked,
+      );
+    }
   }
 }

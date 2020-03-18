@@ -18,6 +18,22 @@ class WordItemDialog {
   }
 }
 
+class IdeaItemDialog {
+  static const NONE = const IdeaItemDialog(0, Idea.NONE);
+  static const TYPE_LIST = 0;
+  static const TYPE_CONFIRM_DELETE = 1;
+  static const TYPE_CONFIRM_BLOCK = 2;
+
+  final int type;
+  final Idea idea;
+
+  const IdeaItemDialog(this.type, this.idea);
+
+  bool isValid() {
+    return idea.isValid();
+  }
+}
+
 class HistoryState {
 
   final AppTheme appTheme;
@@ -25,7 +41,7 @@ class HistoryState {
   final List<Word> words;
   final List<Idea> ideas;
   final WordItemDialog wordItemDialog;
-  final Idea ideaItemDialog;
+  final IdeaItemDialog ideaItemDialog;
 
   const HistoryState({
     this.appTheme = AppTheme.DEFAULT,
@@ -33,7 +49,7 @@ class HistoryState {
     this.words = const [],
     this.ideas = const [],
     this.wordItemDialog = WordItemDialog.NONE,
-    this.ideaItemDialog = Idea.NONE,
+    this.ideaItemDialog = IdeaItemDialog.NONE,
   });
 
   HistoryState buildNew({
@@ -42,7 +58,7 @@ class HistoryState {
     List<Word> words,
     List<Idea> ideas,
     WordItemDialog wordItemDialog,
-    Idea ideaItemDialog,
+    IdeaItemDialog ideaItemDialog,
   }) {
     return HistoryState(
       appTheme: appTheme ?? this.appTheme,

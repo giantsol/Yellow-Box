@@ -93,21 +93,42 @@ class HistoryBloc extends BaseBloc {
 
   void onIdeaItemClicked(Idea item) {
     _state.value = _state.value.buildNew(
-      ideaItemDialog: item,
-    );
-  }
-
-  void onIdeaItemDialogCancelClicked() {
-    _state.value = _state.value.buildNew(
-      ideaItemDialog: Idea.NONE,
+      ideaItemDialog: IdeaItemDialog(IdeaItemDialog.TYPE_LIST, item),
     );
   }
 
   void onIdeaItemDialogDeleteClicked(Idea item) {
+    _state.value = _state.value.buildNew(
+      ideaItemDialog: IdeaItemDialog(IdeaItemDialog.TYPE_CONFIRM_DELETE, item),
+    );
+  }
+
+  void onIdeaItemDialogBlockClicked(Idea item) {
+    _state.value = _state.value.buildNew(
+      ideaItemDialog: IdeaItemDialog(IdeaItemDialog.TYPE_CONFIRM_BLOCK, item),
+    );
+  }
+
+  void onIdeaItemDialogCloseClicked() {
+    _state.value = _state.value.buildNew(
+      ideaItemDialog: IdeaItemDialog.NONE,
+    );
+  }
+
+  void onConfirmDeleteIdeaClicked(Idea item) {
     _ideaRepository.deleteIdea(item);
 
     _state.value = _state.value.buildNew(
-      ideaItemDialog: Idea.NONE,
+      ideaItemDialog: IdeaItemDialog.NONE,
+    );
+  }
+
+  void onConfirmBlockIdeaClicked(Idea item) {
+    // todo
+//    _ideaRepository.blockIdea(item);
+
+    _state.value = _state.value.buildNew(
+      ideaItemDialog: IdeaItemDialog.NONE,
     );
   }
 
@@ -126,7 +147,7 @@ class HistoryBloc extends BaseBloc {
     }
 
     if (_state.value.ideaItemDialog.isValid()) {
-      onIdeaItemDialogCancelClicked();
+      onIdeaItemDialogCloseClicked();
       return true;
     }
 

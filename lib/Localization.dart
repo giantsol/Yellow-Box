@@ -25,6 +25,8 @@ class AppLocalizations {
   static const IDEA_BOX_FULL_SUBTITLE = 'ideaBoxFullSubtitle';
   static const HISTORY = 'history';
   static const IDEA_BOX_FULL_TOAST = 'ideaBoxFullToast';
+  static const BLOCK = 'block';
+  static const BLOCK_IDEA_SUBTITLE = 'blockIdeaSubtitle';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -54,6 +56,8 @@ class AppLocalizations {
       IDEA_BOX_FULL_SUBTITLE: 'Clear some history',
       HISTORY: 'History',
       IDEA_BOX_FULL_TOAST: 'Idea box is full!',
+      BLOCK: 'Block',
+      BLOCK_IDEA_SUBTITLE: 'Blocked ideas will never appear again.\nYou can reset this in settings.',
     },
     'ko': {
       CANCEL: '취소',
@@ -78,6 +82,8 @@ class AppLocalizations {
       IDEA_BOX_FULL_SUBTITLE: '기록을 정리해보세요',
       HISTORY: '기록',
       IDEA_BOX_FULL_TOAST: '아이디어 박스가 가득 찼습니다!',
+      BLOCK: '차단',
+      BLOCK_IDEA_SUBTITLE: '차단된 아이디어는 다시 생성되지 않습니다.\n설정에서 초기화할 수 있습니다.',
     },
   };
 
@@ -107,12 +113,22 @@ class AppLocalizations {
   String get ideaBoxFullSubtitle => _localizedValues[locale.languageCode][IDEA_BOX_FULL_SUBTITLE];
   String get history => _localizedValues[locale.languageCode][HISTORY];
   String get ideaBoxFullToast => _localizedValues[locale.languageCode][IDEA_BOX_FULL_TOAST];
+  String get block => _localizedValues[locale.languageCode][BLOCK];
+  String get blockIdeaSubtitle => _localizedValues[locale.languageCode][BLOCK_IDEA_SUBTITLE];
 
   String getConfirmDeleteTitle(String item) {
     if (locale.languageCode == 'ko') {
-      return '"$item"을(를) 삭제하시겠습니까?';
+      return '"$item"을(를) 삭제하겠습니까?';
     } else {
       return 'Delete "$item?"';
+    }
+  }
+
+  String getConfirmBlockTitle(String item) {
+    if (locale.languageCode == 'ko') {
+      return '"$item"을(를) 차단하겠습니까?';
+    } else {
+      return 'Block "$item?"';
     }
   }
 
