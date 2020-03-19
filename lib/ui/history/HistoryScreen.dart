@@ -49,7 +49,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget _buildUI(HistoryState state) {
     final appTheme = state.appTheme;
-    final isScrimVisible = state.wordItemDialog.isValid() || state.ideaItemDialog.isValid();
+    final isScrimVisible = state.wordItemDialog.isValid() || state.ideaItemDialog.isValid()
+      || state.isDeleteWordsDialogShown;
 
     return WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress(),
@@ -61,6 +62,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
             isWordTab: state.isWordTab,
             words: state.words,
             ideas: state.ideas,
+            selectionMode: state.selectionMode,
+            selectedWords: state.selectedWords,
+            selectedIdeas: state.selectedIdeas,
           ),
           isScrimVisible ? _Scrim() : const SizedBox.shrink(),
           state.wordItemDialog.isValid() ? _WordItemDialog(
@@ -72,6 +76,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
             appTheme: appTheme,
             bloc: _bloc,
             data: state.ideaItemDialog,
+          ) : const SizedBox.shrink(),
+          state.isDeleteWordsDialogShown ? AppAlertDialog(
+            appTheme: appTheme,
+            title: AppLocalizations.of(context).getDeleteWordsTitle(state.selectedWords.length),
+            primaryButtonText: AppLocalizations.of(context).delete,
+            onPrimaryButtonClicked: _bloc.onConfirmDeleteWordsClicked,
+            secondaryButtonText: AppLocalizations.of(context).cancel,
+            onSecondaryButtonClicked: _bloc.onCancelDeleteWordsClicked,
           ) : const SizedBox.shrink(),
         ],
       ),
@@ -85,6 +97,9 @@ class _MainUI extends StatelessWidget {
   final bool isWordTab;
   final List<Word> words;
   final List<Idea> ideas;
+  final SelectionMode selectionMode;
+  final Map<Word, bool> selectedWords;
+  final Map<Idea, bool> selectedIdeas;
 
   _MainUI({
     @required this.appTheme,
@@ -92,32 +107,49 @@ class _MainUI extends StatelessWidget {
     @required this.isWordTab,
     @required this.words,
     @required this.ideas,
+    @required this.selectionMode,
+    @required this.selectedWords,
+    @required this.selectedIdeas,
   });
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Column(
-        verticalDirection: VerticalDirection.up,
-        children: <Widget>[
-          _NavigationBar(
-            bloc: bloc,
-          ),
-          isWordTab ? _WordList(
-            bloc: bloc,
-            items: words,
-            appTheme: appTheme,
-          ) : _IdeaList(
-            bloc: bloc,
-            items: ideas,
-            appTheme: appTheme,
-          ),
-          _TabBar(
-            bloc: bloc,
-            appTheme: appTheme,
-            isWordTab: isWordTab,
-          ),
-        ],
+      child: ClipRect(
+        child: Column(
+          verticalDirection: VerticalDirection.up,
+          children: <Widget>[
+            _NavigationBar(
+              bloc: bloc,
+            ),
+            isWordTab ? _WordList(
+              bloc: bloc,
+              items: words,
+              appTheme: appTheme,
+              isSelectionMode: selectionMode == SelectionMode.WORDS,
+              selectedItems: selectedWords,
+            ) : _IdeaList(
+              bloc: bloc,
+              items: ideas,
+              appTheme: appTheme,
+//            isSelectionMode: selectionMode == SelectionMode.IDEAS,
+//            selectedItems: selectedIdeas,
+            ),
+            selectionMode == SelectionMode.NONE ? _TabBar(
+              bloc: bloc,
+              appTheme: appTheme,
+              isWordTab: isWordTab,
+            ) : selectionMode == SelectionMode.WORDS ? _WordsSelectionBar(
+              bloc: bloc,
+              appTheme: appTheme,
+              selectedItems: selectedWords,
+            ) : _IdeasSelectionBar(
+              bloc: bloc,
+              appTheme: appTheme,
+              selectedItems: selectedIdeas,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -287,15 +319,184 @@ class _TabBar extends StatelessWidget {
   }
 }
 
+class _WordsSelectionBar extends StatelessWidget {
+  final HistoryBloc bloc;
+  final AppTheme appTheme;
+  final Map<Word, bool> selectedItems;
+
+  _WordsSelectionBar({
+    @required this.bloc,
+    @required this.appTheme,
+    @required this.selectedItems,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkTheme = appTheme.isDarkTheme;
+
+    return IntrinsicHeight(
+      child: Stack(
+        children: <Widget>[
+          Material(
+            color: appTheme.lightColor,
+            elevation: 4,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: 56,
+              ),
+              child: Row(
+                children: <Widget>[
+                  InkWell(
+                    onTap: () => bloc.onSelectionModeCloseClicked(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 21, horizontal: 24),
+                      child: Image.asset(
+                        'assets/ic_close.png',
+                        color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.of(context).getSelectionTitle(selectedItems.length),
+                      style: TextStyle(
+                        color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      strutStyle: StrutStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => bloc.onDeleteWordsClicked(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                      child: Image.asset(
+                        'assets/ic_delete.png',
+                        color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 1,
+              color: isDarkTheme ? AppColors.DIVIDER_WHITE : AppColors.DIVIDER_BLACK,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+}
+
+class _IdeasSelectionBar extends StatelessWidget {
+  final HistoryBloc bloc;
+  final AppTheme appTheme;
+  final Map<Idea, bool> selectedItems;
+
+  _IdeasSelectionBar({
+    @required this.bloc,
+    @required this.appTheme,
+    @required this.selectedItems,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkTheme = appTheme.isDarkTheme;
+
+    return IntrinsicHeight(
+      child: Stack(
+        children: <Widget>[
+          Container(
+            constraints: BoxConstraints(
+              minHeight: 56,
+            ),
+            decoration: BoxDecoration(
+              color: appTheme.lightColor,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.SHADOW,
+                  offset: Offset(0, 1),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+            child: Row(
+              children: <Widget>[
+                InkWell(
+                  onTap: () => bloc.onSelectionModeCloseClicked(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 21, horizontal: 24),
+                    child: Image.asset(
+                      'assets/ic_close.png',
+                      color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context).getSelectionTitle(selectedItems.length),
+                    style: TextStyle(
+                      color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    strutStyle: StrutStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () => bloc.onDeleteIdeasClicked(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                    child: Image.asset(
+                      'assets/ic_delete.png',
+                      color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 1,
+              color: isDarkTheme ? AppColors.DIVIDER_WHITE : AppColors.DIVIDER_BLACK,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+}
+
+
 class _WordList extends StatelessWidget {
   final HistoryBloc bloc;
   final List<Word> items;
   final AppTheme appTheme;
+  final bool isSelectionMode;
+  final Map<Word, bool> selectedItems;
 
   _WordList({
     @required this.bloc,
     @required this.items,
     @required this.appTheme,
+    @required this.isSelectionMode,
+    @required this.selectedItems,
   });
 
   @override
@@ -306,11 +507,21 @@ class _WordList extends StatelessWidget {
       child: items.length > 0 ? ListView.builder(
         itemCount: items.length,
         itemBuilder: (context, index) {
-          return _WordItem(
-            bloc: bloc,
-            item: items[index],
-            isDarkTheme: isDarkTheme,
-          );
+          final item = items[index];
+          if (isSelectionMode) {
+            return _SelectionWordItem(
+              bloc: bloc,
+              item: item,
+              isDarkTheme: isDarkTheme,
+              isSelected: selectedItems.containsKey(item),
+            );
+          } else {
+            return _WordItem(
+              bloc: bloc,
+              item: item,
+              isDarkTheme: isDarkTheme,
+            );
+          }
         },
       ) : Center(
         child: Text(
@@ -324,6 +535,85 @@ class _WordList extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _SelectionWordItem extends StatelessWidget {
+  final HistoryBloc bloc;
+  final Word item;
+  final bool isDarkTheme;
+  final bool isSelected;
+
+  _SelectionWordItem({
+    @required this.bloc,
+    @required this.item,
+    @required this.isDarkTheme,
+    @required this.isSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Material(
+          color: isSelected ? (isDarkTheme ? AppColors.SELECTION_WHITE : AppColors.SELECTION_BLACK)
+            : Colors.transparent,
+          child: InkWell(
+            onTap: () => bloc.onWordItemClicked(item),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Image.asset(
+                      isSelected ? 'assets/ic_radio_fill.png' : 'assets/ic_radio.png',
+                      color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      child: Text(
+                        item.title,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                        ),
+                        strutStyle: StrutStyle(
+                          fontSize: 18,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    item.dateMillis.toYearMonthDateString(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDarkTheme ? AppColors.TEXT_WHITE_LIGHT : AppColors.TEXT_BLACK_LIGHT,
+                    ),
+                    strutStyle: StrutStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Container(
+            height: 1,
+            color: isDarkTheme ? AppColors.DIVIDER_WHITE : AppColors.DIVIDER_BLACK,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -346,6 +636,7 @@ class _WordItem extends StatelessWidget {
       children: <Widget>[
         InkWell(
           onTap: () => bloc.onWordItemClicked(item),
+          onLongPress: () => bloc.onWordItemLongPressed(item),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24,),
             child: Row(

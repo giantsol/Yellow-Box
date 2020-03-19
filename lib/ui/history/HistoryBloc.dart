@@ -66,9 +66,21 @@ class HistoryBloc extends BaseBloc {
   }
 
   void onWordItemClicked(Word item) {
-    _state.value = _state.value.buildNew(
-      wordItemDialog: WordItemDialog(WordItemDialog.TYPE_LIST, item),
-    );
+    if (_state.value.selectionMode == SelectionMode.WORDS) {
+      final map = _state.value.selectedWords;
+      if (map.containsKey(item)) {
+        map.remove(item);
+      } else {
+        map[item] = true;
+      }
+      _state.value = _state.value.buildNew(
+        selectedWords: map,
+      );
+    } else {
+      _state.value = _state.value.buildNew(
+        wordItemDialog: WordItemDialog(WordItemDialog.TYPE_LIST, item),
+      );
+    }
   }
 
   void onWordItemDialogCloseClicked() {
@@ -88,6 +100,13 @@ class HistoryBloc extends BaseBloc {
 
     _state.value = _state.value.buildNew(
       wordItemDialog: WordItemDialog.NONE,
+    );
+  }
+
+  void onWordItemLongPressed(Word item) {
+    _state.value = _state.value.buildNew(
+      selectionMode: SelectionMode.WORDS,
+      selectedWords: {item: true},
     );
   }
 
@@ -139,6 +158,43 @@ class HistoryBloc extends BaseBloc {
     }
   }
 
+  void onSelectionModeCloseClicked() {
+    _state.value = _state.value.buildNew(
+      selectionMode: SelectionMode.NONE,
+      selectedWords: {},
+      selectedIdeas: {},
+    );
+  }
+
+  void onDeleteWordsClicked() {
+    if (_state.value.selectedWords.isEmpty) {
+      return;
+    }
+
+    _state.value = _state.value.buildNew(
+      isDeleteWordsDialogShown: true,
+    );
+  }
+
+  void onConfirmDeleteWordsClicked() {
+    final words = _state.value.selectedWords;
+    // todo: delete
+
+    _state.value = _state.value.buildNew(
+      isDeleteWordsDialogShown: false,
+    );
+  }
+
+  void onCancelDeleteWordsClicked() {
+    _state.value = _state.value.buildNew(
+      isDeleteWordsDialogShown: false,
+    );
+  }
+
+  void onDeleteIdeasClicked() {
+    // todo
+  }
+
   bool handleBackPress() {
     if (_state.value.wordItemDialog.isValid()) {
       onWordItemDialogCloseClicked();
@@ -147,6 +203,16 @@ class HistoryBloc extends BaseBloc {
 
     if (_state.value.ideaItemDialog.isValid()) {
       onIdeaItemDialogCloseClicked();
+      return true;
+    }
+
+    if (_state.value.isDeleteWordsDialogShown) {
+      onCancelDeleteWordsClicked();
+      return true;
+    }
+
+    if (_state.value.selectionMode != SelectionMode.NONE) {
+      onSelectionModeCloseClicked();
       return true;
     }
 

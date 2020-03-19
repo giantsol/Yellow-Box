@@ -136,6 +136,22 @@ class AppLocalizations {
     }
   }
 
+  String getDeleteWordsTitle(int count) {
+    if (locale.languageCode == 'ko') {
+      return '$count개를 삭제하겠습니까?';
+    } else {
+      return 'Delete $count items?';
+    }
+  }
+
+  String getSelectionTitle(int count) {
+    if (locale.languageCode == 'ko') {
+      return '$count개 선택';
+    } else {
+      return '$count selected';
+    }
+  }
+
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

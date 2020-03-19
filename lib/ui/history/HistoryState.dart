@@ -3,6 +3,59 @@ import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/Idea.dart';
 import 'package:yellow_box/entity/Word.dart';
 
+class HistoryState {
+
+  final AppTheme appTheme;
+  final bool isWordTab;
+  final List<Word> words;
+  final List<Idea> ideas;
+  final WordItemDialog wordItemDialog;
+  final IdeaItemDialog ideaItemDialog;
+  final SelectionMode selectionMode;
+  final Map<Word, bool> selectedWords;
+  final Map<Idea, bool> selectedIdeas;
+  final bool isDeleteWordsDialogShown;
+
+  const HistoryState({
+    this.appTheme = AppTheme.DEFAULT,
+    this.isWordTab = true,
+    this.words = const [],
+    this.ideas = const [],
+    this.wordItemDialog = WordItemDialog.NONE,
+    this.ideaItemDialog = IdeaItemDialog.NONE,
+    this.selectionMode = SelectionMode.NONE,
+    this.selectedWords = const {},
+    this.selectedIdeas = const {},
+    this.isDeleteWordsDialogShown = false,
+  });
+
+  HistoryState buildNew({
+    AppTheme appTheme,
+    bool isWordTab,
+    List<Word> words,
+    List<Idea> ideas,
+    WordItemDialog wordItemDialog,
+    IdeaItemDialog ideaItemDialog,
+    SelectionMode selectionMode,
+    Map<Word, bool> selectedWords,
+    Map<Idea, bool> selectedIdeas,
+    bool isDeleteWordsDialogShown,
+  }) {
+    return HistoryState(
+      appTheme: appTheme ?? this.appTheme,
+      isWordTab: isWordTab ?? this.isWordTab,
+      words: words ?? this.words,
+      ideas: ideas ?? this.ideas,
+      wordItemDialog: wordItemDialog ?? this.wordItemDialog,
+      ideaItemDialog: ideaItemDialog ?? this.ideaItemDialog,
+      selectionMode: selectionMode ?? this.selectionMode,
+      selectedWords: selectedWords ?? this.selectedWords,
+      selectedIdeas: selectedIdeas ?? this.selectedIdeas,
+      isDeleteWordsDialogShown: isDeleteWordsDialogShown ?? this.isDeleteWordsDialogShown,
+    );
+  }
+}
+
 class WordItemDialog {
   static const NONE = const WordItemDialog(0, Word.NONE);
   static const TYPE_LIST = 0;
@@ -34,39 +87,8 @@ class IdeaItemDialog {
   }
 }
 
-class HistoryState {
-
-  final AppTheme appTheme;
-  final bool isWordTab;
-  final List<Word> words;
-  final List<Idea> ideas;
-  final WordItemDialog wordItemDialog;
-  final IdeaItemDialog ideaItemDialog;
-
-  const HistoryState({
-    this.appTheme = AppTheme.DEFAULT,
-    this.isWordTab = true,
-    this.words = const [],
-    this.ideas = const [],
-    this.wordItemDialog = WordItemDialog.NONE,
-    this.ideaItemDialog = IdeaItemDialog.NONE,
-  });
-
-  HistoryState buildNew({
-    AppTheme appTheme,
-    bool isWordTab,
-    List<Word> words,
-    List<Idea> ideas,
-    WordItemDialog wordItemDialog,
-    IdeaItemDialog ideaItemDialog,
-  }) {
-    return HistoryState(
-      appTheme: appTheme ?? this.appTheme,
-      isWordTab: isWordTab ?? this.isWordTab,
-      words: words ?? this.words,
-      ideas: ideas ?? this.ideas,
-      wordItemDialog: wordItemDialog ?? this.wordItemDialog,
-      ideaItemDialog: ideaItemDialog ?? this.ideaItemDialog,
-    );
-  }
+enum SelectionMode {
+  NONE,
+  WORDS,
+  IDEAS,
 }

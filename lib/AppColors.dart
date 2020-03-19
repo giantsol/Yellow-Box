@@ -18,4 +18,7 @@ class AppColors {
   static const SCRIM = Color(0x7F000000); // 50%
 
   static const SHADOW = Color(0x33000000);
+
+  static const SELECTION_BLACK = Color(0x19000000); // 10%
+  static const SELECTION_WHITE = Color(0x19FFFFFF); // 10%
 }
