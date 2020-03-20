@@ -94,13 +94,7 @@ class _NavigationBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.BACKGROUND_WHITE,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.SHADOW,
-            offset: Offset(0, -1),
-            blurRadius: 4,
-          ),
-        ],
+        boxShadow: kElevationToShadow[4],
       ),
       child: Row(
         children: List.generate(items.length, (index) {

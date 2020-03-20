@@ -210,13 +210,7 @@ class _NavigationBar extends StatelessWidget {
     return !isWordEditorShown ? Container(
       decoration: BoxDecoration(
         color: AppColors.BACKGROUND_WHITE,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.SHADOW,
-            offset: Offset(0, -1),
-            blurRadius: 4,
-          ),
-        ],
+        boxShadow: kElevationToShadow[4],
       ),
       child: Row(
         children: List.generate(items.length, (index) {
@@ -265,13 +259,7 @@ class _WordEditor extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.BACKGROUND_WHITE,
             borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.SHADOW,
-                offset: Offset(0, -1),
-                blurRadius: 4,
-              ),
-            ],
+            boxShadow: kElevationToShadow[4],
           ),
           child: Material(
             child: Row(
