@@ -51,7 +51,7 @@ class AppChoiceListDialog extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const SizedBox(height: 9,),
+                const SizedBox(height: 6,),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -62,7 +62,7 @@ class AppChoiceListDialog extends StatelessWidget {
                         onTap: item.onClick,
                         child: Container(
                           alignment: Alignment.centerLeft,
-                          padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 20,),
+                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20,),
                           child: Text(
                             item.title,
                             style: TextStyle(
@@ -78,7 +78,7 @@ class AppChoiceListDialog extends StatelessWidget {
                     );
                   }),
                 ),
-                const SizedBox(height: 9,),
+                const SizedBox(height: 6,),
               ],
             ),
           ),
