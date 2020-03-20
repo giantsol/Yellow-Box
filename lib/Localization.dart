@@ -28,6 +28,12 @@ class AppLocalizations {
   static const BLOCK = 'block';
   static const BLOCK_IDEA_SUBTITLE = 'blockIdeaSubtitle';
   static const PICKED_BLOCKED_IDEA = 'pickedBlockedIdea';
+  static const AUTO_GENERATE_IDEAS_TITLE = 'autoGenerateIdeasTitle';
+  static const AUTO_GENERATE_IDEAS_SUBTITLE = 'autoGenerateIdeasSubtitle';
+  static const RESET_BLOCKED_IDEAS_TITLE = 'resetBlockedIdeasTitle';
+  static const RESET_BLOCKED_IDEAS_SUBTITLE = 'resetBlockedIdeasSubtitle';
+  static const RESET_BLOCKED_IDEAS_DIALOG_SUBTITLE = 'resetBlockedIdeasDialogSubtitle';
+  static const RESET = 'reset';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -60,6 +66,12 @@ class AppLocalizations {
       BLOCK: 'Block',
       BLOCK_IDEA_SUBTITLE: 'Blocked ideas will never appear again.\nYou can reset this in settings.',
       PICKED_BLOCKED_IDEA: 'You picked out a blocked idea',
+      AUTO_GENERATE_IDEAS_TITLE: 'Auto-generate ideas',
+      AUTO_GENERATE_IDEAS_SUBTITLE: '(Recommended) Generate new ideas automatically in background',
+      RESET_BLOCKED_IDEAS_TITLE: 'Reset blocked ideas',
+      RESET_BLOCKED_IDEAS_SUBTITLE: 'Unblock all previously blocked ideas',
+      RESET_BLOCKED_IDEAS_DIALOG_SUBTITLE: 'Are you sure to unblock all previously blocked ideas?',
+      RESET: 'Reset',
     },
     'ko': {
       CANCEL: '취소',
@@ -87,6 +99,12 @@ class AppLocalizations {
       BLOCK: '차단',
       BLOCK_IDEA_SUBTITLE: '차단된 아이디어는 다시 생성되지 않습니다.\n설정에서 초기화할 수 있습니다.',
       PICKED_BLOCKED_IDEA: '차단된 아이디어입니다',
+      AUTO_GENERATE_IDEAS_TITLE: '아이디어 자동 생성',
+      AUTO_GENERATE_IDEAS_SUBTITLE: '(추천) 백그라운드에서 자동으로 아이디어를 생성합니다',
+      RESET_BLOCKED_IDEAS_TITLE: '차단된 아이디어 리셋',
+      RESET_BLOCKED_IDEAS_SUBTITLE: '차단된 아이디어들을 모두 해제합니다',
+      RESET_BLOCKED_IDEAS_DIALOG_SUBTITLE: '정말로 차단된 아이디어들을 모두 해제하겠습니까?',
+      RESET: '리셋',
     },
   };
 
@@ -119,6 +137,12 @@ class AppLocalizations {
   String get block => _localizedValues[locale.languageCode][BLOCK];
   String get blockIdeaSubtitle => _localizedValues[locale.languageCode][BLOCK_IDEA_SUBTITLE];
   String get pickedBlockedIdea => _localizedValues[locale.languageCode][PICKED_BLOCKED_IDEA];
+  String get autoGenerateIdeasTitle => _localizedValues[locale.languageCode][AUTO_GENERATE_IDEAS_TITLE];
+  String get autoGenerateIdeasSubtitle => _localizedValues[locale.languageCode][AUTO_GENERATE_IDEAS_SUBTITLE];
+  String get resetBlockedIdeasTitle => _localizedValues[locale.languageCode][RESET_BLOCKED_IDEAS_TITLE];
+  String get resetBlockedIdeasSubtitle => _localizedValues[locale.languageCode][RESET_BLOCKED_IDEAS_SUBTITLE];
+  String get resetBlockedIdeasDialogSubtitle => _localizedValues[locale.languageCode][RESET_BLOCKED_IDEAS_DIALOG_SUBTITLE];
+  String get reset => _localizedValues[locale.languageCode][RESET];
 
   String getConfirmDeleteTitle(String item) {
     if (locale.languageCode == 'ko') {

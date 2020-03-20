@@ -147,13 +147,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.0"
-  preferences:
-    dependency: "direct main"
-    description:
-      name: preferences
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.0.2"
   quiver:
     dependency: transitive
     description:
@@ -169,12 +162,12 @@ packages:
     source: hosted
     version: "0.23.1"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.6+1"
+    version: "0.5.6+3"
   shared_preferences_macos:
     dependency: transitive
     description:
