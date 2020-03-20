@@ -50,7 +50,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget _buildUI(HistoryState state) {
     final appTheme = state.appTheme;
     final isScrimVisible = state.wordItemDialog.isValid() || state.ideaItemDialog.isValid()
-      || state.isDeleteWordsDialogShown;
+      || state.isDeleteWordsDialogShown || state.isDeleteIdeasDialogShown
+      || state.isBlockIdeasDialogShown;
 
     return WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress(),
@@ -79,11 +80,28 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ) : const SizedBox.shrink(),
           state.isDeleteWordsDialogShown ? AppAlertDialog(
             appTheme: appTheme,
-            title: AppLocalizations.of(context).getDeleteWordsTitle(state.selectedWords.length),
+            title: AppLocalizations.of(context).getDeleteItemsTitle(state.selectedWords.length),
             primaryButtonText: AppLocalizations.of(context).delete,
             onPrimaryButtonClicked: _bloc.onConfirmDeleteWordsClicked,
             secondaryButtonText: AppLocalizations.of(context).cancel,
             onSecondaryButtonClicked: _bloc.onCancelDeleteWordsClicked,
+          ) : const SizedBox.shrink(),
+          state.isDeleteIdeasDialogShown ? AppAlertDialog(
+            appTheme: appTheme,
+            title: AppLocalizations.of(context).getDeleteItemsTitle(state.selectedIdeas.length),
+            primaryButtonText: AppLocalizations.of(context).delete,
+            onPrimaryButtonClicked: _bloc.onConfirmDeleteIdeasClicked,
+            secondaryButtonText: AppLocalizations.of(context).cancel,
+            onSecondaryButtonClicked: _bloc.onCancelDeleteIdeasClicked,
+          ) : const SizedBox.shrink(),
+          state.isBlockIdeasDialogShown ? AppAlertDialog(
+            appTheme: appTheme,
+            title: AppLocalizations.of(context).getBlockItemsTitle(state.selectedIdeas.length),
+            subtitle: AppLocalizations.of(context).blockIdeaSubtitle,
+            primaryButtonText: AppLocalizations.of(context).block,
+            onPrimaryButtonClicked: _bloc.onConfirmBlockIdeasClicked,
+            secondaryButtonText: AppLocalizations.of(context).cancel,
+            onSecondaryButtonClicked: _bloc.onCancelBlockIdeasClicked,
           ) : const SizedBox.shrink(),
         ],
       ),
@@ -132,8 +150,8 @@ class _MainUI extends StatelessWidget {
               bloc: bloc,
               items: ideas,
               appTheme: appTheme,
-//            isSelectionMode: selectionMode == SelectionMode.IDEAS,
-//            selectedItems: selectedIdeas,
+              isSelectionMode: selectionMode == SelectionMode.IDEAS,
+              selectedItems: selectedIdeas,
             ),
             selectionMode == SelectionMode.NONE ? _TabBar(
               bloc: bloc,
@@ -373,13 +391,14 @@ class _WordsSelectionBar extends StatelessWidget {
                   InkWell(
                     onTap: () => bloc.onDeleteWordsClicked(),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                      padding: const EdgeInsets.all(14),
                       child: Image.asset(
                         'assets/ic_delete.png',
                         color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
                       ),
                     ),
                   ),
+                  const SizedBox(width: 10),
                 ],
               ),
             ),
@@ -416,57 +435,62 @@ class _IdeasSelectionBar extends StatelessWidget {
     return IntrinsicHeight(
       child: Stack(
         children: <Widget>[
-          Container(
-            constraints: BoxConstraints(
-              minHeight: 56,
-            ),
-            decoration: BoxDecoration(
-              color: appTheme.lightColor,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.SHADOW,
-                  offset: Offset(0, 1),
-                  blurRadius: 4,
-                ),
-              ],
-            ),
-            child: Row(
-              children: <Widget>[
-                InkWell(
-                  onTap: () => bloc.onSelectionModeCloseClicked(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 21, horizontal: 24),
-                    child: Image.asset(
-                      'assets/ic_close.png',
-                      color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+          Material(
+            color: appTheme.lightColor,
+            elevation: 4,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: 56,
+              ),
+              child: Row(
+                children: <Widget>[
+                  InkWell(
+                    onTap: () => bloc.onSelectionModeCloseClicked(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 21, horizontal: 24),
+                      child: Image.asset(
+                        'assets/ic_close.png',
+                        color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Text(
-                    AppLocalizations.of(context).getSelectionTitle(selectedItems.length),
-                    style: TextStyle(
-                      color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    strutStyle: StrutStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () => bloc.onDeleteIdeasClicked(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-                    child: Image.asset(
-                      'assets/ic_delete.png',
-                      color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.of(context).getSelectionTitle(selectedItems.length),
+                      style: TextStyle(
+                        color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      strutStyle: StrutStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  InkWell(
+                    onTap: () => bloc.onBlockIdeasClicked(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Image.asset(
+                        'assets/ic_block.png',
+                        color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => bloc.onDeleteIdeasClicked(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Image.asset(
+                        'assets/ic_delete.png',
+                        color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+              ),
             ),
           ),
           Align(
@@ -685,11 +709,15 @@ class _IdeaList extends StatelessWidget {
   final HistoryBloc bloc;
   final List<Idea> items;
   final AppTheme appTheme;
+  final bool isSelectionMode;
+  final Map<Idea, bool> selectedItems;
 
   _IdeaList({
     @required this.bloc,
     @required this.items,
     @required this.appTheme,
+    @required this.isSelectionMode,
+    @required this.selectedItems,
   });
 
   @override
@@ -700,11 +728,21 @@ class _IdeaList extends StatelessWidget {
       child: items.length > 0 ? ListView.builder(
         itemCount: items.length,
         itemBuilder: (context, index) {
-          return _IdeaItem(
-            bloc: bloc,
-            item: items[index],
-            isDarkTheme: isDarkTheme,
-          );
+          final item = items[index];
+          if (isSelectionMode) {
+            return _SelectionIdeaItem(
+              bloc: bloc,
+              item: item,
+              isDarkTheme: isDarkTheme,
+              isSelected: selectedItems.containsKey(item),
+            );
+          } else {
+            return _IdeaItem(
+              bloc: bloc,
+              item: item,
+              isDarkTheme: isDarkTheme,
+            );
+          }
         },
       ) : Center(
         child: Text(
@@ -718,6 +756,85 @@ class _IdeaList extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _SelectionIdeaItem extends StatelessWidget {
+  final HistoryBloc bloc;
+  final Idea item;
+  final bool isDarkTheme;
+  final bool isSelected;
+
+  _SelectionIdeaItem({
+    @required this.bloc,
+    @required this.item,
+    @required this.isDarkTheme,
+    @required this.isSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Material(
+          color: isSelected ? (isDarkTheme ? AppColors.SELECTION_WHITE : AppColors.SELECTION_BLACK)
+            : Colors.transparent,
+          child: InkWell(
+            onTap: () => bloc.onIdeaItemClicked(item),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Image.asset(
+                      isSelected ? 'assets/ic_radio_fill.png' : 'assets/ic_radio.png',
+                      color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      child: Text(
+                        item.title,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                        ),
+                        strutStyle: StrutStyle(
+                          fontSize: 18,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    item.dateMillis.toYearMonthDateString(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDarkTheme ? AppColors.TEXT_WHITE_LIGHT : AppColors.TEXT_BLACK_LIGHT,
+                    ),
+                    strutStyle: StrutStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Container(
+            height: 1,
+            color: isDarkTheme ? AppColors.DIVIDER_WHITE : AppColors.DIVIDER_BLACK,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -740,6 +857,7 @@ class _IdeaItem extends StatelessWidget {
       children: <Widget>[
         InkWell(
           onTap: () => bloc.onIdeaItemClicked(item),
+          onLongPress: () => bloc.onIdeaItemLongPressed(item),
           child: Row(
             children: <Widget>[
               const SizedBox(width: 8,),

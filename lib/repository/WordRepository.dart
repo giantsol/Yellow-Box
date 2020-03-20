@@ -44,6 +44,17 @@ class WordRepository {
     return _database.removeWord(item);
   }
 
+  Future<void> deleteWords(Map<Word, bool> items) async {
+    final list = _words.value;
+    list.removeWhere((it) => items.containsKey(it));
+    _words.value = list;
+
+    for (final item in items.keys) {
+      _database.removeWord(item);
+    }
+    return;
+  }
+
   Future<int> getCount() async {
     return _words.value.length;
   }

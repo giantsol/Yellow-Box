@@ -111,8 +111,27 @@ class HistoryBloc extends BaseBloc {
   }
 
   void onIdeaItemClicked(Idea item) {
+    if (_state.value.selectionMode == SelectionMode.IDEAS) {
+      final map = _state.value.selectedIdeas;
+      if (map.containsKey(item)) {
+        map.remove(item);
+      } else {
+        map[item] = true;
+      }
+      _state.value = _state.value.buildNew(
+        selectedIdeas: map,
+      );
+    } else {
+      _state.value = _state.value.buildNew(
+        ideaItemDialog: IdeaItemDialog(IdeaItemDialog.TYPE_LIST, item),
+      );
+    }
+  }
+
+  void onIdeaItemLongPressed(Idea item) {
     _state.value = _state.value.buildNew(
-      ideaItemDialog: IdeaItemDialog(IdeaItemDialog.TYPE_LIST, item),
+      selectionMode: SelectionMode.IDEAS,
+      selectedIdeas: {item: true},
     );
   }
 
@@ -178,10 +197,13 @@ class HistoryBloc extends BaseBloc {
 
   void onConfirmDeleteWordsClicked() {
     final words = _state.value.selectedWords;
-    // todo: delete
+    _wordRepository.deleteWords(words);
 
     _state.value = _state.value.buildNew(
       isDeleteWordsDialogShown: false,
+      selectionMode: SelectionMode.NONE,
+      selectedWords: {},
+      selectedIdeas: {},
     );
   }
 
@@ -192,7 +214,59 @@ class HistoryBloc extends BaseBloc {
   }
 
   void onDeleteIdeasClicked() {
-    // todo
+    if (_state.value.selectedIdeas.isEmpty) {
+      return;
+    }
+
+    _state.value = _state.value.buildNew(
+      isDeleteIdeasDialogShown: true,
+    );
+  }
+
+  void onConfirmDeleteIdeasClicked() {
+    final ideas = _state.value.selectedIdeas;
+    _ideaRepository.deleteIdeas(ideas);
+
+    _state.value = _state.value.buildNew(
+      isDeleteIdeasDialogShown: false,
+      selectionMode: SelectionMode.NONE,
+      selectedWords: {},
+      selectedIdeas: {},
+    );
+  }
+
+  void onCancelDeleteIdeasClicked() {
+    _state.value = _state.value.buildNew(
+      isDeleteIdeasDialogShown: false,
+    );
+  }
+
+  void onBlockIdeasClicked() {
+    if (_state.value.selectedIdeas.isEmpty) {
+      return;
+    }
+
+    _state.value = _state.value.buildNew(
+      isBlockIdeasDialogShown: true,
+    );
+  }
+
+  void onConfirmBlockIdeasClicked() {
+    final ideas = _state.value.selectedIdeas;
+    _ideaRepository.blockIdeas(ideas);
+
+    _state.value = _state.value.buildNew(
+      isBlockIdeasDialogShown: false,
+      selectionMode: SelectionMode.NONE,
+      selectedWords: {},
+      selectedIdeas: {},
+    );
+  }
+
+  void onCancelBlockIdeasClicked() {
+    _state.value = _state.value.buildNew(
+      isBlockIdeasDialogShown: false,
+    );
   }
 
   bool handleBackPress() {
@@ -208,6 +282,16 @@ class HistoryBloc extends BaseBloc {
 
     if (_state.value.isDeleteWordsDialogShown) {
       onCancelDeleteWordsClicked();
+      return true;
+    }
+
+    if (_state.value.isDeleteIdeasDialogShown) {
+      onCancelDeleteIdeasClicked();
+      return true;
+    }
+
+    if (_state.value.isBlockIdeasDialogShown) {
+      onCancelBlockIdeasClicked();
       return true;
     }
 

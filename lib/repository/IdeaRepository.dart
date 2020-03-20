@@ -52,6 +52,17 @@ class IdeaRepository {
     return _database.removeIdea(item);
   }
 
+  Future<void> deleteIdeas(Map<Idea, bool> items) async {
+    final list = _ideas.value;
+    list.removeWhere((it) => items.containsKey(it));
+    _ideas.value = list;
+
+    for (final item in items.keys) {
+      _database.removeIdea(item);
+    }
+    return;
+  }
+
   Future<void> blockIdea(Idea item) async {
     final list = _ideas.value;
     final index = list.indexWhere((it) => it.title == item.title);
@@ -63,6 +74,17 @@ class IdeaRepository {
     _ideas.value = list;
 
     return _database.blockIdea(item);
+  }
+
+  Future<void> blockIdeas(Map<Idea, bool> items) async {
+    final list = _ideas.value;
+    list.removeWhere((it) => items.containsKey(it));
+    _ideas.value = list;
+
+    for (final item in items.keys) {
+      _database.blockIdea(item);
+    }
+    return;
   }
 
   Future<bool> isBlocked(String title) async {

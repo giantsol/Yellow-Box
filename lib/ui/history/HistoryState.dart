@@ -15,6 +15,8 @@ class HistoryState {
   final Map<Word, bool> selectedWords;
   final Map<Idea, bool> selectedIdeas;
   final bool isDeleteWordsDialogShown;
+  final bool isDeleteIdeasDialogShown;
+  final bool isBlockIdeasDialogShown;
 
   const HistoryState({
     this.appTheme = AppTheme.DEFAULT,
@@ -27,6 +29,8 @@ class HistoryState {
     this.selectedWords = const {},
     this.selectedIdeas = const {},
     this.isDeleteWordsDialogShown = false,
+    this.isDeleteIdeasDialogShown = false,
+    this.isBlockIdeasDialogShown = false,
   });
 
   HistoryState buildNew({
@@ -40,6 +44,8 @@ class HistoryState {
     Map<Word, bool> selectedWords,
     Map<Idea, bool> selectedIdeas,
     bool isDeleteWordsDialogShown,
+    bool isDeleteIdeasDialogShown,
+    bool isBlockIdeasDialogShown,
   }) {
     return HistoryState(
       appTheme: appTheme ?? this.appTheme,
@@ -52,6 +58,8 @@ class HistoryState {
       selectedWords: selectedWords ?? this.selectedWords,
       selectedIdeas: selectedIdeas ?? this.selectedIdeas,
       isDeleteWordsDialogShown: isDeleteWordsDialogShown ?? this.isDeleteWordsDialogShown,
+      isDeleteIdeasDialogShown: isDeleteIdeasDialogShown ?? this.isDeleteIdeasDialogShown,
+      isBlockIdeasDialogShown: isBlockIdeasDialogShown ?? this.isBlockIdeasDialogShown,
     );
   }
 }

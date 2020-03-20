@@ -136,7 +136,7 @@ class AppLocalizations {
     }
   }
 
-  String getDeleteWordsTitle(int count) {
+  String getDeleteItemsTitle(int count) {
     if (locale.languageCode == 'ko') {
       return '$count개를 삭제하겠습니까?';
     } else {
@@ -149,6 +149,14 @@ class AppLocalizations {
       return '$count개 선택';
     } else {
       return '$count selected';
+    }
+  }
+
+  String getBlockItemsTitle(int count) {
+    if (locale.languageCode == 'ko') {
+      return '$count개를 차단하겠습니까?';
+    } else {
+      return 'Block $count items?';
     }
   }
 
