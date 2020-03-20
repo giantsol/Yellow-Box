@@ -67,7 +67,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             selectedWords: state.selectedWords,
             selectedIdeas: state.selectedIdeas,
           ),
-          isScrimVisible ? _Scrim() : const SizedBox.shrink(),
+          isScrimVisible ? _Scrim(_bloc) : const SizedBox.shrink(),
           state.wordItemDialog.isValid() ? _WordItemDialog(
             appTheme: appTheme,
             bloc: _bloc,
@@ -877,10 +877,17 @@ class _IdeaItem extends StatelessWidget {
 }
 
 class _Scrim extends StatelessWidget {
+  final HistoryBloc bloc;
+
+  _Scrim(this.bloc);
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.SCRIM,
+    return GestureDetector(
+      onTap: () => bloc.handleBackPress(),
+      child: Container(
+        color: AppColors.SCRIM,
+      ),
     );
   }
 }

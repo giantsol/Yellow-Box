@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
             appTheme: appTheme,
             text: state.editingWord,
           ) : const SizedBox.shrink(),
-          isScrimVisible ? _Scrim() : const SizedBox.shrink(),
+          isScrimVisible ? _Scrim(_bloc) : const SizedBox.shrink(),
           state.isListeningToSpeech ? _ListeningToSpeechView(
             bloc: _bloc,
             appTheme: appTheme,
@@ -377,11 +377,17 @@ class _OverlayProgress extends StatelessWidget {
 }
 
 class _Scrim extends StatelessWidget {
+  final HomeBloc bloc;
+
+  _Scrim(this.bloc);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.SCRIM,
+    return GestureDetector(
+      onTap: () => bloc.handleBackPress(),
+      child: Container(
+        color: AppColors.SCRIM,
+      ),
     );
   }
 }
