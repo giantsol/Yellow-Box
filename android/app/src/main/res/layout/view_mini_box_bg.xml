@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <RelativeLayout
+        android:id="@+id/dragging_box"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_mini_box"
+        android:elevation="4dp"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_mini_box"
+            android:layout_centerInParent="true"
+            />
+
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/close"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="#88000000"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="72dp"
+        />
+
+</RelativeLayout>
