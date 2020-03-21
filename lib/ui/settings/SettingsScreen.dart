@@ -11,6 +11,7 @@ import 'package:yellow_box/ui/settings/SettingsBloc.dart';
 import 'package:yellow_box/ui/settings/SettingsNavigator.dart';
 import 'package:yellow_box/ui/settings/SettingsState.dart';
 import 'package:yellow_box/ui/widget/AppAlertDialog.dart';
+import 'package:yellow_box/ui/widget/AppChoiceListDialog.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -44,7 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavi
   }
 
   Widget _buildUI(SettingsState state) {
-    final isScrimVisible = state.isResetBlockedIdeasDialogShown;
+    final isScrimVisible = state.isResetBlockedIdeasDialogShown || state.isIntervalDialogShown;
 
     return WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress(),
@@ -54,6 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavi
             appTheme: state.appTheme,
             bloc: _bloc,
             autoGenerateIdeas: state.autoGenerateIdeas,
+            intervalHours: state.intervalHours,
           ),
           isScrimVisible ? _Scrim(_bloc) : const SizedBox.shrink(),
           state.isResetBlockedIdeasDialogShown ? AppAlertDialog(
@@ -64,6 +66,31 @@ class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavi
             onPrimaryButtonClicked: _bloc.onConfirmResetBlockedIdeasClicked,
             secondaryButtonText: AppLocalizations.of(context).cancel,
             onSecondaryButtonClicked: _bloc.onCancelResetBlockedIdeasClicked,
+          ) : const SizedBox.shrink(),
+          state.isIntervalDialogShown ? AppChoiceListDialog(
+            title: AppLocalizations.of(context).intervalTitle,
+            items: [
+              ChoiceItem(
+                AppLocalizations.of(context).getIntervalHours(2),
+                () => _bloc.onIntervalChoiceClicked(2),
+              ),
+              ChoiceItem(
+                AppLocalizations.of(context).getIntervalHours(6),
+                  () => _bloc.onIntervalChoiceClicked(6),
+              ),
+              ChoiceItem(
+                AppLocalizations.of(context).getIntervalHours(12),
+                  () => _bloc.onIntervalChoiceClicked(12),
+              ),
+              ChoiceItem(
+                AppLocalizations.of(context).getIntervalHours(24),
+                  () => _bloc.onIntervalChoiceClicked(24),
+              ),
+              ChoiceItem(
+                AppLocalizations.of(context).close,
+                  () => _bloc.onCloseIntervalDialogClicked(),
+              ),
+            ],
           ) : const SizedBox.shrink(),
         ],
       ),
@@ -86,11 +113,13 @@ class _MainUI extends StatelessWidget {
   final AppTheme appTheme;
   final SettingsBloc bloc;
   final bool autoGenerateIdeas;
+  final int intervalHours;
 
   _MainUI({
     @required this.appTheme,
     @required this.bloc,
     @required this.autoGenerateIdeas,
+    @required this.intervalHours,
   });
 
   @override
@@ -116,6 +145,14 @@ class _MainUI extends StatelessWidget {
                 value: autoGenerateIdeas,
                 onChanged: bloc.onAutoGenerateIdeasChanged,
               ),
+              autoGenerateIdeas ? _ArrowSettingsItem(
+                isDarkTheme: isDarkTheme,
+                title: AppLocalizations.of(context).intervalTitle,
+                subtitle: AppLocalizations.of(context).intervalSubtitle,
+                onTap: bloc.onIntervalClicked,
+                value: AppLocalizations.of(context).getIntervalHours(intervalHours),
+                isSubSettings: true,
+              ) : const SizedBox.shrink(),
               _SettingsItem(
                 isDarkTheme: isDarkTheme,
                 title: AppLocalizations.of(context).resetBlockedIdeasTitle,
@@ -218,12 +255,16 @@ class _ArrowSettingsItem extends StatelessWidget {
   final String title;
   final String subtitle;
   final Function onTap;
+  final String value;
+  final bool isSubSettings;
 
   _ArrowSettingsItem({
     @required this.isDarkTheme,
     @required this.title,
     @required this.subtitle,
     @required this.onTap,
+    this.value = '',
+    this.isSubSettings = false,
   });
 
   @override
@@ -238,40 +279,56 @@ class _ArrowSettingsItem extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: isSubSettings ? 8 : 0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                          ),
+                          strutStyle: StrutStyle(
+                            fontSize: 18,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        strutStyle: StrutStyle(
-                          fontSize: 18,
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDarkTheme ? AppColors.TEXT_WHITE_LIGHT : AppColors.TEXT_BLACK_LIGHT,
+                          ),
+                          strutStyle: StrutStyle(
+                            fontSize: 12,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDarkTheme ? AppColors.TEXT_WHITE_LIGHT : AppColors.TEXT_BLACK_LIGHT,
-                        ),
-                        strutStyle: StrutStyle(
-                          fontSize: 12,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
+                value.isNotEmpty ? Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                    ),
+                    strutStyle: StrutStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                ) : const SizedBox.shrink(),
                 Padding(
-                  padding: const EdgeInsets.only(left: 24),
+                  padding: const EdgeInsets.only(left: 8),
                   child: Image.asset(
                     'assets/ic_right_arrow.png',
                     color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,

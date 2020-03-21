@@ -13,4 +13,12 @@ class SettingsRepository {
   Future<void> setAutoGenerateIdeas(bool value) {
     return _prefs.setAutoGenerateIdeas(value);
   }
+
+  Future<int> getAutoGenerateIntervalHours() {
+    return _prefs.getAutoGenerateIntervalHours();
+  }
+
+  Future<void> setAutoGenerateIntervalHours(int value) {
+    return _prefs.setAutoGenerateIntervalHours(value);
+  }
 }

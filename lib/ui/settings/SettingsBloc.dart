@@ -30,9 +30,11 @@ class SettingsBloc extends BaseBloc {
 
   void _init() async {
     final autoGenerateIdeas = await _settingsRepository.getAutoGenerateIdeas();
+    final intervalHours = await _settingsRepository.getAutoGenerateIntervalHours();
 
     _state.value = _state.value.buildNew(
       autoGenerateIdeas: autoGenerateIdeas,
+      intervalHours: intervalHours,
     );
 
     _subscriptions.add(_themeRepository.observeCurrentAppTheme()
@@ -88,9 +90,35 @@ class SettingsBloc extends BaseBloc {
     );
   }
 
+  void onIntervalClicked() {
+    _state.value = _state.value.buildNew(
+      isIntervalDialogShown: true,
+    );
+  }
+
+  void onIntervalChoiceClicked(int value) {
+    _state.value = _state.value.buildNew(
+      intervalHours: value,
+      isIntervalDialogShown: false,
+    );
+
+    _settingsRepository.setAutoGenerateIntervalHours(value);
+  }
+
+  void onCloseIntervalDialogClicked() {
+    _state.value = _state.value.buildNew(
+      isIntervalDialogShown: false,
+    );
+  }
+
   bool handleBackPress() {
     if (_state.value.isResetBlockedIdeasDialogShown) {
       onCancelResetBlockedIdeasClicked();
+      return true;
+    }
+
+    if (_state.value.isIntervalDialogShown) {
+      onCloseIntervalDialogClicked();
       return true;
     }
 

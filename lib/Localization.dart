@@ -34,6 +34,8 @@ class AppLocalizations {
   static const RESET_BLOCKED_IDEAS_SUBTITLE = 'resetBlockedIdeasSubtitle';
   static const RESET_BLOCKED_IDEAS_DIALOG_SUBTITLE = 'resetBlockedIdeasDialogSubtitle';
   static const RESET = 'reset';
+  static const INTERVAL_TITLE = 'intervalTitle';
+  static const INTERVAL_SUBTITLE = 'intervalSubtitle';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -72,6 +74,8 @@ class AppLocalizations {
       RESET_BLOCKED_IDEAS_SUBTITLE: 'Unblock all previously blocked ideas',
       RESET_BLOCKED_IDEAS_DIALOG_SUBTITLE: 'Are you sure to unblock all previously blocked ideas?',
       RESET: 'Reset',
+      INTERVAL_TITLE: 'Interval',
+      INTERVAL_SUBTITLE: 'New ideas will be generated every interval approximately',
     },
     'ko': {
       CANCEL: '취소',
@@ -105,6 +109,8 @@ class AppLocalizations {
       RESET_BLOCKED_IDEAS_SUBTITLE: '차단된 아이디어들을 모두 해제합니다',
       RESET_BLOCKED_IDEAS_DIALOG_SUBTITLE: '정말로 차단된 아이디어들을 모두 해제하겠습니까?',
       RESET: '리셋',
+      INTERVAL_TITLE: '시간 간격',
+      INTERVAL_SUBTITLE: '정해진 시간 간격마다 아이디어가 생성됩니다',
     },
   };
 
@@ -143,6 +149,8 @@ class AppLocalizations {
   String get resetBlockedIdeasSubtitle => _localizedValues[locale.languageCode][RESET_BLOCKED_IDEAS_SUBTITLE];
   String get resetBlockedIdeasDialogSubtitle => _localizedValues[locale.languageCode][RESET_BLOCKED_IDEAS_DIALOG_SUBTITLE];
   String get reset => _localizedValues[locale.languageCode][RESET];
+  String get intervalTitle => _localizedValues[locale.languageCode][INTERVAL_TITLE];
+  String get intervalSubtitle => _localizedValues[locale.languageCode][INTERVAL_SUBTITLE];
 
   String getConfirmDeleteTitle(String item) {
     if (locale.languageCode == 'ko') {
@@ -181,6 +189,14 @@ class AppLocalizations {
       return '$count개를 차단하겠습니까?';
     } else {
       return 'Block $count items?';
+    }
+  }
+
+  String getIntervalHours(int hour) {
+    if (locale.languageCode == 'ko') {
+      return '$hour 시간';
+    } else {
+      return '$hour hr';
     }
   }
 
