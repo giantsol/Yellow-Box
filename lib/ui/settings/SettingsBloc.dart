@@ -1,7 +1,7 @@
 
-import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:yellow_box/AppMethodChannel.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
@@ -22,7 +22,7 @@ class SettingsBloc extends BaseBloc {
 
   CompositeSubscription _subscriptions = CompositeSubscription();
 
-  final methodChannel = MethodChannel('com.giantsol.yellow_box');
+  final appMethodChannel = dependencies.appMethodChannel;
 
   SettingsBloc(this._navigator) {
     _init();
@@ -52,7 +52,12 @@ class SettingsBloc extends BaseBloc {
   Future<void> onMiniBoxItemClicked() async {
     bool success;
     try {
-      success = await methodChannel.invokeMethod('showMiniBox');
+      final result = await appMethodChannel.showMiniBox();
+      if (result == AppMethodChannel.SHOW_MINI_BOX_RESULT_OK) {
+        success = true;
+      } else {
+        success = false;
+      }
     } catch (e) {
       success = false;
     }
