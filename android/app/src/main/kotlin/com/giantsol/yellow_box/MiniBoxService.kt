@@ -12,7 +12,7 @@ import android.view.View
 import android.view.WindowManager
 
 
-class MiniBoxService : Service() {
+class MiniBoxService : Service(), MiniBox.Callback {
 
     companion object {
         const val ACTION_SHOW_MINI_BOX = "action.show.mini.box"
@@ -124,7 +124,11 @@ class MiniBoxService : Service() {
 
     private fun showMiniBox() {
         if (miniBox == null) {
-            miniBox = MiniBox(applicationContext)
+            miniBox = MiniBox(applicationContext, this)
         }
+    }
+
+    override fun stopMiniBox() {
+        stopSelf()
     }
 }

@@ -3,18 +3,26 @@ package com.giantsol.yellow_box
 import android.content.Context
 import android.graphics.PixelFormat
 import android.graphics.Point
+import android.graphics.Rect
 import android.os.Build
 import android.util.TypedValue
 import android.view.*
 import kotlin.math.abs
 
-class MiniBox(private val context: Context) {
+class MiniBox(private val context: Context,
+              private val callback: Callback) {
 
-    private val wm: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    interface Callback {
+        fun stopMiniBox()
+    }
+
+    private val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
     private val bgView = LayoutInflater.from(context).inflate(R.layout.view_mini_box_bg, null)
     private val draggingView = bgView.findViewById<View>(R.id.dragging_box)
     private val closeView = bgView.findViewById<View>(R.id.close)
+    private val draggingViewRect = Rect()
+    private val closeViewRect = Rect()
 
     private val miniBoxView = LayoutInflater.from(context).inflate(R.layout.view_mini_box, null)
     private lateinit var miniBoxViewLp: WindowManager.LayoutParams
@@ -46,7 +54,7 @@ class MiniBox(private val context: Context) {
         miniBoxView.setOnTouchListener(object: View.OnTouchListener {
             private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
             private val touchDownPoint = Point()
-            private var startedDragging = false
+            private var isDragging = false
 
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 val eventX = event.x.toInt()
@@ -55,26 +63,41 @@ class MiniBox(private val context: Context) {
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
                         touchDownPoint.set(eventX, eventY)
-                        startedDragging = false
+                        isDragging = false
                     }
                     MotionEvent.ACTION_MOVE -> {
                         val moveDiffX = eventX - touchDownPoint.x
                         val moveDiffY = eventY - touchDownPoint.y
-                        if (abs(moveDiffX) + abs(moveDiffY) > touchSlop && !startedDragging) {
-                            startedDragging = true
-                        } else if (startedDragging) {
+                        if (abs(moveDiffX) + abs(moveDiffY) > touchSlop && !isDragging) {
+                            isDragging = true
+                        } else if (isDragging) {
                             miniBoxView.visibility = View.GONE
                             draggingView.visibility = View.VISIBLE
                             closeView.visibility = View.VISIBLE
                             draggingView.x = miniBoxViewLp.x + eventX.toFloat() - touchDownPoint.x
                             draggingView.y = miniBoxViewLp.y + eventY.toFloat() - touchDownPoint.y
+
+                            if (closeViewRect.isEmpty) {
+                                closeView.getGlobalVisibleRect(closeViewRect)
+                            }
+                            draggingView.getGlobalVisibleRect(draggingViewRect)
+
+                            closeView.isActivated = draggingViewRect.intersect(closeViewRect)
                         }
                     }
                     MotionEvent.ACTION_UP,
                     MotionEvent.ACTION_CANCEL -> {
-                        miniBoxView.visibility = View.VISIBLE
-                        draggingView.visibility = View.GONE
-                        closeView.visibility = View.GONE
+                        if (closeView.isActivated) {
+                            callback.stopMiniBox()
+                        } else {
+                            isDragging = false
+                            miniBoxView.visibility = View.VISIBLE
+                            miniBoxViewLp.x = draggingView.x.toInt()
+                            miniBoxViewLp.y = draggingView.y.toInt()
+                            wm.updateViewLayout(miniBoxView, miniBoxViewLp)
+                            closeView.isActivated = false
+                            closeView.visibility = View.GONE
+                        }
                     }
                 }
                 return false
