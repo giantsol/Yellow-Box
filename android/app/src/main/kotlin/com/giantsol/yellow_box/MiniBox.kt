@@ -2,8 +2,8 @@ package com.giantsol.yellow_box
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.PixelFormat
 import android.graphics.Point
@@ -28,11 +28,10 @@ class MiniBox(private val context: Context,
 
     private val bgView = LayoutInflater.from(context).inflate(R.layout.view_mini_box_bg, null)
 
-    private val draggingView = bgView.findViewById<View>(R.id.dragging_box)
-    private val draggingViewRect = Rect()
-
     private val closeView = bgView.findViewById<View>(R.id.close)
     private val closeViewRect = Rect()
+
+    private val wordEditorView = bgView.findViewById<View>(R.id.word_editor)
 
     private val miniBoxView = LayoutInflater.from(context).inflate(R.layout.view_mini_box, null)
     private lateinit var miniBoxViewLp: WindowManager.LayoutParams
@@ -41,9 +40,9 @@ class MiniBox(private val context: Context,
 
     private val windowSize = Point().apply { wm.defaultDisplay.getSize(this) }
 
-    private val pvhX = PropertyValuesHolder.ofFloat("x", 0f)
-    private val pvhY = PropertyValuesHolder.ofFloat("y", 0f)
-    private val springBackAnimator = ObjectAnimator.ofPropertyValuesHolder(draggingView, pvhX, pvhY).apply {
+    private val pvhX = PropertyValuesHolder.ofInt("x", 0)
+    private val pvhY = PropertyValuesHolder.ofInt("y", 0)
+    private val springBackAnimator = ValueAnimator.ofPropertyValuesHolder(pvhX, pvhY).apply {
         duration = 400
         interpolator = OvershootInterpolator()
     }
@@ -64,12 +63,13 @@ class MiniBox(private val context: Context,
     }
 
     private fun initBgView() {
-        val lp = getWindowParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        lp.flags = lp.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        val lp = getWindowParams(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
+        lp.flags = lp.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
         wm.addView(bgView, lp)
 
-        draggingView.visibility = View.GONE
+        bgView.visibility = View.GONE
         closeView.visibility = View.GONE
+        wordEditorView.visibility = View.GONE
     }
 
     private fun initMiniBoxView() {
@@ -81,53 +81,70 @@ class MiniBox(private val context: Context,
         miniBoxView.setOnTouchListener(object: View.OnTouchListener {
             private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
             private val touchDownPoint = PointF()
+            private val touchDownRawPoint = PointF()
             private var isDragging = false
 
             override fun onTouch(v: View, event: MotionEvent): Boolean {
-                val eventX = event.x
-                val eventY = event.y
+                val x = event.x
+                val y = event.y
+                val rawX = event.rawX
+                val rawY = event.rawY
 
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
-                        touchDownPoint.set(eventX, eventY)
+                        touchDownPoint.set(x, y)
+                        touchDownRawPoint.set(rawX, rawY)
                         isDragging = false
                     }
                     MotionEvent.ACTION_MOVE -> {
-                        val moveDiffX = eventX - touchDownPoint.x
-                        val moveDiffY = eventY - touchDownPoint.y
+                        val moveDiffX = rawX - touchDownRawPoint.x
+                        val moveDiffY = rawY - touchDownRawPoint.y
                         if (abs(moveDiffX) + abs(moveDiffY) > touchSlop && !isDragging) {
                             isDragging = true
-                            onStartDragging()
-                        } else if (isDragging) {
-                            onDragging(miniBoxViewLp.x + eventX - touchDownPoint.x,
-                                miniBoxViewLp.y + eventY - touchDownPoint.y)
+                        }
+
+                        if (isDragging) {
+                            onDragging(rawX - touchDownPoint.x, rawY - touchDownPoint.y)
                         }
                     }
                     MotionEvent.ACTION_UP,
                     MotionEvent.ACTION_CANCEL -> {
+                        if (isDragging) {
+                            onStopDragging()
+                        } else if (event.action == MotionEvent.ACTION_UP) {
+                            v.performClick()
+                        }
                         isDragging = false
-                        onStopDragging()
                     }
                 }
-                return false
+                return true
             }
         })
+
+        miniBoxView.setOnClickListener {
+            toggleWordEditor()
+        }
     }
 
     private fun initSpringBackAnimator() {
+        springBackAnimator.addUpdateListener {
+            val x: Int = it.getAnimatedValue("x") as Int
+            val y: Int = it.getAnimatedValue("y") as Int
+            miniBoxViewLp.x = x
+            miniBoxViewLp.y = y
+            wm.updateViewLayout(miniBoxView, miniBoxViewLp)
+        }
+
         springBackAnimator.addListener(object: AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator, isReverse: Boolean) {
-                draggingView.scaleX = 1f
-                draggingView.scaleY = 1f
+                miniBoxView.scaleX = 1f
+                miniBoxView.scaleY = 1f
                 closeView.isActivated = false
                 closeView.visibility = View.GONE
             }
 
             override fun onAnimationEnd(animation: Animator) {
-                miniBoxView.visibility = View.VISIBLE
-                miniBoxViewLp.x = draggingView.x.toInt()
-                miniBoxViewLp.y = draggingView.y.toInt()
-                wm.updateViewLayout(miniBoxView, miniBoxViewLp)
+                bgView.visibility = View.GONE
             }
         })
     }
@@ -148,24 +165,23 @@ class MiniBox(private val context: Context,
         }
     }
 
-    private fun onStartDragging() {
-        draggingView.scaleX = 1.2f
-        draggingView.scaleY = 1.2f
-        closeView.visibility = View.VISIBLE
-    }
-
     private fun onDragging(x: Float, y: Float) {
-        miniBoxView.visibility = View.GONE
-        draggingView.visibility = View.VISIBLE
-        draggingView.x = x
-        draggingView.y = y
+        bgView.visibility = View.VISIBLE
+        closeView.visibility = View.VISIBLE
+        wordEditorView.visibility = View.GONE
+
+        miniBoxView.scaleX = 1.2f
+        miniBoxView.scaleY = 1.2f
+        miniBoxViewLp.x = x.toInt()
+        miniBoxViewLp.y = y.toInt()
+        wm.updateViewLayout(miniBoxView, miniBoxViewLp)
 
         if (closeViewRect.isEmpty) {
             closeView.getGlobalVisibleRect(closeViewRect)
         }
-        draggingView.getGlobalVisibleRect(draggingViewRect)
 
-        closeView.isActivated = draggingViewRect.intersect(closeViewRect)
+        closeView.isActivated = closeViewRect.intersect(miniBoxViewLp.x, miniBoxViewLp.y,
+            miniBoxViewLp.x + miniBoxViewSize, miniBoxViewLp.y + miniBoxViewSize)
     }
 
     private fun onStopDragging() {
@@ -177,19 +193,29 @@ class MiniBox(private val context: Context,
     }
 
     private fun springBackToWall() {
-        val finalX: Float = if (draggingView.x >= windowSize.x / 2) {
+        val finalX: Int = if (miniBoxViewLp.x >= windowSize.x / 2) {
             windowSize.x - miniBoxViewSize + miniBoxViewInset
         } else {
             -miniBoxViewInset
-        }.toFloat()
+        }
 
-        val finalY: Float = max(0f, min(draggingView.y, (windowSize.y - miniBoxViewSize - statusBarHeight).toFloat()))
+        val finalY: Int = max(0, min(miniBoxViewLp.y, windowSize.y - miniBoxViewSize - statusBarHeight))
 
-        pvhX.setFloatValues(draggingView.x, finalX)
-        pvhY.setFloatValues(draggingView.y, finalY)
+        pvhX.setIntValues(miniBoxViewLp.x, finalX)
+        pvhY.setIntValues(miniBoxViewLp.y, finalY)
         springBackAnimator.apply {
             cancel()
             start()
+        }
+    }
+
+    private fun toggleWordEditor() {
+        if (wordEditorView.visibility == View.VISIBLE) {
+            bgView.visibility = View.GONE
+            wordEditorView.visibility = View.GONE
+        } else {
+            bgView.visibility = View.VISIBLE
+            wordEditorView.visibility = View.VISIBLE
         }
     }
 
