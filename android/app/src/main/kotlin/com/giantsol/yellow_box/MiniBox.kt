@@ -1,9 +1,6 @@
 package com.giantsol.yellow_box
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.PropertyValuesHolder
-import android.animation.ValueAnimator
+import android.animation.*
 import android.content.Context
 import android.graphics.PixelFormat
 import android.graphics.Point
@@ -13,12 +10,13 @@ import android.os.Build
 import android.util.TypedValue
 import android.view.*
 import android.view.animation.OvershootInterpolator
+import android.widget.EditText
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
 class MiniBox(private val context: Context,
-              private val callback: Callback) {
+              private val callback: Callback): View.OnKeyListener {
 
     interface Callback {
         fun stopMiniBox()
@@ -26,12 +24,14 @@ class MiniBox(private val context: Context,
 
     private val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-    private val bgView = LayoutInflater.from(context).inflate(R.layout.view_mini_box_bg, null)
+    private val bgView = LayoutInflater.from(context).inflate(R.layout.view_mini_box_bg, null) as KeyInterceptRelativeLayout
 
     private val closeView = bgView.findViewById<View>(R.id.close)
     private val closeViewRect = Rect()
 
     private val wordEditorView = bgView.findViewById<View>(R.id.word_editor)
+    private val editorView = wordEditorView.findViewById<EditText>(R.id.editor)
+    private val addButton = wordEditorView.findViewById<View>(R.id.add)
 
     private val miniBoxView = LayoutInflater.from(context).inflate(R.layout.view_mini_box, null)
     private lateinit var miniBoxViewLp: WindowManager.LayoutParams
@@ -47,12 +47,22 @@ class MiniBox(private val context: Context,
         interpolator = OvershootInterpolator()
     }
 
+    private val showWordEditorAnimator = ObjectAnimator.ofFloat(wordEditorView, "x", 0f).apply {
+        duration = 400
+        interpolator = OvershootInterpolator()
+    }
+
+    private val hideWordEditorAnimator = ObjectAnimator.ofFloat(wordEditorView, "x", 0f).apply {
+        duration = 400
+        interpolator = OvershootInterpolator()
+    }
+
     private val statusBarHeight: Int
 
     init {
         initBgView()
         initMiniBoxView()
-        initSpringBackAnimator()
+        initAnimators()
 
         val statusResourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
         statusBarHeight = if (statusResourceId > 0) {
@@ -67,9 +77,18 @@ class MiniBox(private val context: Context,
         lp.flags = lp.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
         wm.addView(bgView, lp)
 
+        bgView.setKeyInterceptListener(this)
+        bgView.setOnClickListener {
+            hideWordEditor()
+        }
+
+        addButton.setOnClickListener {
+            addWordIfPossible()
+        }
+
         bgView.visibility = View.GONE
         closeView.visibility = View.GONE
-        wordEditorView.visibility = View.GONE
+        wordEditorView.visibility = View.INVISIBLE
     }
 
     private fun initMiniBoxView() {
@@ -126,7 +145,7 @@ class MiniBox(private val context: Context,
         }
     }
 
-    private fun initSpringBackAnimator() {
+    private fun initAnimators() {
         springBackAnimator.addUpdateListener {
             val x: Int = it.getAnimatedValue("x") as Int
             val y: Int = it.getAnimatedValue("y") as Int
@@ -145,6 +164,31 @@ class MiniBox(private val context: Context,
 
             override fun onAnimationEnd(animation: Animator) {
                 bgView.visibility = View.GONE
+            }
+        })
+
+        showWordEditorAnimator.addListener(object: AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator) {
+                bgView.visibility = View.VISIBLE
+                wordEditorView.visibility = View.VISIBLE
+                closeView.visibility = View.GONE
+            }
+        })
+
+        hideWordEditorAnimator.addListener(object: AnimatorListenerAdapter() {
+            private var isCancelled = false
+
+            override fun onAnimationCancel(animation: Animator) {
+                isCancelled = true
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                if (!isCancelled) {
+                    bgView.visibility = View.GONE
+                    wordEditorView.visibility = View.INVISIBLE
+                    editorView.text = null
+                }
+                isCancelled = false
             }
         })
     }
@@ -168,7 +212,7 @@ class MiniBox(private val context: Context,
     private fun onDragging(x: Float, y: Float) {
         bgView.visibility = View.VISIBLE
         closeView.visibility = View.VISIBLE
-        wordEditorView.visibility = View.GONE
+        hideWordEditor()
 
         miniBoxView.scaleX = 1.2f
         miniBoxView.scaleY = 1.2f
@@ -210,16 +254,71 @@ class MiniBox(private val context: Context,
     }
 
     private fun toggleWordEditor() {
-        if (wordEditorView.visibility == View.VISIBLE) {
-            bgView.visibility = View.GONE
-            wordEditorView.visibility = View.GONE
+        if (isWordEditorShown()) {
+            hideWordEditor()
         } else {
-            bgView.visibility = View.VISIBLE
-            wordEditorView.visibility = View.VISIBLE
+            showWordEditor()
         }
     }
 
+    private fun isWordEditorShown() = wordEditorView.visibility == View.VISIBLE
+
+    private fun hideWordEditor() {
+        if (!isWordEditorShown() || hideWordEditorAnimator.isRunning) {
+            return
+        }
+
+        showWordEditorAnimator.cancel()
+        hideWordEditorAnimator.apply {
+            if (miniBoxViewLp.x > windowSize.x / 2) {
+                setFloatValues((wordEditorView.layoutParams as ViewGroup.MarginLayoutParams).marginStart - miniBoxViewSize.toFloat(), windowSize.x.toFloat())
+            } else {
+                setFloatValues((wordEditorView.layoutParams as ViewGroup.MarginLayoutParams).marginStart.toFloat(), -wordEditorView.width.toFloat())
+            }
+            start()
+        }
+    }
+
+    private fun showWordEditor() {
+        if (isWordEditorShown() || showWordEditorAnimator.isRunning) {
+            return
+        }
+
+        hideWordEditorAnimator.cancel()
+        showWordEditorAnimator.apply {
+            if (miniBoxViewLp.x > windowSize.x / 2) {
+                setFloatValues(windowSize.x.toFloat(), (wordEditorView.layoutParams as ViewGroup.MarginLayoutParams).marginStart - miniBoxViewSize.toFloat())
+            } else {
+                setFloatValues(-wordEditorView.width.toFloat(), (wordEditorView.layoutParams as ViewGroup.MarginLayoutParams).marginStart.toFloat())
+            }
+            start()
+        }
+        wordEditorView.y = miniBoxViewLp.y.toFloat()
+    }
+
+    private fun addWordIfPossible() {
+        val word = editorView.text
+        if (word.isNotEmpty()) {
+            // todo
+
+            hideWordEditor()
+        }
+    }
+
+    override fun onKey(v: View, keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP && isWordEditorShown()) {
+            hideWordEditor()
+            return true
+        }
+
+        return false
+    }
+
     fun destroy() {
+        springBackAnimator.removeAllListeners()
+        showWordEditorAnimator.removeAllListeners()
+        hideWordEditorAnimator.removeAllListeners()
+
         wm.removeView(miniBoxView)
         wm.removeView(bgView)
     }
