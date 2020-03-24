@@ -40,6 +40,10 @@
             android:hint="@string/word"
             android:textCursorDrawable="@drawable/word_editor_cursor"
             android:background="@null"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:imeOptions="actionDone"
+            android:inputType="text"
             />
 
         <TextView

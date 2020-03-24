@@ -10,6 +10,8 @@ import android.os.Build
 import android.util.TypedValue
 import android.view.*
 import android.view.animation.OvershootInterpolator
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import kotlin.math.abs
 import kotlin.math.max
@@ -23,6 +25,7 @@ class MiniBox(private val context: Context,
     }
 
     private val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
     private val bgView = LayoutInflater.from(context).inflate(R.layout.view_mini_box_bg, null) as KeyInterceptRelativeLayout
 
@@ -84,6 +87,20 @@ class MiniBox(private val context: Context,
 
         addButton.setOnClickListener {
             addWordIfPossible()
+        }
+
+        editorView.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                pullUpWordEditorForInputIfNeeded()
+            }
+        }
+        editorView.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                addButton.performClick()
+                true
+            } else {
+                false
+            }
         }
 
         bgView.visibility = View.GONE
@@ -168,15 +185,34 @@ class MiniBox(private val context: Context,
         })
 
         showWordEditorAnimator.addListener(object: AnimatorListenerAdapter() {
+            private var isCancelled = false
+
             override fun onAnimationStart(animation: Animator) {
                 bgView.visibility = View.VISIBLE
                 wordEditorView.visibility = View.VISIBLE
                 closeView.visibility = View.GONE
             }
+
+            override fun onAnimationCancel(animation: Animator?) {
+                isCancelled = true
+            }
+
+            override fun onAnimationEnd(animation: Animator?, isReverse: Boolean) {
+                if (!isCancelled) {
+                    editorView.requestFocus()
+                    imm.showSoftInput(editorView, InputMethodManager.SHOW_IMPLICIT)
+                }
+                isCancelled = false
+            }
         })
 
         hideWordEditorAnimator.addListener(object: AnimatorListenerAdapter() {
             private var isCancelled = false
+
+            override fun onAnimationStart(animation: Animator, isReverse: Boolean) {
+                editorView.clearFocus()
+                imm.hideSoftInputFromWindow(editorView.windowToken, InputMethodManager.HIDE_IMPLICIT_ONLY)
+            }
 
             override fun onAnimationCancel(animation: Animator) {
                 isCancelled = true
@@ -302,6 +338,22 @@ class MiniBox(private val context: Context,
             // todo
 
             hideWordEditor()
+        }
+    }
+
+    private fun pullUpWordEditorForInputIfNeeded() {
+        if (wordEditorView.y > windowSize.y / 4) {
+            val animator = ValueAnimator.ofFloat(wordEditorView.y, windowSize.y / 4f).apply {
+                duration = 400
+                interpolator = OvershootInterpolator()
+            }
+            animator.addUpdateListener {
+                val value = it.animatedValue as Float
+                wordEditorView.y = value
+                miniBoxViewLp.y = value.toInt()
+                wm.updateViewLayout(miniBoxView, miniBoxViewLp)
+            }
+            animator.start()
         }
     }
 
