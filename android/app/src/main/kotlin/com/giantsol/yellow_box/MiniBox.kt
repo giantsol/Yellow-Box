@@ -21,7 +21,7 @@ class MiniBox(private val context: Context,
               private val callback: Callback): View.OnKeyListener {
 
     interface Callback {
-        fun stopMiniBox()
+        fun stopMiniBoxService()
         fun addWord(word: String)
     }
 
@@ -267,7 +267,7 @@ class MiniBox(private val context: Context,
 
     private fun onStopDragging() {
         if (closeView.isActivated) {
-            callback.stopMiniBox()
+            callback.stopMiniBoxService()
         } else {
             springBackToWall()
         }

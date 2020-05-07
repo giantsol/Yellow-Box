@@ -3,6 +3,7 @@ package com.giantsol.yellow_box
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.net.Uri
 import android.os.Build
@@ -124,11 +125,16 @@ class MiniBoxService : Service(), MiniBox.Callback {
 
     private fun showMiniBox() {
         if (miniBox == null) {
-            miniBox = MiniBox(applicationContext, this)
+            miniBox = MiniBox(this, this)
         }
     }
 
-    override fun stopMiniBox() {
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        miniBox?.destroy()
+        miniBox = MiniBox(this, this)
+    }
+
+    override fun stopMiniBoxService() {
         terminate()
     }
 
