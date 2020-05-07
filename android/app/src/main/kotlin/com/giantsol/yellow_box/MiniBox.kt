@@ -261,7 +261,7 @@ class MiniBox(private val context: Context,
             closeView.getGlobalVisibleRect(closeViewRect)
         }
 
-        closeView.isActivated = closeViewRect.intersect(miniBoxViewLp.x, miniBoxViewLp.y,
+        closeView.isActivated = closeViewRect.intersects(miniBoxViewLp.x, miniBoxViewLp.y,
             miniBoxViewLp.x + miniBoxViewSize, miniBoxViewLp.y + miniBoxViewSize)
     }
 
