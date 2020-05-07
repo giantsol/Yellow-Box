@@ -129,6 +129,10 @@ class MiniBoxService : Service(), MiniBox.Callback {
     }
 
     override fun stopMiniBox() {
-        stopSelf()
+        terminate()
+    }
+
+    override fun addWord(word: String) {
+        AppMethodCallHandler.deliverMiniBoxWord(this, word)
     }
 }

@@ -1,9 +1,9 @@
 
-import 'package:yellow_box/AppMethodChannel.dart';
 import 'package:yellow_box/datasource/AppDatabase.dart';
 import 'package:yellow_box/datasource/AppPreferences.dart';
 import 'package:yellow_box/repository/ChildScreenRepository.dart';
 import 'package:yellow_box/repository/IdeaRepository.dart';
+import 'package:yellow_box/repository/MiniBoxRepository.dart';
 import 'package:yellow_box/repository/SettingsRepository.dart';
 import 'package:yellow_box/repository/ThemeRepository.dart';
 import 'package:yellow_box/repository/WordRepository.dart';
@@ -17,5 +17,5 @@ class Dependencies {
   final WordRepository wordRepository = WordRepository(_database);
   final IdeaRepository ideaRepository = IdeaRepository(_database);
   final SettingsRepository settingsRepository = SettingsRepository(_prefs);
-  final AppMethodChannel appMethodChannel = AppMethodChannel();
+  final MiniBoxRepository miniBoxRepository = MiniBoxRepository();
 }

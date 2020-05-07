@@ -1,7 +1,7 @@
 
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:yellow_box/AppMethodChannel.dart';
+import 'package:yellow_box/repository/MiniBoxRepository.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
@@ -19,10 +19,9 @@ class SettingsBloc extends BaseBloc {
   final _themeRepository = dependencies.themeRepository;
   final _childScreenRepository = dependencies.childScreenRepository;
   final _settingsRepository = dependencies.settingsRepository;
+  final miniBoxRepository = dependencies.miniBoxRepository;
 
   CompositeSubscription _subscriptions = CompositeSubscription();
-
-  final appMethodChannel = dependencies.appMethodChannel;
 
   SettingsBloc(this._navigator) {
     _init();
@@ -52,12 +51,7 @@ class SettingsBloc extends BaseBloc {
   Future<void> onMiniBoxItemClicked() async {
     bool success;
     try {
-      final result = await appMethodChannel.showMiniBox();
-      if (result == AppMethodChannel.SHOW_MINI_BOX_RESULT_OK) {
-        success = true;
-      } else {
-        success = false;
-      }
+      success = await miniBoxRepository.showMiniBox();
     } catch (e) {
       success = false;
     }

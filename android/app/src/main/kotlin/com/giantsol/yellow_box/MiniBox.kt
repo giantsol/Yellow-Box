@@ -22,6 +22,7 @@ class MiniBox(private val context: Context,
 
     interface Callback {
         fun stopMiniBox()
+        fun addWord(word: String)
     }
 
     private val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -333,10 +334,9 @@ class MiniBox(private val context: Context,
     }
 
     private fun addWordIfPossible() {
-        val word = editorView.text
+        val word = editorView.text.toString()
         if (word.isNotEmpty()) {
-            // todo
-
+            callback.addWord(word)
             hideWordEditor()
         }
     }

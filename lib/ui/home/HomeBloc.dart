@@ -4,6 +4,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/entity/IdeaPopUpData.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
+import 'package:yellow_box/entity/Word.dart';
 import 'package:yellow_box/repository/IdeaRepository.dart';
 import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
@@ -100,20 +101,18 @@ class HomeBloc extends BaseBloc {
     }
 
     _showProgress();
-    final isThisWordAlreadySaved = await _wordRepository.hasWord(word);
-    if (isThisWordAlreadySaved) {
+
+    final result = await _wordRepository.addWord(Word(word, DateTime.now().millisecondsSinceEpoch));
+    if (!result) {
       _navigator.showEditingWordAlreadyExists();
       _hideProgress();
-      return;
+    } else {
+      _state.value = _state.value.buildNew(
+        isWordEditorShown: false,
+        editingWord: '',
+        isProgressShown: false,
+      );
     }
-
-    await _wordRepository.addWord(word);
-
-    _state.value = _state.value.buildNew(
-      isWordEditorShown: false,
-      editingWord: '',
-      isProgressShown: false,
-    );
   }
 
   void onMicIconClicked() async {

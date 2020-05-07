@@ -6,7 +6,7 @@ import 'package:yellow_box/entity/Word.dart';
 class WordRepository {
   final AppDatabase _database;
 
-  final _words = BehaviorSubject<List<Word>>.seeded([]);
+  final _words = BehaviorSubject<List<Word>>();
 
   WordRepository(this._database) {
     _init();
@@ -17,22 +17,34 @@ class WordRepository {
     _words.value = words;
   }
 
-  Future<bool> hasWord(String wordString) async {
-    return _words.value.any((word) => word.title == wordString);
+  Future<bool> _hasWord(String wordString) async {
+    return (await _words.first).any((word) => word.title == wordString);
   }
 
-  Future<void> addWord(String wordString) {
-    final wordEntity = Word(wordString, DateTime.now().millisecondsSinceEpoch);
+  Future<bool> addWord(Word word) async {
+    if (await _hasWord(word.title)) {
+      return false;
+    }
 
-    final list = _words.value;
-    list.insert(0, wordEntity);
+    final list = await _words.first;
+    final insertIndex = list.indexWhere((it) => it.dateMillis <= word.dateMillis);
+    list.insert(insertIndex, word);
     _words.value = list;
 
-    return _database.addWord(wordEntity);
+    await _database.addWord(word);
+
+    return true;
+  }
+
+  void addWords(List<Word> words) {
+    // todo: wordcount max size account하도록 해야함
+    for (Word word in words) {
+      addWord(word);
+    }
   }
 
   Future<void> deleteWord(Word item) async {
-    final list = _words.value;
+    final list = await _words.first;
     final index = list.indexWhere((it) => it.title == item.title);
     if (index < 0) {
       return;
@@ -45,7 +57,7 @@ class WordRepository {
   }
 
   Future<void> deleteWords(Map<Word, bool> items) async {
-    final list = _words.value;
+    final list = await _words.first;
     list.removeWhere((it) => items.containsKey(it));
     _words.value = list;
 
@@ -56,7 +68,7 @@ class WordRepository {
   }
 
   Future<int> getCount() async {
-    return _words.value.length;
+    return (await _words.first).length;
   }
 
   Future<List<String>> getRandomWordStrings(int count) {
