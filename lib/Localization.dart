@@ -20,7 +20,7 @@ class AppLocalizations {
   static const GENERAL = 'general';
   static const MINI_BOX_TITLE = 'miniBoxTitle';
   static const MINI_BOX_SUBTITLE = 'miniBoxSubtitle';
-  static const FAILED_TO_LAUNCH_MINI_BOX = 'failedToLaunchMiniBox';
+  static const MINI_BOX_NOT_SUPPORTED = 'miniBoxNotSupported';
   static const IDEA_BOX_FULL_TITLE = 'ideaBoxFullTitle';
   static const IDEA_BOX_FULL_SUBTITLE = 'ideaBoxFullSubtitle';
   static const HISTORY = 'history';
@@ -60,7 +60,7 @@ class AppLocalizations {
       GENERAL: 'General',
       MINI_BOX_TITLE: 'Mini Box',
       MINI_BOX_SUBTITLE: 'Quickly add new words using floating button',
-      FAILED_TO_LAUNCH_MINI_BOX: 'Failed to launch mini box',
+      MINI_BOX_NOT_SUPPORTED: 'Not supported in this platform',
       IDEA_BOX_FULL_TITLE: 'Idea box is full!',
       IDEA_BOX_FULL_SUBTITLE: 'Clear some history',
       HISTORY: 'History',
@@ -95,7 +95,7 @@ class AppLocalizations {
       GENERAL: '일반',
       MINI_BOX_TITLE: '미니 박스',
       MINI_BOX_SUBTITLE: '플로팅 버튼을 사용해 쉽게 새 단어를 추가합니다',
-      FAILED_TO_LAUNCH_MINI_BOX: '미니 박스 실행에 실패하였습니다',
+      MINI_BOX_NOT_SUPPORTED: '현재 환경에선 지원되지 않는 기능입니다',
       IDEA_BOX_FULL_TITLE: '아이디어 박스가 가득 찼습니다!',
       IDEA_BOX_FULL_SUBTITLE: '기록을 정리해보세요',
       HISTORY: '기록',
@@ -135,7 +135,7 @@ class AppLocalizations {
   String get general => _localizedValues[locale.languageCode][GENERAL];
   String get miniBoxTitle => _localizedValues[locale.languageCode][MINI_BOX_TITLE];
   String get miniBoxSubtitle => _localizedValues[locale.languageCode][MINI_BOX_SUBTITLE];
-  String get failedToLaunchMiniBox => _localizedValues[locale.languageCode][FAILED_TO_LAUNCH_MINI_BOX];
+  String get miniBoxNotSupported => _localizedValues[locale.languageCode][MINI_BOX_NOT_SUPPORTED];
   String get ideaBoxFullTitle => _localizedValues[locale.languageCode][IDEA_BOX_FULL_TITLE];
   String get ideaBoxFullSubtitle => _localizedValues[locale.languageCode][IDEA_BOX_FULL_SUBTITLE];
   String get history => _localizedValues[locale.languageCode][HISTORY];

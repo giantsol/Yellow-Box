@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:rxdart/rxdart.dart';
 import 'package:yellow_box/datasource/AppDatabase.dart';
 import 'package:yellow_box/entity/Word.dart';
@@ -27,7 +29,7 @@ class WordRepository {
     }
 
     final list = await _words.first;
-    final insertIndex = list.indexWhere((it) => it.dateMillis <= word.dateMillis);
+    final insertIndex = max(list.indexWhere((it) => it.dateMillis <= word.dateMillis), 0);
     list.insert(insertIndex, word);
     _words.value = list;
 

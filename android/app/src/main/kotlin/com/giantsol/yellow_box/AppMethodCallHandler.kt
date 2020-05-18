@@ -3,6 +3,7 @@ package com.giantsol.yellow_box
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.core.content.ContextCompat
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -63,8 +64,9 @@ object AppMethodCallHandler: MethodChannel.MethodCallHandler {
     private fun showMiniBox() {
         val activity = activity ?: return
         val intent = Intent(activity, MiniBoxService::class.java)
-        intent.action = MiniBoxService.ACTION_SHOW_MINI_BOX
+        intent.action = MiniBoxService.ACTION_START_MINI_BOX
         activity.startService(intent)
+//        ContextCompat.startForegroundService(activity, intent)
     }
 
     fun deliverMiniBoxWord(context: Context, word: String) {

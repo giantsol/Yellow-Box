@@ -31,8 +31,12 @@ class MiniBoxRepository {
     _methodChannel.invokeMethod(_METHOD_INITIALIZED);
   }
 
-  Future<bool> showMiniBox() {
-    return _methodChannel.invokeMethod(_METHOD_SHOW_MINI_BOX);
+  Future<bool> showMiniBox() async {
+    try {
+      return (await _methodChannel.invokeMethod(_METHOD_SHOW_MINI_BOX)) == true;
+    } on Exception catch (_) {
+      return false;
+    }
   }
 
 }

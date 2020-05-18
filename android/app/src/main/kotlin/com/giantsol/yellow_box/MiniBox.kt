@@ -21,7 +21,7 @@ class MiniBox(private val context: Context,
               private val callback: Callback): View.OnKeyListener {
 
     interface Callback {
-        fun stopMiniBoxService()
+        fun stopMiniBox()
         fun addWord(word: String)
     }
 
@@ -267,7 +267,7 @@ class MiniBox(private val context: Context,
 
     private fun onStopDragging() {
         if (closeView.isActivated) {
-            callback.stopMiniBoxService()
+            callback.stopMiniBox()
         } else {
             springBackToWall()
         }
@@ -371,7 +371,9 @@ class MiniBox(private val context: Context,
         showWordEditorAnimator.removeAllListeners()
         hideWordEditorAnimator.removeAllListeners()
 
-        wm.removeView(miniBoxView)
-        wm.removeView(bgView)
+        if (miniBoxView.isAttachedToWindow) {
+            wm.removeView(miniBoxView)
+            wm.removeView(bgView)
+        }
     }
 }

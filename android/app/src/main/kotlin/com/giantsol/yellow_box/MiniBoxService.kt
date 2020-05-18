@@ -1,6 +1,6 @@
 package com.giantsol.yellow_box
 
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -11,15 +11,31 @@ import android.os.IBinder
 import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
+import android.widget.RemoteViews
+import androidx.core.app.NotificationCompat
 
 
 class MiniBoxService : Service(), MiniBox.Callback {
 
     companion object {
-        const val ACTION_SHOW_MINI_BOX = "action.show.mini.box"
+        const val ACTION_START_MINI_BOX = "action.start.mini.box"
+        const val ACTION_PAUSE_MINI_BOX = "action.pause.mini.box"
+        const val ACTION_RESUME_MINI_BOX = "action.resume.mini.box"
+        const val ACTION_STOP_MINI_BOX = "action.stop.mini.box"
+
+        private const val NOTIFICATION_ID = 1001
+        private const val NOTIFICATION_CHANNEL_ID = "minibox.notification.channel"
+
+        private const val REQUEST_CODE_PAUSE_BUTTON = 0
+        private const val REQUEST_CODE_STOP_BUTTON = 1
+        private const val REQUEST_CODE_RESUME_BUTTON = 2
     }
 
     private var miniBox: MiniBox? = null
+
+    private lateinit var notificationManager: NotificationManager
+
+    private var isTerminating = false
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -28,26 +44,42 @@ class MiniBoxService : Service(), MiniBox.Callback {
     override fun onCreate() {
         super.onCreate()
 
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        createNotificationChannel()
+
         if (requestOverlayPermissionIfNeeded()) {
             terminate()
             return
         }
     }
 
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.mini_box_notification_channel_name)
+            val descriptionText = getString(R.string.mini_box_notification_channel_description)
+            val importance = NotificationManager.IMPORTANCE_LOW
+            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply { description = descriptionText }
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
     private fun terminate() {
+        stopForeground(true)
         stopSelf()
         miniBox?.destroy() // should remove views from window
         miniBox = null
+        isTerminating = true
     }
 
     private fun requestOverlayPermissionIfNeeded(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !canDrawOverlays(applicationContext)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !canDrawOverlays(this)) {
             try {
-                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${applicationContext.packageName}")).apply {
+                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${packageName}")).apply {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 }
-                applicationContext.startActivity(intent)
+                startActivity(intent)
                 return true
             } catch (ignored: Exception) { }
             terminate()
@@ -112,21 +144,83 @@ class MiniBoxService : Service(), MiniBox.Callback {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == null) {
+        if (intent?.action == null || isTerminating) {
             return START_NOT_STICKY
         }
 
         when (intent.action!!) {
-            ACTION_SHOW_MINI_BOX -> showMiniBox()
+            ACTION_START_MINI_BOX -> startMiniBox()
+            ACTION_PAUSE_MINI_BOX -> pauseMiniBox()
+            ACTION_RESUME_MINI_BOX -> startMiniBox()
+            ACTION_STOP_MINI_BOX -> terminate()
         }
 
         return START_NOT_STICKY
     }
 
-    private fun showMiniBox() {
-        if (miniBox == null) {
-            miniBox = MiniBox(this, this)
-        }
+    private fun startMiniBox() {
+        miniBox?.destroy()
+
+        startForeground(NOTIFICATION_ID, createStartedNotification())
+        miniBox = MiniBox(this, this)
+    }
+
+    private fun pauseMiniBox() {
+        stopForeground(false)
+        miniBox?.destroy()
+        notificationManager.notify(NOTIFICATION_ID, createPausedNotification())
+    }
+
+    private fun createStartedNotification(): Notification {
+        val view = RemoteViews(packageName, R.layout.mini_box_notification_started)
+        val pausePendingIntent = PendingIntent.getService(
+            this, REQUEST_CODE_PAUSE_BUTTON,
+            Intent(this, MiniBoxService::class.java).apply { action = ACTION_PAUSE_MINI_BOX },
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        view.setOnClickPendingIntent(R.id.pause_button, pausePendingIntent)
+
+        val stopPendingIntent = PendingIntent.getService(
+            this, REQUEST_CODE_STOP_BUTTON,
+            Intent(this, MiniBoxService::class.java).apply { action = ACTION_STOP_MINI_BOX },
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        view.setOnClickPendingIntent(R.id.stop_button, stopPendingIntent)
+
+        val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_mini_box)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setCustomContentView(view)
+            .setOngoing(true)
+            .build()
+
+        return notification
+    }
+
+    private fun createPausedNotification(): Notification {
+        val view = RemoteViews(packageName, R.layout.mini_box_notification_paused)
+        val pausePendingIntent = PendingIntent.getService(
+            this, REQUEST_CODE_RESUME_BUTTON,
+            Intent(this, MiniBoxService::class.java).apply { action = ACTION_RESUME_MINI_BOX },
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        view.setOnClickPendingIntent(R.id.resume_button, pausePendingIntent)
+
+        val stopPendingIntent = PendingIntent.getService(
+            this, REQUEST_CODE_STOP_BUTTON,
+            Intent(this, MiniBoxService::class.java).apply { action = ACTION_STOP_MINI_BOX },
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        view.setOnClickPendingIntent(R.id.stop_button, stopPendingIntent)
+
+        val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_mini_box)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setCustomContentView(view)
+            .setOngoing(true)
+            .build()
+
+        return notification
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -134,7 +228,7 @@ class MiniBoxService : Service(), MiniBox.Callback {
         miniBox = MiniBox(this, this)
     }
 
-    override fun stopMiniBoxService() {
+    override fun stopMiniBox() {
         terminate()
     }
 

@@ -1,7 +1,7 @@
 
+import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:yellow_box/repository/MiniBoxRepository.dart';
 import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
@@ -49,14 +49,10 @@ class SettingsBloc extends BaseBloc {
   }
 
   Future<void> onMiniBoxItemClicked() async {
-    bool success;
-    try {
-      success = await miniBoxRepository.showMiniBox();
-    } catch (e) {
-      success = false;
-    }
-
-    if (!success) {
+    final success = await miniBoxRepository.showMiniBox();
+    if (success) {
+      SystemNavigator.pop(animated: true);
+    } else {
       _navigator.showMiniBoxLaunchFailedMessage();
     }
   }

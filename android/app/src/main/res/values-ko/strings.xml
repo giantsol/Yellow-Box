@@ -2,4 +2,13 @@
 <resources>
     <string name="word">단어</string>
     <string name="add">추가</string>
+
+    <string name="mini_box_notification_channel_name">미니 박스</string>
+    <string name="mini_box_notification_channel_description">원활한 미니 박스 이용을 위해 필요합니다</string>
+
+    <string name="notification_title_started">Mini Box 실행중</string>
+    <string name="notification_title_paused">Mini Box 일시정지</string>
+    <string name="notification_pause">일시정지</string>
+    <string name="notification_resume">활성화</string>
+    <string name="notification_stop">종료</string>
 </resources>

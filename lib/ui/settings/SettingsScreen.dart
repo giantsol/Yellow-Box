@@ -99,7 +99,7 @@ class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavi
 
   @override
   void showMiniBoxLaunchFailedMessage() {
-    _showToast(AppLocalizations.of(context).failedToLaunchMiniBox);
+    _showToast(AppLocalizations.of(context).miniBoxNotSupported);
   }
 
   void _showToast(String msg) {
