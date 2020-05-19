@@ -6,7 +6,7 @@ class NavigationBarItem {
   static const ITEMS = const [
     NavigationBarItem(ChildScreenKey.HOME, "assets/ic_home.png"),
     NavigationBarItem(ChildScreenKey.HISTORY, "assets/ic_history.png"),
-    NavigationBarItem(ChildScreenKey.THEME, "assets/ic_theme.png"),
+//    NavigationBarItem(ChildScreenKey.THEME, "assets/ic_theme.png"),
     NavigationBarItem(ChildScreenKey.SETTINGS, "assets/ic_settings.png"),
   ];
 
