@@ -34,48 +34,13 @@ class AppChoiceListDialog extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, top: 20),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: AppColors.TEXT_BLACK,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    strutStyle: StrutStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+                _Title(title),
                 const SizedBox(height: 6,),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: List.generate(items.length, (i) {
-                    final item = items[i];
-                    return Material(
-                      child: InkWell(
-                        onTap: item.onClick,
-                        child: Container(
-                          alignment: Alignment.centerLeft,
-                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20,),
-                          child: Text(
-                            item.title,
-                            style: TextStyle(
-                              color: AppColors.TEXT_BLACK,
-                              fontSize: 12,
-                            ),
-                            strutStyle: StrutStyle(
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
+                    return _ChoiceItem(items[i]);
                   }),
                 ),
                 const SizedBox(height: 6,),
@@ -88,3 +53,58 @@ class AppChoiceListDialog extends StatelessWidget {
   }
 }
 
+class _Title extends StatelessWidget {
+  final String title;
+
+  _Title(this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, top: 20),
+      child: Text(
+        title,
+        style: TextStyle(
+          color: AppColors.TEXT_BLACK,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+        strutStyle: StrutStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+}
+
+class _ChoiceItem extends StatelessWidget {
+  final ChoiceItem item;
+
+  _ChoiceItem(this.item);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: InkWell(
+        onTap: item.onClick,
+        child: Container(
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20,),
+          child: Text(
+            item.title,
+            style: TextStyle(
+              color: AppColors.TEXT_BLACK,
+              fontSize: 12,
+            ),
+            strutStyle: StrutStyle(
+              fontSize: 12,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

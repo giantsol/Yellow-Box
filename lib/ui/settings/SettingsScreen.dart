@@ -1,17 +1,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:yellow_box/AppColors.dart';
 import 'package:yellow_box/Localization.dart';
+import 'package:yellow_box/Utils.dart';
 import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
-import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/settings/SettingsBloc.dart';
 import 'package:yellow_box/ui/settings/SettingsNavigator.dart';
 import 'package:yellow_box/ui/settings/SettingsState.dart';
 import 'package:yellow_box/ui/widget/AppAlertDialog.dart';
 import 'package:yellow_box/ui/widget/AppChoiceListDialog.dart';
+import 'package:yellow_box/ui/widget/ChildScreenNavigationBar.dart';
+import 'package:yellow_box/ui/widget/Scrim.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -32,9 +33,7 @@ class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavi
     return StreamBuilder(
       initialData: _bloc.getInitialState(),
       stream: _bloc.observeState(),
-      builder: (context, snapshot) {
-        return _buildUI(snapshot.data);
-      }
+      builder: (context, snapshot) => _buildUI(snapshot.data),
     );
   }
 
@@ -45,8 +44,6 @@ class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavi
   }
 
   Widget _buildUI(SettingsState state) {
-    final isScrimVisible = state.isResetBlockedIdeasDialogShown || state.isIntervalDialogShown;
-
     return WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress(),
       child: Stack(
@@ -57,7 +54,9 @@ class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavi
             autoGenerateIdeas: state.autoGenerateIdeas,
             intervalHours: state.intervalHours,
           ),
-          isScrimVisible ? _Scrim(_bloc) : const SizedBox.shrink(),
+          state.isScrimVisible ? Scrim(
+            onTap: _bloc.handleBackPress,
+          ) : const SizedBox.shrink(),
           state.isResetBlockedIdeasDialogShown ? AppAlertDialog(
             appTheme: state.appTheme,
             title: AppLocalizations.of(context).resetBlockedIdeasTitle,
@@ -65,14 +64,14 @@ class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavi
             primaryButtonText: AppLocalizations.of(context).reset,
             onPrimaryButtonClicked: _bloc.onConfirmResetBlockedIdeasClicked,
             secondaryButtonText: AppLocalizations.of(context).cancel,
-            onSecondaryButtonClicked: _bloc.onCancelResetBlockedIdeasClicked,
+            onSecondaryButtonClicked: _bloc.onCloseResetBlockedIdeasClicked,
           ) : const SizedBox.shrink(),
           state.isIntervalDialogShown ? AppChoiceListDialog(
             title: AppLocalizations.of(context).intervalTitle,
             items: [
               ChoiceItem(
                 AppLocalizations.of(context).getIntervalHours(2),
-                () => _bloc.onIntervalChoiceClicked(2),
+                  () => _bloc.onIntervalChoiceClicked(2),
               ),
               ChoiceItem(
                 AppLocalizations.of(context).getIntervalHours(6),
@@ -99,12 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavi
 
   @override
   void showMiniBoxLaunchFailedMessage() {
-    _showToast(AppLocalizations.of(context).miniBoxNotSupported);
-  }
-
-  void _showToast(String msg) {
-    Fluttertoast.cancel();
-    Fluttertoast.showToast(msg: msg);
+    Utils.showToast(AppLocalizations.of(context).miniBoxNotSupported);
   }
 
 }
@@ -130,8 +124,9 @@ class _MainUI extends StatelessWidget {
       child: Column(
         verticalDirection: VerticalDirection.up,
         children: <Widget>[
-          _NavigationBar(
-            bloc: bloc,
+          ChildScreenNavigationBar(
+            currentChildScreenKey: ChildScreenKey.SETTINGS,
+            onItemClicked: bloc.onNavigationBarItemClicked,
           ),
           Spacer(),
           _SettingsGroup(
@@ -168,46 +163,6 @@ class _MainUI extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _NavigationBar extends StatelessWidget {
-  final SettingsBloc bloc;
-
-  _NavigationBar({
-    @required this.bloc,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final items = NavigationBarItem.ITEMS;
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.BACKGROUND_WHITE,
-        boxShadow: kElevationToShadow[4],
-      ),
-      child: Row(
-        children: List.generate(items.length, (index) {
-          final item = items[index];
-          return Expanded(
-            child: Material(
-              child: InkWell(
-                onTap: () => bloc.onNavigationBarItemClicked(item),
-                child: Container(
-                  height: 60,
-                  alignment: Alignment.center,
-                  child: Image.asset(item.iconPath,
-                    width: 24,
-                    height: 24,
-                    color: item.key == ChildScreenKey.SETTINGS ? AppColors.TEXT_BLACK : AppColors.TEXT_BLACK_LIGHT,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
       ),
     );
   }
@@ -502,22 +457,6 @@ class _SettingsItem extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _Scrim extends StatelessWidget {
-  final SettingsBloc bloc;
-
-  _Scrim(this.bloc);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => bloc.handleBackPress(),
-      child: Container(
-        color: AppColors.SCRIM,
-      ),
     );
   }
 }

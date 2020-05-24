@@ -5,7 +5,11 @@ import 'package:rxdart/subjects.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
 
 class ChildScreenRepository {
-  final _currentChildScreenKey = BehaviorSubject<ChildScreenKey>.seeded(ChildScreenKey.HOME);
+  final BehaviorSubject<ChildScreenKey> _currentChildScreenKey = BehaviorSubject();
+
+  ChildScreenRepository() {
+    _currentChildScreenKey.value = ChildScreenKey.HOME;
+  }
 
   Stream<ChildScreenKey> observeCurrentChildScreenKey() {
     return _currentChildScreenKey;

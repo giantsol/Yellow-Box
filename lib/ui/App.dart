@@ -28,7 +28,7 @@ class App extends StatelessWidget {
         canvasColor: Colors.transparent,
         splashColor: AppColors.RIPPLE,
         textTheme: TextTheme(
-          subhead: TextStyle(
+          subtitle1: TextStyle(
             textBaseline: TextBaseline.alphabetic
           ),
         ),

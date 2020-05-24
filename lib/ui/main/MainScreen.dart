@@ -1,31 +1,31 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:yellow_box/Localization.dart';
+import 'package:yellow_box/Utils.dart';
 import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/ui/history/HistoryScreen.dart';
 import 'package:yellow_box/ui/home/HomeScreen.dart';
 import 'package:yellow_box/ui/main/MainBloc.dart';
+import 'package:yellow_box/ui/main/MainNavigator.dart';
 import 'package:yellow_box/ui/main/MainState.dart';
 import 'package:yellow_box/ui/settings/SettingsScreen.dart';
 import 'package:yellow_box/ui/theme/ThemeScreen.dart';
 
 class MainScreen extends StatefulWidget {
-
   @override
   State createState() => _MainScreenState();
-
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> implements MainNavigator {
   MainBloc _bloc;
-
-  final Map<ChildScreenKey, Widget> _childScreenWidgets = {};
 
   @override
   void initState() {
     super.initState();
-    _bloc = MainBloc();
+    _bloc = MainBloc(this);
   }
 
   @override
@@ -33,9 +33,7 @@ class _MainScreenState extends State<MainScreen> {
     return StreamBuilder(
       initialData: _bloc.getInitialState(),
       stream: _bloc.observeState(),
-      builder: (context, snapshot) {
-        return _buildUI(snapshot.data);
-      }
+      builder: (context, snapshot) => _buildUI(snapshot.data),
     );
   }
 
@@ -46,8 +44,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildUI(MainState state) {
-    final currentChildScreenKey = state.currentChildScreenKey;
     final appTheme = state.appTheme;
+    final childScreenWidget = _getChildScreenWidget(state.currentChildScreenKey);
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -62,33 +60,30 @@ class _MainScreenState extends State<MainScreen> {
             _BackgroundDeco(
               appTheme: appTheme,
             ),
-            _ChildScreen(
-              widget: _getOrCreateChildScreenWidget(currentChildScreenKey),
-            ),
+            childScreenWidget,
           ],
         ),
       ),
     );
   }
 
-  Widget _getOrCreateChildScreenWidget(ChildScreenKey key) {
-    if (!_childScreenWidgets.containsKey(key)) {
-      switch (key) {
-        case ChildScreenKey.HOME:
-          _childScreenWidgets[key] = HomeScreen();
-          break;
-        case ChildScreenKey.HISTORY:
-          _childScreenWidgets[key] = HistoryScreen();
-          break;
-        case ChildScreenKey.THEME:
-          _childScreenWidgets[key] = ThemeScreen();
-          break;
-        case ChildScreenKey.SETTINGS:
-          _childScreenWidgets[key] = SettingsScreen();
-          break;
-      }
+  Widget _getChildScreenWidget(ChildScreenKey key) {
+    switch (key) {
+      case ChildScreenKey.HISTORY:
+        return HistoryScreen();
+      case ChildScreenKey.THEME:
+        return ThemeScreen();
+      case ChildScreenKey.SETTINGS:
+        return SettingsScreen();
+      case ChildScreenKey.HOME:
+      default:
+        return HomeScreen();
     }
-    return _childScreenWidgets[key];
+  }
+
+  @override
+  void showRemainingMiniBoxWordsCount(int count) {
+    Utils.showToast(AppLocalizations.of(context).getRemainingMiniBoxWordsCount(count), toastLength: Toast.LENGTH_LONG);
   }
 
 }
@@ -128,20 +123,4 @@ class _BackgroundDeco extends StatelessWidget {
       ),
     );
   }
-
 }
-
-class _ChildScreen extends StatelessWidget {
-  final Widget widget;
-
-  _ChildScreen({
-    @required this.widget,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return widget;
-  }
-
-}
-

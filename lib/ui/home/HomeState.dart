@@ -22,6 +22,8 @@ class HomeState {
     this.isIdeaBoxFull = false,
   });
 
+  bool get isScrimVisible => isListeningToSpeech || ideaPopUpData.isValid();
+
   HomeState buildNew({
     AppTheme appTheme,
     bool isWordEditorShown,

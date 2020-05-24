@@ -33,6 +33,10 @@ class HistoryState {
     this.isBlockIdeasDialogShown = false,
   });
 
+  bool get isScrimVisible => wordItemDialog.isValid() || ideaItemDialog.isValid()
+    || isDeleteWordsDialogShown || isDeleteIdeasDialogShown
+    || isBlockIdeasDialogShown;
+
   HistoryState buildNew({
     AppTheme appTheme,
     bool isWordTab,

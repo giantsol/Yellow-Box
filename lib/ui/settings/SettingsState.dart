@@ -17,6 +17,8 @@ class SettingsState {
     this.isIntervalDialogShown = false,
   });
 
+  bool get isScrimVisible => isResetBlockedIdeasDialogShown || isIntervalDialogShown;
+
   SettingsState buildNew({
     AppTheme appTheme,
     bool autoGenerateIdeas,

@@ -3,9 +3,13 @@ import 'package:rxdart/subjects.dart';
 import 'package:yellow_box/entity/AppTheme.dart';
 
 class ThemeRepository {
-  final _currentAppTheme = BehaviorSubject<AppTheme>.seeded(AppTheme.DEFAULT);
+  final BehaviorSubject<AppTheme> _currentAppTheme = BehaviorSubject();
 
-  Stream<AppTheme> observeCurrentAppTheme() {
+  ThemeRepository() {
+    _currentAppTheme.value = AppTheme.DEFAULT;
+  }
+
+  Stream<AppTheme> observeAppTheme() {
     return _currentAppTheme;
   }
 }

@@ -1,15 +1,21 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:yellow_box/StreamSubscriptionExtension.dart';
+import 'package:yellow_box/entity/AddIdeaResult.dart';
+import 'package:yellow_box/entity/AddWordResult.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/entity/IdeaPopUpData.dart';
-import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/entity/Word.dart';
-import 'package:yellow_box/repository/IdeaRepository.dart';
-import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
 import 'package:yellow_box/ui/home/HomeNavigator.dart';
 import 'package:yellow_box/ui/home/HomeState.dart';
+import 'package:yellow_box/usecase/AddIdea.dart';
+import 'package:yellow_box/usecase/AddWord.dart';
+import 'package:yellow_box/usecase/IsIdeasFull.dart';
+import 'package:yellow_box/usecase/ObserveAppTheme.dart';
+import 'package:yellow_box/usecase/ObserveIdeas.dart';
+import 'package:yellow_box/usecase/SetChildScreen.dart';
 
 class HomeBloc extends BaseBloc {
 
@@ -19,12 +25,14 @@ class HomeBloc extends BaseBloc {
   HomeState getInitialState() => _state.value;
   Stream<HomeState> observeState() => _state.distinct();
 
-  final _themeRepository = dependencies.themeRepository;
-  final _childScreenRepository = dependencies.childScreenRepository;
-  final _wordRepository = dependencies.wordRepository;
-  final _ideaRepository = dependencies.ideaRepository;
-
   CompositeSubscription _subscriptions = CompositeSubscription();
+
+  final _observeAppTheme = ObserveAppTheme();
+  final _observeIdeas = ObserveIdeas();
+  final _isIdeasFull = IsIdeasFull();
+  final _addWord = AddWord();
+  final _addIdea = AddIdea();
+  final _setChildScreen = SetChildScreen();
 
   final _stt = SpeechToText();
 
@@ -43,19 +51,19 @@ class HomeBloc extends BaseBloc {
       );
     });
 
-    _subscriptions.add(_themeRepository.observeCurrentAppTheme()
+    _observeAppTheme.invoke()
       .listen((appTheme) {
       _state.value = _state.value.buildNew(
         appTheme: appTheme,
       );
-    }));
+    }).addTo(_subscriptions);
 
-    _subscriptions.add(_ideaRepository.observeIdeas()
-      .listen((ideas) {
+    _observeIdeas.invoke()
+      .listen((ideas) async {
       _state.value = _state.value.buildNew(
-        isIdeaBoxFull: ideas.length >= IdeaRepository.MAX_COUNT,
+        isIdeaBoxFull: await _isIdeasFull.invoke(),
       );
-    }));
+    }).addTo(_subscriptions);
   }
 
   @override
@@ -72,8 +80,8 @@ class HomeBloc extends BaseBloc {
     }
   }
 
-  void onNavigationBarItemClicked(NavigationBarItem item) {
-    _childScreenRepository.setCurrentChildScreenKey(item.key);
+  void onNavigationBarItemClicked(ChildScreenKey key) {
+    _setChildScreen.invoke(key);
   }
 
   void onEditingWordChanged(String s) {
@@ -102,17 +110,19 @@ class HomeBloc extends BaseBloc {
 
     _showProgress();
 
-    final result = await _wordRepository.addWord(Word(word, DateTime.now().millisecondsSinceEpoch));
-    if (!result) {
+    final result = await _addWord.invoke(Word(word, DateTime.now().millisecondsSinceEpoch));
+    if (result == AddWordResult.FULL) {
+      _navigator.showWordBoxFull();
+    } else if (result == AddWordResult.ALREADY_EXISTS) {
       _navigator.showEditingWordAlreadyExists();
-      _hideProgress();
     } else {
       _state.value = _state.value.buildNew(
         isWordEditorShown: false,
         editingWord: '',
-        isProgressShown: false,
       );
     }
+
+    _hideProgress();
   }
 
   void onMicIconClicked() async {
@@ -141,40 +151,32 @@ class HomeBloc extends BaseBloc {
       return;
     }
 
-    if (_state.value.isIdeaBoxFull) {
-      _navigator.showIdeaBoxFull();
-      return;
-    }
-
     _showProgress();
 
-    final savedWordCount = await _wordRepository.getCount();
-    if (savedWordCount < 2) {
-      _navigator.showAddMoreWordsForIdea();
-      _hideProgress();
-      return;
-    }
-
-    final randIdeaTitle = (await _wordRepository.getRandomWordStrings(2)).join(" ");
-    final isAlreadySavedIdea = await _ideaRepository.hasIdea(randIdeaTitle);
-    if (isAlreadySavedIdea) {
-      _state.value = _state.value.buildNew(
-        ideaPopUpData: IdeaPopUpData(randIdeaTitle, IdeaPopUpData.TYPE_EXISTS),
-      );
-    } else {
-      final isBlockedIdea = await _ideaRepository.isBlocked(randIdeaTitle);
-      if (isBlockedIdea) {
+    final result = await _addIdea.invoke();
+    switch (result.item1) {
+      case AddIdeaResult.SUCCESS:
+        _state.value = _state.value.buildNew(
+          ideaPopUpData: IdeaPopUpData(result.item2, IdeaPopUpData.TYPE_NEW),
+        );
+        break;
+      case AddIdeaResult.NEED_MORE_WORDS:
+        _navigator.showAddMoreWordsForIdea();
+        break;
+      case AddIdeaResult.FULL:
+        _navigator.showIdeaBoxFull();
+        break;
+      case AddIdeaResult.ALREADY_EXISTS:
+        _state.value = _state.value.buildNew(
+          ideaPopUpData: IdeaPopUpData(result.item2, IdeaPopUpData.TYPE_EXISTS),
+        );
+        break;
+      case AddIdeaResult.BLOCKED:
         // show oops! you picked out a blocked idea!
         _state.value = _state.value.buildNew(
-          ideaPopUpData: IdeaPopUpData(randIdeaTitle, IdeaPopUpData.TYPE_BLOCKED),
+          ideaPopUpData: IdeaPopUpData(result.item2, IdeaPopUpData.TYPE_BLOCKED),
         );
-      } else {
-        _state.value = _state.value.buildNew(
-          ideaPopUpData: IdeaPopUpData(randIdeaTitle, IdeaPopUpData.TYPE_NEW),
-        );
-
-        await _ideaRepository.addIdea(randIdeaTitle);
-      }
+        break;
     }
 
     _hideProgress();
@@ -187,7 +189,7 @@ class HomeBloc extends BaseBloc {
   }
 
   void onIdeaBoxFullNotiClicked() {
-    _childScreenRepository.setCurrentChildScreenKey(ChildScreenKey.HISTORY);
+    _setChildScreen.invoke(ChildScreenKey.HISTORY);
   }
 
   bool handleBackPress() {

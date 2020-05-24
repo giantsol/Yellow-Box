@@ -20,6 +20,7 @@ dependencies:
   path: ^1.6.4
   speech_to_text: ^0.8.0
   shared_preferences: ^0.5.6+3
+  tuple: ^1.0.3
 
 dev_dependencies:
   flutter_test:

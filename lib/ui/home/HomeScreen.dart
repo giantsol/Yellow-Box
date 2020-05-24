@@ -3,28 +3,28 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:yellow_box/AppColors.dart';
 import 'package:yellow_box/Localization.dart';
+import 'package:yellow_box/Utils.dart';
 import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/entity/IdeaPopUpData.dart';
-import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/ui/home/HomeBloc.dart';
 import 'package:yellow_box/ui/home/HomeNavigator.dart';
 import 'package:yellow_box/ui/home/HomeState.dart';
 import 'package:yellow_box/ui/widget/AppTextField.dart';
+import 'package:yellow_box/ui/widget/ChildScreenNavigationBar.dart';
+import 'package:yellow_box/ui/widget/Scrim.dart';
 
 class HomeScreen extends StatefulWidget {
-
   @override
   State createState() => _HomeScreenState();
-
 }
 
 class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
   HomeBloc _bloc;
 
+  // one shot flags are not managed in HomeState
   bool _hasShownIdeaBoxFullNoti = false;
   bool _isIdeaBoxFullNotiVisible = false;
 
@@ -39,9 +39,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
     return StreamBuilder(
       initialData: _bloc.getInitialState(),
       stream: _bloc.observeState(),
-      builder: (context, snapshot) {
-        return _buildUI(snapshot.data);
-      }
+      builder: (context, snapshot) => _buildUI(snapshot.data),
     );
   }
 
@@ -53,8 +51,6 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
 
   Widget _buildUI(HomeState state) {
     final appTheme = state.appTheme;
-    final isScrimVisible = state.isListeningToSpeech
-      || state.ideaPopUpData.isValid();
 
     if (state.isIdeaBoxFull && !_hasShownIdeaBoxFullNoti) {
       _hasShownIdeaBoxFullNoti = true;
@@ -78,7 +74,9 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
             appTheme: appTheme,
             text: state.editingWord,
           ) : const SizedBox.shrink(),
-          isScrimVisible ? _Scrim(_bloc) : const SizedBox.shrink(),
+          state.isScrimVisible ? Scrim(
+            onTap: _bloc.handleBackPress,
+          ) : const SizedBox.shrink(),
           state.isListeningToSpeech ? _ListeningToSpeechView(
             bloc: _bloc,
             appTheme: appTheme,
@@ -99,41 +97,44 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
     );
   }
 
+  // todo: should make this cancelable.. don't know how yet
   void _hideIdeaBoxFullNotiAfterDelay() async {
     await Future.delayed(const Duration(seconds: 5));
-    setState(() {
-      _isIdeaBoxFullNotiVisible = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isIdeaBoxFullNotiVisible = false;
+      });
+    }
   }
 
   @override
   void showEditingWordEmptyMessage() {
-    _showToast(AppLocalizations.of(context).editingWordEmpty);
-  }
-
-  void _showToast(String msg) {
-    Fluttertoast.cancel();
-    Fluttertoast.showToast(msg: msg);
+    Utils.showToast(AppLocalizations.of(context).editingWordEmpty);
   }
 
   @override
   void showEditingWordAlreadyExists() {
-    _showToast(AppLocalizations.of(context).editingWordAlreadyExists);
+    Utils.showToast(AppLocalizations.of(context).editingWordAlreadyExists);
+  }
+
+  @override
+  void showWordBoxFull() {
+    Utils.showToast(AppLocalizations.of(context).wordBoxFull);
   }
 
   @override
   void showSpeechToTextNotReady() {
-    _showToast(AppLocalizations.of(context).speechToTextNotReady);
+    Utils.showToast(AppLocalizations.of(context).speechToTextNotReady);
   }
 
   @override
   void showAddMoreWordsForIdea() {
-    _showToast(AppLocalizations.of(context).addMoreWordsForIdea);
+    Utils.showToast(AppLocalizations.of(context).addMoreWordsForIdea);
   }
 
   @override
   void showIdeaBoxFull() {
-    _showToast(AppLocalizations.of(context).ideaBoxFullToast);
+    Utils.showToast(AppLocalizations.of(context).ideaBoxFullToast);
   }
 
 }
@@ -155,9 +156,10 @@ class _MainUI extends StatelessWidget {
       child: Column(
         verticalDirection: VerticalDirection.up,
         children: <Widget>[
-          _NavigationBar(
-            bloc: bloc,
-            isWordEditorShown: isWordEditorShown
+          ChildScreenNavigationBar(
+            currentChildScreenKey: ChildScreenKey.HOME,
+            onItemClicked: bloc.onNavigationBarItemClicked,
+            isVisible: !isWordEditorShown,
           ),
           Expanded(
             child: Center(
@@ -193,49 +195,6 @@ class _MainUI extends StatelessWidget {
       ),
     );
   }
-}
-
-class _NavigationBar extends StatelessWidget {
-  final HomeBloc bloc;
-  final bool isWordEditorShown;
-
-  _NavigationBar({
-    @required this.bloc,
-    @required this.isWordEditorShown,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final items = NavigationBarItem.ITEMS;
-    return !isWordEditorShown ? Container(
-      decoration: BoxDecoration(
-        color: AppColors.BACKGROUND_WHITE,
-        boxShadow: kElevationToShadow[4],
-      ),
-      child: Row(
-        children: List.generate(items.length, (index) {
-          final item = items[index];
-          return Expanded(
-            child: Material(
-              child: InkWell(
-                onTap: () => bloc.onNavigationBarItemClicked(item),
-                child: Container(
-                  height: 60,
-                  alignment: Alignment.center,
-                  child: Image.asset(item.iconPath,
-                    width: 24,
-                    height: 24,
-                    color: item.key == ChildScreenKey.HOME ? AppColors.TEXT_BLACK : AppColors.TEXT_BLACK_LIGHT,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
-      ),
-    ) : const SizedBox(height: 60,);
-  }
-
 }
 
 class _WordEditor extends StatelessWidget {
@@ -376,22 +335,6 @@ class _OverlayProgress extends StatelessWidget {
 
 }
 
-class _Scrim extends StatelessWidget {
-  final HomeBloc bloc;
-
-  _Scrim(this.bloc);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => bloc.handleBackPress(),
-      child: Container(
-        color: AppColors.SCRIM,
-      ),
-    );
-  }
-}
-
 class _ListeningToSpeechView extends StatelessWidget {
   final HomeBloc bloc;
   final AppTheme appTheme;
@@ -418,9 +361,7 @@ class _ListeningToSpeechView extends StatelessWidget {
                 ),
               ),
             ),
-            _SpeechAnimatingView(
-              color: appTheme.darkColor,
-            ),
+            _SpeechAnimatingView(appTheme.darkColor),
           ],
         ),
       ),
@@ -431,13 +372,10 @@ class _ListeningToSpeechView extends StatelessWidget {
 class _SpeechAnimatingView extends StatefulWidget {
   final Color color;
 
-  _SpeechAnimatingView({
-    @required this.color,
-  });
+  _SpeechAnimatingView(this.color);
 
   @override
   State createState() => _SpeechAnimatingViewState();
-
 }
 
 class _SpeechAnimatingViewState extends State<_SpeechAnimatingView> with SingleTickerProviderStateMixin {
@@ -527,7 +465,7 @@ class _SpeechAnimatingViewState extends State<_SpeechAnimatingView> with SingleT
 
 class _WhiteDot extends AnimatedWidget {
   _WhiteDot({
-    Animation<double> animation,
+    @required Animation<double> animation,
   }) : super(listenable: animation);
 
   @override

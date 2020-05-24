@@ -1,12 +1,24 @@
 
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:yellow_box/StreamSubscriptionExtension.dart';
+import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/entity/Idea.dart';
-import 'package:yellow_box/entity/NavigationBarItem.dart';
 import 'package:yellow_box/entity/Word.dart';
-import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
 import 'package:yellow_box/ui/history/HistoryState.dart';
+import 'package:yellow_box/usecase/BlockIdea.dart';
+import 'package:yellow_box/usecase/BlockIdeas.dart';
+import 'package:yellow_box/usecase/DeleteIdea.dart';
+import 'package:yellow_box/usecase/DeleteIdeas.dart';
+import 'package:yellow_box/usecase/DeleteWord.dart';
+import 'package:yellow_box/usecase/DeleteWords.dart';
+import 'package:yellow_box/usecase/FavoriteIdea.dart';
+import 'package:yellow_box/usecase/ObserveAppTheme.dart';
+import 'package:yellow_box/usecase/ObserveIdeas.dart';
+import 'package:yellow_box/usecase/ObserveWords.dart';
+import 'package:yellow_box/usecase/SetChildScreen.dart';
+import 'package:yellow_box/usecase/UnfavoriteIdea.dart';
 
 class HistoryBloc extends BaseBloc {
 
@@ -14,34 +26,42 @@ class HistoryBloc extends BaseBloc {
   HistoryState getInitialState() => _state.value;
   Stream<HistoryState> observeState() => _state.distinct();
 
-  final _themeRepository = dependencies.themeRepository;
-  final _childScreenRepository = dependencies.childScreenRepository;
-  final _wordRepository = dependencies.wordRepository;
-  final _ideaRepository = dependencies.ideaRepository;
-
   CompositeSubscription _subscriptions = CompositeSubscription();
 
+  final _observeAppTheme = ObserveAppTheme();
+  final _observeWords = ObserveWords();
+  final _observeIdeas = ObserveIdeas();
+  final _setChildScreen = SetChildScreen();
+  final _deleteWord = DeleteWord();
+  final _deleteIdea = DeleteIdea();
+  final _blockIdea = BlockIdea();
+  final _favoriteIdea = FavoriteIdea();
+  final _unfavoriteIdea = UnfavoriteIdea();
+  final _deleteWords = DeleteWords();
+  final _deleteIdeas = DeleteIdeas();
+  final _blockIdeas = BlockIdeas();
+
   HistoryBloc() {
-    _subscriptions.add(_themeRepository.observeCurrentAppTheme()
+    _observeAppTheme.invoke()
       .listen((appTheme) {
       _state.value = _state.value.buildNew(
         appTheme: appTheme,
       );
-    }));
+    }).addTo(_subscriptions);
 
-    _subscriptions.add(_wordRepository.observeWords()
+    _observeWords.invoke()
       .listen((words) {
       _state.value = _state.value.buildNew(
         words: words,
       );
-    }));
+    }).addTo(_subscriptions);
 
-    _subscriptions.add(_ideaRepository.observeIdeas()
+    _observeIdeas.invoke()
       .listen((ideas) {
       _state.value = _state.value.buildNew(
         ideas: ideas,
       );
-    }));
+    }).addTo(_subscriptions);
   }
 
   @override
@@ -49,8 +69,8 @@ class HistoryBloc extends BaseBloc {
     _subscriptions.dispose();
   }
 
-  void onNavigationBarItemClicked(NavigationBarItem item) {
-    _childScreenRepository.setCurrentChildScreenKey(item.key);
+  void onNavigationBarItemClicked(ChildScreenKey key) {
+    _setChildScreen.invoke(key);
   }
 
   void onWordTabClicked() {
@@ -73,6 +93,7 @@ class HistoryBloc extends BaseBloc {
       } else {
         map[item] = true;
       }
+
       _state.value = _state.value.buildNew(
         selectedWords: map,
       );
@@ -96,7 +117,7 @@ class HistoryBloc extends BaseBloc {
   }
 
   void onConfirmDeleteWordClicked(Word item) {
-    _wordRepository.deleteWord(item);
+    _deleteWord.invoke(item);
 
     _state.value = _state.value.buildNew(
       wordItemDialog: WordItemDialog.NONE,
@@ -118,6 +139,7 @@ class HistoryBloc extends BaseBloc {
       } else {
         map[item] = true;
       }
+
       _state.value = _state.value.buildNew(
         selectedIdeas: map,
       );
@@ -154,7 +176,7 @@ class HistoryBloc extends BaseBloc {
   }
 
   void onConfirmDeleteIdeaClicked(Idea item) {
-    _ideaRepository.deleteIdea(item);
+    _deleteIdea.invoke(item);
 
     _state.value = _state.value.buildNew(
       ideaItemDialog: IdeaItemDialog.NONE,
@@ -162,7 +184,7 @@ class HistoryBloc extends BaseBloc {
   }
 
   void onConfirmBlockIdeaClicked(Idea item) {
-    _ideaRepository.blockIdea(item);
+    _blockIdea.invoke(item);
 
     _state.value = _state.value.buildNew(
       ideaItemDialog: IdeaItemDialog.NONE,
@@ -171,9 +193,9 @@ class HistoryBloc extends BaseBloc {
 
   void onIdeaItemFavoriteClicked(Idea item) {
     if (item.isFavorite) {
-      _ideaRepository.unfavoriteItem(item);
+      _unfavoriteIdea.invoke(item);
     } else {
-      _ideaRepository.favoriteItem(item);
+      _favoriteIdea.invoke(item);
     }
   }
 
@@ -186,18 +208,15 @@ class HistoryBloc extends BaseBloc {
   }
 
   void onDeleteWordsClicked() {
-    if (_state.value.selectedWords.isEmpty) {
-      return;
+    if (_state.value.selectedWords.isNotEmpty) {
+      _state.value = _state.value.buildNew(
+        isDeleteWordsDialogShown: true,
+      );
     }
-
-    _state.value = _state.value.buildNew(
-      isDeleteWordsDialogShown: true,
-    );
   }
 
   void onConfirmDeleteWordsClicked() {
-    final words = _state.value.selectedWords;
-    _wordRepository.deleteWords(words);
+    _deleteWords.invoke(_state.value.selectedWords);
 
     _state.value = _state.value.buildNew(
       isDeleteWordsDialogShown: false,
@@ -207,25 +226,22 @@ class HistoryBloc extends BaseBloc {
     );
   }
 
-  void onCancelDeleteWordsClicked() {
+  void onCloseDeleteWordsClicked() {
     _state.value = _state.value.buildNew(
       isDeleteWordsDialogShown: false,
     );
   }
 
   void onDeleteIdeasClicked() {
-    if (_state.value.selectedIdeas.isEmpty) {
-      return;
+    if (_state.value.selectedIdeas.isNotEmpty) {
+      _state.value = _state.value.buildNew(
+        isDeleteIdeasDialogShown: true,
+      );
     }
-
-    _state.value = _state.value.buildNew(
-      isDeleteIdeasDialogShown: true,
-    );
   }
 
   void onConfirmDeleteIdeasClicked() {
-    final ideas = _state.value.selectedIdeas;
-    _ideaRepository.deleteIdeas(ideas);
+    _deleteIdeas.invoke(_state.value.selectedIdeas);
 
     _state.value = _state.value.buildNew(
       isDeleteIdeasDialogShown: false,
@@ -235,25 +251,22 @@ class HistoryBloc extends BaseBloc {
     );
   }
 
-  void onCancelDeleteIdeasClicked() {
+  void onCloseDeleteIdeasClicked() {
     _state.value = _state.value.buildNew(
       isDeleteIdeasDialogShown: false,
     );
   }
 
   void onBlockIdeasClicked() {
-    if (_state.value.selectedIdeas.isEmpty) {
-      return;
+    if (_state.value.selectedIdeas.isNotEmpty) {
+      _state.value = _state.value.buildNew(
+        isBlockIdeasDialogShown: true,
+      );
     }
-
-    _state.value = _state.value.buildNew(
-      isBlockIdeasDialogShown: true,
-    );
   }
 
   void onConfirmBlockIdeasClicked() {
-    final ideas = _state.value.selectedIdeas;
-    _ideaRepository.blockIdeas(ideas);
+    _blockIdeas.invoke(_state.value.selectedIdeas);
 
     _state.value = _state.value.buildNew(
       isBlockIdeasDialogShown: false,
@@ -263,7 +276,7 @@ class HistoryBloc extends BaseBloc {
     );
   }
 
-  void onCancelBlockIdeasClicked() {
+  void onCloseBlockIdeasClicked() {
     _state.value = _state.value.buildNew(
       isBlockIdeasDialogShown: false,
     );
@@ -281,17 +294,17 @@ class HistoryBloc extends BaseBloc {
     }
 
     if (_state.value.isDeleteWordsDialogShown) {
-      onCancelDeleteWordsClicked();
+      onCloseDeleteWordsClicked();
       return true;
     }
 
     if (_state.value.isDeleteIdeasDialogShown) {
-      onCancelDeleteIdeasClicked();
+      onCloseDeleteIdeasClicked();
       return true;
     }
 
     if (_state.value.isBlockIdeasDialogShown) {
-      onCancelBlockIdeasClicked();
+      onCloseBlockIdeasClicked();
       return true;
     }
 

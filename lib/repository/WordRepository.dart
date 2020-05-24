@@ -3,9 +3,12 @@ import 'dart:math';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:yellow_box/datasource/AppDatabase.dart';
+import 'package:yellow_box/entity/AddWordResult.dart';
 import 'package:yellow_box/entity/Word.dart';
 
 class WordRepository {
+  static const _MAX_COUNT = 10000;
+
   final AppDatabase _database;
 
   final _words = BehaviorSubject<List<Word>>();
@@ -15,55 +18,77 @@ class WordRepository {
   }
 
   Future<void> _init() async {
-    final words = await _database.getWords();
-    _words.value = words;
+    _words.value = await _database.getWords();
+  }
+
+  Stream<List<Word>> observeWords() {
+    return _words;
   }
 
   Future<bool> _hasWord(String wordString) async {
-    return (await _words.first).any((word) => word.title == wordString);
+    final words = await _words.first;
+    return words.any((word) => word.title == wordString);
   }
 
-  Future<bool> addWord(Word word) async {
+  Future<AddWordResult> addWord(Word word) async {
+    final words = await _words.first;
+    if (words.length >= _MAX_COUNT) {
+      return AddWordResult.FULL;
+    }
+
     if (await _hasWord(word.title)) {
-      return false;
+      return AddWordResult.ALREADY_EXISTS;
     }
 
-    final list = await _words.first;
-    final insertIndex = max(list.indexWhere((it) => it.dateMillis <= word.dateMillis), 0);
-    list.insert(insertIndex, word);
-    _words.value = list;
+    final insertIndex = max(words.indexWhere((it) => it.dateMillis <= word.dateMillis), 0);
+    words.insert(insertIndex, word);
+    _words.value = words;
 
-    await _database.addWord(word);
+    _database.addWord(word);
 
-    return true;
+    return AddWordResult.SUCCESS;
   }
 
-  void addWords(List<Word> words) {
-    // todo: wordcount max size account하도록 해야함
+  // returns leftovers that had not been added due to box full
+  Future<List<Word>> addWords(List<Word> words) async {
+    final List<Word> leftOvers = [];
+    bool skipFromNow = false;
+
     for (Word word in words) {
-      addWord(word);
+      if (skipFromNow) {
+        leftOvers.add(word);
+      } else {
+        final result = await addWord(word);
+        if (result == AddWordResult.FULL) {
+          leftOvers.add(word);
+          skipFromNow = true;
+        }
+      }
     }
+
+    return leftOvers;
   }
 
   Future<void> deleteWord(Word item) async {
-    final list = await _words.first;
-    final index = list.indexWhere((it) => it.title == item.title);
+    final words = await _words.first;
+    final index = words.indexWhere((it) => it.title == item.title);
     if (index < 0) {
       return;
     }
 
-    list.removeAt(index);
-    _words.value = list;
+    words.removeAt(index);
+    _words.value = words;
 
     return _database.removeWord(item);
   }
 
   Future<void> deleteWords(Map<Word, bool> items) async {
-    final list = await _words.first;
-    list.removeWhere((it) => items.containsKey(it));
-    _words.value = list;
+    final words = await _words.first;
+    words.removeWhere((it) => items.containsKey(it));
+    _words.value = words;
 
     for (final item in items.keys) {
+      // todo: bulk method?
       _database.removeWord(item);
     }
     return;
@@ -75,10 +100,6 @@ class WordRepository {
 
   Future<List<String>> getRandomWordStrings(int count) {
     return _database.getRandomWordStrings(count);
-  }
-
-  Stream<List<Word>> observeWords() {
-    return _words;
   }
 
 }

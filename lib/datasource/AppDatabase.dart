@@ -139,7 +139,7 @@ class AppDatabase {
     );
   }
 
-  Future<void> removeIdea(Idea item) async {
+  Future<void> deleteIdea(Idea item) async {
     final db = await _database.first;
     return db.delete(
       TABLE_IDEAS,

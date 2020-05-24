@@ -8,6 +8,7 @@ class AppLocalizations {
   static const WORD_EDITOR_HINT = 'wordEditorHint';
   static const EDITING_WORD_EMPTY = 'editingWordEmpty';
   static const EDITING_WORD_ALREADY_EXISTS = 'editingWordAlreadyExists';
+  static const WORD_BOX_FULL = 'wordBoxFull';
   static const SPEECH_TO_TEXT_NOT_READY = 'speechToTextNotReady';
   static const ADD_MORE_WORDS_FOR_IDEA = 'addMoreWordsForIdea';
   static const NEW_IDEA = 'newIdea';
@@ -48,6 +49,7 @@ class AppLocalizations {
       WORD_EDITOR_HINT: 'Add word',
       EDITING_WORD_EMPTY: 'Word is empty',
       EDITING_WORD_ALREADY_EXISTS: 'This word is already saved',
+      WORD_BOX_FULL: 'Word box is full!',
       SPEECH_TO_TEXT_NOT_READY: 'Speech recognizer is not yet ready',
       ADD_MORE_WORDS_FOR_IDEA: 'Add more words for idea',
       NEW_IDEA: 'New idea!',
@@ -83,6 +85,7 @@ class AppLocalizations {
       WORD_EDITOR_HINT: '추가할 단어',
       EDITING_WORD_EMPTY: '단어를 입력해주세요',
       EDITING_WORD_ALREADY_EXISTS: '이미 저장된 단어입니다',
+      WORD_BOX_FULL: '단어 박스가 가득 찼습니다!',
       SPEECH_TO_TEXT_NOT_READY: '음성 인식기가 아직 준비중입니다',
       ADD_MORE_WORDS_FOR_IDEA: '단어를 더 추가해보세요',
       NEW_IDEA: '새로운 아이디어!',
@@ -123,6 +126,7 @@ class AppLocalizations {
   String get wordEditorHint => _localizedValues[locale.languageCode][WORD_EDITOR_HINT];
   String get editingWordEmpty => _localizedValues[locale.languageCode][EDITING_WORD_EMPTY];
   String get editingWordAlreadyExists => _localizedValues[locale.languageCode][EDITING_WORD_ALREADY_EXISTS];
+  String get wordBoxFull => _localizedValues[locale.languageCode][WORD_BOX_FULL];
   String get speechToTextNotReady => _localizedValues[locale.languageCode][SPEECH_TO_TEXT_NOT_READY];
   String get addMoreWordsForIdea => _localizedValues[locale.languageCode][ADD_MORE_WORDS_FOR_IDEA];
   String get newIdea => _localizedValues[locale.languageCode][NEW_IDEA];
@@ -197,6 +201,14 @@ class AppLocalizations {
       return '$hour 시간';
     } else {
       return '$hour hr';
+    }
+  }
+
+  String getRemainingMiniBoxWordsCount(int count) {
+    if (locale.languageCode == 'ko') {
+      return '단어 박스가 가득 차서 $count개의 미니 박스 단어들이 저장되지 못했어요!\n단어들을 삭제하고 재실행해보세요!';
+    } else {
+      return '$count number of mini box words couldn\'t be saved!\nTry deleting some words and reopen the app.';
     }
   }
 

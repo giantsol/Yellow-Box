@@ -3,7 +3,6 @@ package com.giantsol.yellow_box
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.core.content.ContextCompat
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -16,6 +15,7 @@ object AppMethodCallHandler: MethodChannel.MethodCallHandler {
     private const val METHOD_SHOW_MINI_BOX = "showMiniBox"
     private const val METHOD_INITIALIZED = "initialized"
     private const val METHOD_DELIVER_MINI_BOX_WORDS = "deliverMiniBoxWords"
+    private const val METHOD_DELIVER_REMAINING_MINI_BOX_WORDS = "deliverRemainingMiniBoxWords"
 
     private const val PREF_BACKGROUND_MINI_BOX_WORDS = "background.mini.box.words"
 
@@ -45,6 +45,11 @@ object AppMethodCallHandler: MethodChannel.MethodCallHandler {
                 showMiniBox()
                 result.success(true)
             }
+            METHOD_DELIVER_REMAINING_MINI_BOX_WORDS -> {
+                val map = call.arguments as Map<String, Long>
+                saveMiniBoxWords(activity, map)
+                result.success(true)
+            }
             else -> {
                 result.notImplemented()
             }
@@ -66,16 +71,24 @@ object AppMethodCallHandler: MethodChannel.MethodCallHandler {
         val intent = Intent(activity, MiniBoxService::class.java)
         intent.action = MiniBoxService.ACTION_START_MINI_BOX
         activity.startService(intent)
-//        ContextCompat.startForegroundService(activity, intent)
     }
 
     fun deliverMiniBoxWord(context: Context, word: String) {
+        val wordMap = hashMapOf(Pair(word, System.currentTimeMillis()))
         if (isMethodChannelConnected) {
-            methodChannel?.invokeMethod(METHOD_DELIVER_MINI_BOX_WORDS, hashMapOf(Pair(word, System.currentTimeMillis())))
+            methodChannel?.invokeMethod(METHOD_DELIVER_MINI_BOX_WORDS, wordMap)
         } else {
-            val prefs = context.getSharedPreferences(PREF_BACKGROUND_MINI_BOX_WORDS, Context.MODE_PRIVATE) ?: return
-            prefs.edit().putLong(word, System.currentTimeMillis()).apply()
+            saveMiniBoxWords(context, wordMap)
         }
+    }
+
+    private fun saveMiniBoxWords(context: Context?, wordsMap: Map<String, Long>) {
+        val prefs = context?.getSharedPreferences(PREF_BACKGROUND_MINI_BOX_WORDS, Context.MODE_PRIVATE) ?: return
+        val editor = prefs.edit()
+        for (entry in wordsMap.entries) {
+            editor.putLong(entry.key, entry.value)
+        }
+        editor.apply()
     }
 
 }

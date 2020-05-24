@@ -1,12 +1,21 @@
 
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:yellow_box/entity/NavigationBarItem.dart';
-import 'package:yellow_box/ui/App.dart';
+import 'package:yellow_box/StreamSubscriptionExtension.dart';
+import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
 import 'package:yellow_box/ui/settings/SettingsNavigator.dart';
 import 'package:yellow_box/ui/settings/SettingsState.dart';
+import 'package:yellow_box/usecase/ObserveAppTheme.dart';
+import 'package:yellow_box/usecase/ObserveAutoGenerateIdeas.dart';
+import 'package:yellow_box/usecase/ObserveAutoGenerateIntervalHours.dart';
+import 'package:yellow_box/usecase/SetAutoGenerateIdeas.dart';
+import 'package:yellow_box/usecase/SetAutoGenerateIntervalHours.dart';
+import 'package:yellow_box/usecase/SetChildScreen.dart';
+import 'package:yellow_box/usecase/ShowMiniBox.dart';
 
 class SettingsBloc extends BaseBloc {
 
@@ -16,40 +25,49 @@ class SettingsBloc extends BaseBloc {
   SettingsState getInitialState() => _state.value;
   Stream<SettingsState> observeState() => _state.distinct();
 
-  final _themeRepository = dependencies.themeRepository;
-  final _childScreenRepository = dependencies.childScreenRepository;
-  final _settingsRepository = dependencies.settingsRepository;
-  final miniBoxRepository = dependencies.miniBoxRepository;
-
   CompositeSubscription _subscriptions = CompositeSubscription();
+
+  final _observeAutoGenerateIdeas = ObserveAutoGenerateIdeas();
+  final _observeAutoGenerateIntervalHours = ObserveAutoGenerateIntervalHours();
+  final _setAutoGenerateIdeas = SetAutoGenerateIdeas();
+  final _setAutoGenerateIntervalHours = SetAutoGenerateIntervalHours();
+  final _observeAppTheme = ObserveAppTheme();
+  final _setChildScreen = SetChildScreen();
+  final _showMiniBox = ShowMiniBox();
 
   SettingsBloc(this._navigator) {
     _init();
   }
 
-  void _init() async {
-    final autoGenerateIdeas = await _settingsRepository.getAutoGenerateIdeas();
-    final intervalHours = await _settingsRepository.getAutoGenerateIntervalHours();
+  void _init() {
+    _observeAutoGenerateIdeas.invoke()
+      .listen((value) {
+      _state.value = _state.value.buildNew(
+        autoGenerateIdeas: value,
+      );
+    }).addTo(_subscriptions);
 
-    _state.value = _state.value.buildNew(
-      autoGenerateIdeas: autoGenerateIdeas,
-      intervalHours: intervalHours,
-    );
+    _observeAutoGenerateIntervalHours.invoke()
+      .listen((value) {
+      _state.value = _state.value.buildNew(
+        intervalHours: value,
+      );
+    }).addTo(_subscriptions);
 
-    _subscriptions.add(_themeRepository.observeCurrentAppTheme()
+    _observeAppTheme.invoke()
       .listen((appTheme) {
       _state.value = _state.value.buildNew(
         appTheme: appTheme,
       );
-    }));
+    }).addTo(_subscriptions);
   }
 
-  void onNavigationBarItemClicked(NavigationBarItem item) {
-    _childScreenRepository.setCurrentChildScreenKey(item.key);
+  void onNavigationBarItemClicked(ChildScreenKey key) {
+    _setChildScreen.invoke(key);
   }
 
   Future<void> onMiniBoxItemClicked() async {
-    final success = await miniBoxRepository.showMiniBox();
+    final success = await _showMiniBox.invoke();
     if (success) {
       SystemNavigator.pop(animated: true);
     } else {
@@ -58,11 +76,7 @@ class SettingsBloc extends BaseBloc {
   }
 
   void onAutoGenerateIdeasChanged(bool value) {
-    _state.value = _state.value.buildNew(
-      autoGenerateIdeas: value,
-    );
-
-    _settingsRepository.setAutoGenerateIdeas(value);
+    _setAutoGenerateIdeas.invoke(value);
   }
 
   void onResetBlockedIdeasClicked() {
@@ -79,7 +93,7 @@ class SettingsBloc extends BaseBloc {
     );
   }
 
-  void onCancelResetBlockedIdeasClicked() {
+  void onCloseResetBlockedIdeasClicked() {
     _state.value = _state.value.buildNew(
       isResetBlockedIdeasDialogShown: false,
     );
@@ -93,11 +107,10 @@ class SettingsBloc extends BaseBloc {
 
   void onIntervalChoiceClicked(int value) {
     _state.value = _state.value.buildNew(
-      intervalHours: value,
       isIntervalDialogShown: false,
     );
 
-    _settingsRepository.setAutoGenerateIntervalHours(value);
+    _setAutoGenerateIntervalHours.invoke(value);
   }
 
   void onCloseIntervalDialogClicked() {
@@ -108,7 +121,7 @@ class SettingsBloc extends BaseBloc {
 
   bool handleBackPress() {
     if (_state.value.isResetBlockedIdeasDialogShown) {
-      onCancelResetBlockedIdeasClicked();
+      onCloseResetBlockedIdeasClicked();
       return true;
     }
 
