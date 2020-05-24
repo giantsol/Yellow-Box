@@ -114,6 +114,10 @@ class IdeaRepository {
     return _database.isBlockedIdea(title);
   }
 
+  Future<void> resetBlockedIdeas() {
+    return _database.resetBlockedIdeas();
+  }
+
   Future<void> favoriteIdea(Idea item) async {
     if (item.isFavorite) {
       return;

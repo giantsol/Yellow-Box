@@ -172,6 +172,15 @@ class AppDatabase {
     return map.isNotEmpty;
   }
 
+  Future<void> resetBlockedIdeas() async {
+    final db = await _database.first;
+    return db.delete(
+      TABLE_IDEAS,
+      where: '$COLUMN_BLOCKED = ?',
+      whereArgs: [1],
+    );
+  }
+
   // returns only unblocked ideas
   Future<List<Idea>> getIdeas() async {
     final db = await _database.first;

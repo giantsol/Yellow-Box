@@ -12,6 +12,7 @@ import 'package:yellow_box/ui/settings/SettingsState.dart';
 import 'package:yellow_box/usecase/ObserveAppTheme.dart';
 import 'package:yellow_box/usecase/ObserveAutoGenerateIdeas.dart';
 import 'package:yellow_box/usecase/ObserveAutoGenerateIntervalHours.dart';
+import 'package:yellow_box/usecase/ResetBlockedIdeas.dart';
 import 'package:yellow_box/usecase/SetAutoGenerateIdeas.dart';
 import 'package:yellow_box/usecase/SetAutoGenerateIntervalHours.dart';
 import 'package:yellow_box/usecase/SetChildScreen.dart';
@@ -34,6 +35,7 @@ class SettingsBloc extends BaseBloc {
   final _observeAppTheme = ObserveAppTheme();
   final _setChildScreen = SetChildScreen();
   final _showMiniBox = ShowMiniBox();
+  final _resetBlockedIdeas = ResetBlockedIdeas();
 
   SettingsBloc(this._navigator) {
     _init();
@@ -86,7 +88,7 @@ class SettingsBloc extends BaseBloc {
   }
 
   void onConfirmResetBlockedIdeasClicked() {
-    // todo
+    _resetBlockedIdeas.invoke();
 
     _state.value = _state.value.buildNew(
       isResetBlockedIdeasDialogShown: false,
