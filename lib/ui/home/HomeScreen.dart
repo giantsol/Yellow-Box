@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
   State createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin implements HomeNavigator {
   HomeBloc _bloc;
 
   // one shot flags are not managed in HomeState
@@ -36,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return StreamBuilder(
       initialData: _bloc.getInitialState(),
       stream: _bloc.observeState(),
@@ -48,6 +49,9 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
     super.dispose();
     _bloc.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   Widget _buildUI(HomeState state) {
     final appTheme = state.appTheme;
@@ -90,7 +94,13 @@ class _HomeScreenState extends State<HomeScreen> implements HomeNavigator {
             appTheme: appTheme,
           ) : const SizedBox.shrink(),
           _isIdeaBoxFullNotiVisible ? _IdeaBoxFullNoti(
-            bloc: _bloc,
+            onTap: () {
+              setState(() {
+                _isIdeaBoxFullNotiVisible = false;
+              });
+
+              _bloc.onIdeaBoxFullNotiClicked();
+            }
           ) : const SizedBox.shrink(),
         ],
       ),
@@ -627,10 +637,10 @@ class _SadLogo extends StatelessWidget {
 }
 
 class _IdeaBoxFullNoti extends StatelessWidget {
-  final HomeBloc bloc;
+  final Function() onTap;
 
   _IdeaBoxFullNoti({
-    @required this.bloc,
+    @required this.onTap,
   });
 
   @override
@@ -644,7 +654,7 @@ class _IdeaBoxFullNoti extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(24)),
           child: InkWell(
             borderRadius: BorderRadius.all(Radius.circular(24)),
-            onTap: () => bloc.onIdeaBoxFullNotiClicked(),
+            onTap: onTap,
             child: IntrinsicHeight(
               child: Row(
                 children: <Widget>[
