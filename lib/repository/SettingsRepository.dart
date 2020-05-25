@@ -36,4 +36,12 @@ class SettingsRepository {
     _autoGenerateIntervalHours.value = value;
     return _prefs.setAutoGenerateIntervalHours(value);
   }
+
+  Future<int> getLastActiveTime() {
+    return _prefs.getLastActiveTime();
+  }
+
+  Future<void> setLastActiveTime(int time) {
+    return _prefs.setLastActiveTime(time);
+  }
 }
