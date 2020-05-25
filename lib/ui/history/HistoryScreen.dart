@@ -132,44 +132,51 @@ class _MainUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: ClipRect(
-        child: Column(
-          verticalDirection: VerticalDirection.up,
-          children: <Widget>[
-            ChildScreenNavigationBar(
-              currentChildScreenKey: ChildScreenKey.HISTORY,
-              onItemClicked: bloc.onNavigationBarItemClicked,
-            ),
-            isWordTab ? _WordList(
-              bloc: bloc,
-              items: words,
-              appTheme: appTheme,
-              isSelectionMode: selectionMode == SelectionMode.WORDS,
-              selectedItems: selectedWords,
-            ) : _IdeaList(
-              bloc: bloc,
-              items: ideas,
-              appTheme: appTheme,
-              isSelectionMode: selectionMode == SelectionMode.IDEAS,
-              selectedItems: selectedIdeas,
-            ),
-            selectionMode == SelectionMode.NONE ? _TabBar(
-              bloc: bloc,
-              appTheme: appTheme,
-              isWordTab: isWordTab,
-            ) : selectionMode == SelectionMode.WORDS ? _WordsSelectionBar(
-              bloc: bloc,
-              appTheme: appTheme,
-              selectedItems: selectedWords,
-            ) : _IdeasSelectionBar(
-              bloc: bloc,
-              appTheme: appTheme,
-              selectedItems: selectedIdeas,
-            ),
-          ],
+    return Column(
+      verticalDirection: VerticalDirection.up,
+      children: <Widget>[
+        ChildScreenNavigationBar(
+          currentChildScreenKey: ChildScreenKey.HISTORY,
+          onItemClicked: bloc.onNavigationBarItemClicked,
         ),
-      ),
+        Expanded(
+          child: SafeArea(
+            child: ClipRect(
+              child: Column(
+                verticalDirection: VerticalDirection.up,
+                children: [
+                  isWordTab ? _WordList(
+                    bloc: bloc,
+                    items: words,
+                    appTheme: appTheme,
+                    isSelectionMode: selectionMode == SelectionMode.WORDS,
+                    selectedItems: selectedWords,
+                  ) : _IdeaList(
+                    bloc: bloc,
+                    items: ideas,
+                    appTheme: appTheme,
+                    isSelectionMode: selectionMode == SelectionMode.IDEAS,
+                    selectedItems: selectedIdeas,
+                  ),
+                  selectionMode == SelectionMode.NONE ? _TabBar(
+                    bloc: bloc,
+                    appTheme: appTheme,
+                    isWordTab: isWordTab,
+                  ) : selectionMode == SelectionMode.WORDS ? _WordsSelectionBar(
+                    bloc: bloc,
+                    appTheme: appTheme,
+                    selectedItems: selectedWords,
+                  ) : _IdeasSelectionBar(
+                    bloc: bloc,
+                    appTheme: appTheme,
+                    selectedItems: selectedIdeas,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -125,50 +125,55 @@ class _MainUI extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkTheme = appTheme.isDarkTheme;
 
-    return SafeArea(
-      child: Column(
-        verticalDirection: VerticalDirection.up,
-        children: <Widget>[
-          ChildScreenNavigationBar(
-            currentChildScreenKey: ChildScreenKey.SETTINGS,
-            onItemClicked: bloc.onNavigationBarItemClicked,
+    return Column(
+      verticalDirection: VerticalDirection.up,
+      children: <Widget>[
+        ChildScreenNavigationBar(
+          currentChildScreenKey: ChildScreenKey.SETTINGS,
+          onItemClicked: bloc.onNavigationBarItemClicked,
+        ),
+        Expanded(
+          child: SafeArea(
+            child: Column(
+              children: [
+                _SettingsGroup(
+                  isDarkTheme: isDarkTheme,
+                  title: AppLocalizations.of(context).general,
+                  children: [
+                    _SwitchSettingsItem(
+                      appTheme: appTheme,
+                      title: AppLocalizations.of(context).autoGenerateIdeasTitle,
+                      subtitle: AppLocalizations.of(context).autoGenerateIdeasSubtitle,
+                      value: autoGenerateIdeas,
+                      onChanged: bloc.onAutoGenerateIdeasChanged,
+                    ),
+                    autoGenerateIdeas ? _ArrowSettingsItem(
+                      isDarkTheme: isDarkTheme,
+                      title: AppLocalizations.of(context).intervalTitle,
+                      subtitle: AppLocalizations.of(context).intervalSubtitle,
+                      onTap: bloc.onIntervalClicked,
+                      value: AppLocalizations.of(context).getIntervalHours(intervalHours),
+                      isSubSettings: true,
+                    ) : const SizedBox.shrink(),
+                    _SettingsItem(
+                      isDarkTheme: isDarkTheme,
+                      title: AppLocalizations.of(context).resetBlockedIdeasTitle,
+                      subtitle: AppLocalizations.of(context).resetBlockedIdeasSubtitle,
+                      onTap: bloc.onResetBlockedIdeasClicked,
+                    ),
+                    _ArrowSettingsItem(
+                      isDarkTheme: isDarkTheme,
+                      title: AppLocalizations.of(context).miniBoxTitle,
+                      subtitle: AppLocalizations.of(context).miniBoxSubtitle,
+                      onTap: bloc.onMiniBoxItemClicked,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          Spacer(),
-          _SettingsGroup(
-            isDarkTheme: isDarkTheme,
-            title: AppLocalizations.of(context).general,
-            children: [
-              _SwitchSettingsItem(
-                appTheme: appTheme,
-                title: AppLocalizations.of(context).autoGenerateIdeasTitle,
-                subtitle: AppLocalizations.of(context).autoGenerateIdeasSubtitle,
-                value: autoGenerateIdeas,
-                onChanged: bloc.onAutoGenerateIdeasChanged,
-              ),
-              autoGenerateIdeas ? _ArrowSettingsItem(
-                isDarkTheme: isDarkTheme,
-                title: AppLocalizations.of(context).intervalTitle,
-                subtitle: AppLocalizations.of(context).intervalSubtitle,
-                onTap: bloc.onIntervalClicked,
-                value: AppLocalizations.of(context).getIntervalHours(intervalHours),
-                isSubSettings: true,
-              ) : const SizedBox.shrink(),
-              _SettingsItem(
-                isDarkTheme: isDarkTheme,
-                title: AppLocalizations.of(context).resetBlockedIdeasTitle,
-                subtitle: AppLocalizations.of(context).resetBlockedIdeasSubtitle,
-                onTap: bloc.onResetBlockedIdeasClicked,
-              ),
-              _ArrowSettingsItem(
-                isDarkTheme: isDarkTheme,
-                title: AppLocalizations.of(context).miniBoxTitle,
-                subtitle: AppLocalizations.of(context).miniBoxSubtitle,
-                onTap: bloc.onMiniBoxItemClicked,
-              ),
-            ],
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

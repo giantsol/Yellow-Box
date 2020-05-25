@@ -21,6 +21,7 @@ class ChildScreenNavigationBar extends StatelessWidget {
     const double height = 60;
 
     return isVisible ? Container(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
         color: AppColors.BACKGROUND_WHITE,
         boxShadow: kElevationToShadow[4],
@@ -46,7 +47,7 @@ class ChildScreenNavigationBar extends StatelessWidget {
           );
         }),
       ),
-    ) : const SizedBox(height: height,);
+    ) : SizedBox(height: height + MediaQuery.of(context).padding.bottom,);
   }
 }
 

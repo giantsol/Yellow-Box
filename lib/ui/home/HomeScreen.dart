@@ -162,16 +162,16 @@ class _MainUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        verticalDirection: VerticalDirection.up,
-        children: <Widget>[
-          ChildScreenNavigationBar(
-            currentChildScreenKey: ChildScreenKey.HOME,
-            onItemClicked: bloc.onNavigationBarItemClicked,
-            isVisible: !isWordEditorShown,
-          ),
-          Expanded(
+    return Column(
+      verticalDirection: VerticalDirection.up,
+      children: <Widget>[
+        ChildScreenNavigationBar(
+          currentChildScreenKey: ChildScreenKey.HOME,
+          onItemClicked: bloc.onNavigationBarItemClicked,
+          isVisible: !isWordEditorShown,
+        ),
+        Expanded(
+          child: SafeArea(
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -201,8 +201,8 @@ class _MainUI extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
