@@ -35,22 +35,13 @@ class HomeBloc extends BaseBloc {
   final _setChildScreen = SetChildScreen();
 
   final _stt = SpeechToText();
+  bool _sttInitializingOrInitialized = false;
 
   HomeBloc(this._navigator) {
     _init();
   }
 
-  void _init() async {
-    _stt.initialize(onStatus: (status) {
-      _state.value = _state.value.buildNew(
-        isListeningToSpeech: status == SpeechToText.listeningStatus,
-      );
-    }, onError: (error) {
-      _state.value = _state.value.buildNew(
-        isListeningToSpeech: false,
-      );
-    });
-
+  void _init() {
     _observeAppTheme.invoke()
       .listen((appTheme) {
       _state.value = _state.value.buildNew(
@@ -126,7 +117,24 @@ class HomeBloc extends BaseBloc {
   }
 
   void onMicIconClicked() async {
-    if (_stt.isAvailable && !_state.value.isListeningToSpeech) {
+    if (!_sttInitializingOrInitialized) {
+      _sttInitializingOrInitialized = true;
+      _sttInitializingOrInitialized = await _stt.initialize(onStatus: (status) {
+        _state.value = _state.value.buildNew(
+          isListeningToSpeech: status == SpeechToText.listeningStatus,
+        );
+      }, onError: (error) {
+        _state.value = _state.value.buildNew(
+          isListeningToSpeech: false,
+        );
+      });
+
+      if (_sttInitializingOrInitialized) {
+        onMicIconClicked();
+      }
+    } else if (!_stt.isAvailable) {
+      _navigator.showSpeechToTextNotReady();
+    } else if (!_state.value.isListeningToSpeech) {
       _stt.listen(onResult: (result) {
         if (result.finalResult) {
           final recognizedWord = result.recognizedWords;
@@ -137,8 +145,6 @@ class HomeBloc extends BaseBloc {
           }
         }
       });
-    } else {
-      _navigator.showSpeechToTextNotReady();
     }
   }
 
@@ -172,7 +178,7 @@ class HomeBloc extends BaseBloc {
         );
         break;
       case AddIdeaResult.BLOCKED:
-        // show oops! you picked out a blocked idea!
+      // show oops! you picked out a blocked idea!
         _state.value = _state.value.buildNew(
           ideaPopUpData: IdeaPopUpData(result.item2, IdeaPopUpData.TYPE_BLOCKED),
         );
