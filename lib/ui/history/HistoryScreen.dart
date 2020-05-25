@@ -20,7 +20,7 @@ class HistoryScreen extends StatefulWidget {
   State createState() => _HistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
+class _HistoryScreenState extends State<HistoryScreen> with AutomaticKeepAliveClientMixin<HistoryScreen> {
   HistoryBloc _bloc;
 
   @override
@@ -31,6 +31,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return StreamBuilder(
       initialData: _bloc.getInitialState(),
       stream: _bloc.observeState(),
@@ -43,6 +44,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
     super.dispose();
     _bloc.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   Widget _buildUI(HistoryState state) {
     final appTheme = state.appTheme;

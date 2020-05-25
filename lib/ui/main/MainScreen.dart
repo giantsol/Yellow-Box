@@ -19,13 +19,28 @@ class MainScreen extends StatefulWidget {
   State createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> implements MainNavigator {
+class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateMixin implements MainNavigator {
   MainBloc _bloc;
+
+  PageController _pageController;
+  final Map<ChildScreenKey, int> _childScreenKeys = {
+    ChildScreenKey.HOME: 0,
+    ChildScreenKey.HISTORY: 1,
+    ChildScreenKey.THEME: 2,
+    ChildScreenKey.SETTINGS: 3,
+  };
+  final List<Widget> _childScreens = [
+    HomeScreen(),
+    HistoryScreen(),
+    ThemeScreen(),
+    SettingsScreen(),
+  ];
 
   @override
   void initState() {
     super.initState();
     _bloc = MainBloc(this);
+    _pageController = PageController();
   }
 
   @override
@@ -41,11 +56,15 @@ class _MainScreenState extends State<MainScreen> implements MainNavigator {
   void dispose() {
     super.dispose();
     _bloc.dispose();
+    _pageController.dispose();
   }
 
   Widget _buildUI(MainState state) {
     final appTheme = state.appTheme;
-    final childScreenWidget = _getChildScreenWidget(state.currentChildScreenKey);
+    final int page = _childScreenKeys[state.currentChildScreenKey];
+    if (_pageController.hasClients && _pageController.page != null && _pageController.page != page) {
+      _pageController.jumpToPage(page);
+    }
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -60,25 +79,15 @@ class _MainScreenState extends State<MainScreen> implements MainNavigator {
             _BackgroundDeco(
               appTheme: appTheme,
             ),
-            childScreenWidget,
+            PageView(
+              controller: _pageController,
+              children: _childScreens,
+              physics: NeverScrollableScrollPhysics(),
+            ),
           ],
         ),
       ),
     );
-  }
-
-  Widget _getChildScreenWidget(ChildScreenKey key) {
-    switch (key) {
-      case ChildScreenKey.HISTORY:
-        return HistoryScreen();
-      case ChildScreenKey.THEME:
-        return ThemeScreen();
-      case ChildScreenKey.SETTINGS:
-        return SettingsScreen();
-      case ChildScreenKey.HOME:
-      default:
-        return HomeScreen();
-    }
   }
 
   @override

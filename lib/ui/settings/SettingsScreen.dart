@@ -19,7 +19,8 @@ class SettingsScreen extends StatefulWidget {
   State createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavigator {
+class _SettingsScreenState extends State<SettingsScreen> with AutomaticKeepAliveClientMixin<SettingsScreen>
+  implements SettingsNavigator {
   SettingsBloc _bloc;
 
   @override
@@ -30,6 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavi
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return StreamBuilder(
       initialData: _bloc.getInitialState(),
       stream: _bloc.observeState(),
@@ -42,6 +44,9 @@ class _SettingsScreenState extends State<SettingsScreen> implements SettingsNavi
     super.dispose();
     _bloc.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   Widget _buildUI(SettingsState state) {
     return WillPopScope(
