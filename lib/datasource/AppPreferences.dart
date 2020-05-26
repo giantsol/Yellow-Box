@@ -8,7 +8,7 @@ class AppPreferences {
   static const KEY_LAST_ACTIVE_TIME = 'last.active.time';
 
   static const DEFAULT_AUTO_GENERATE_IDEAS = false;
-  static const DEFAULT_AUTO_GENERATE_INTERVAL_HOURS = 2;
+  static const DEFAULT_AUTO_GENERATE_INTERVAL_HOURS = 12;
   
   final _prefs = BehaviorSubject<SharedPreferences>();
 

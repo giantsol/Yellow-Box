@@ -75,20 +75,20 @@ class _SettingsScreenState extends State<SettingsScreen> with AutomaticKeepAlive
             title: AppLocalizations.of(context).intervalTitle,
             items: [
               ChoiceItem(
-                AppLocalizations.of(context).getIntervalHours(2),
-                  () => _bloc.onIntervalChoiceClicked(2),
-              ),
-              ChoiceItem(
-                AppLocalizations.of(context).getIntervalHours(6),
-                  () => _bloc.onIntervalChoiceClicked(6),
-              ),
-              ChoiceItem(
                 AppLocalizations.of(context).getIntervalHours(12),
                   () => _bloc.onIntervalChoiceClicked(12),
               ),
               ChoiceItem(
                 AppLocalizations.of(context).getIntervalHours(24),
                   () => _bloc.onIntervalChoiceClicked(24),
+              ),
+              ChoiceItem(
+                AppLocalizations.of(context).getIntervalHours(36),
+                  () => _bloc.onIntervalChoiceClicked(36),
+              ),
+              ChoiceItem(
+                AppLocalizations.of(context).getIntervalHours(48),
+                  () => _bloc.onIntervalChoiceClicked(48),
               ),
               ChoiceItem(
                 AppLocalizations.of(context).close,
