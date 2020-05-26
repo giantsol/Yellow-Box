@@ -523,7 +523,9 @@ class _IdeaPopUpBox extends StatelessWidget {
                 color: appTheme.lightColor,
               ),
               padding: const EdgeInsets.only(top: 16),
-              child: type == IdeaPopUpData.TYPE_NEW ? _HappyLogo() : _SadLogo(),
+              child: type == IdeaPopUpData.TYPE_NEW ? _HappyLogo()
+                : type == IdeaPopUpData.TYPE_EXISTS ? _SadLogo()
+                : _BlockedLogo(),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 192,),
@@ -622,6 +624,21 @@ class _HappyLogo extends StatelessWidget {
 }
 
 class _SadLogo extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: SizedBox(
+        width: 160,
+        height: 160,
+        child: Placeholder(),
+      ),
+    );
+  }
+}
+
+class _BlockedLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
