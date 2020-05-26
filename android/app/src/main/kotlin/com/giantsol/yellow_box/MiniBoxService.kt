@@ -166,7 +166,6 @@ class MiniBoxService : Service(), MiniBox.Callback {
     }
 
     private fun pauseMiniBox() {
-        stopForeground(false)
         miniBox?.destroy()
         notificationManager.notify(NOTIFICATION_ID, createPausedNotification())
     }
