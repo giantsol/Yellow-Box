@@ -63,6 +63,8 @@ class MiniBox(private val context: Context,
 
     private val statusBarHeight: Int
 
+    val isDestroyed get() = !miniBoxView.isAttachedToWindow
+
     init {
         initBgView()
         initMiniBoxView()

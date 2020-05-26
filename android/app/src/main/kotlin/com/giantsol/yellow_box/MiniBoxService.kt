@@ -223,8 +223,10 @@ class MiniBoxService : Service(), MiniBox.Callback {
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
-        miniBox?.destroy()
-        miniBox = MiniBox(this, this)
+        if (miniBox?.isDestroyed == false) {
+            miniBox?.destroy()
+            miniBox = MiniBox(this, this)
+        }
     }
 
     override fun stopMiniBox() {
