@@ -109,7 +109,7 @@ class _HistoryScreenState extends State<HistoryScreen> with AutomaticKeepAliveCl
   }
 }
 
-class _MainUI extends StatelessWidget {
+class _MainUI extends StatefulWidget {
   final AppTheme appTheme;
   final HistoryBloc bloc;
   final bool isWordTab;
@@ -131,13 +131,50 @@ class _MainUI extends StatelessWidget {
   });
 
   @override
+  State createState() => _MainUIState();
+
+}
+
+class _MainUIState extends State<_MainUI> with SingleTickerProviderStateMixin {
+
+  TabController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TabController(length: 2, vsync: this);
+    _controller.addListener(_tabControllerListener);
+  }
+
+  void _tabControllerListener() {
+    if (_controller.index == 0) {
+      widget.bloc.onWordTabClicked();
+    } else {
+      widget.bloc.onIdeaTabClicked();
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.removeListener(_tabControllerListener);
+    _controller.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (widget.isWordTab) {
+      _controller.index = 0;
+    } else {
+      _controller.index = 1;
+    }
+
     return Column(
       verticalDirection: VerticalDirection.up,
       children: <Widget>[
         ChildScreenNavigationBar(
           currentChildScreenKey: ChildScreenKey.HISTORY,
-          onItemClicked: bloc.onNavigationBarItemClicked,
+          onItemClicked: widget.bloc.onNavigationBarItemClicked,
         ),
         Expanded(
           child: SafeArea(
@@ -145,31 +182,39 @@ class _MainUI extends StatelessWidget {
               child: Column(
                 verticalDirection: VerticalDirection.up,
                 children: [
-                  isWordTab ? _WordList(
-                    bloc: bloc,
-                    items: words,
-                    appTheme: appTheme,
-                    isSelectionMode: selectionMode == SelectionMode.WORDS,
-                    selectedItems: selectedWords,
-                  ) : _IdeaList(
-                    bloc: bloc,
-                    items: ideas,
-                    appTheme: appTheme,
-                    isSelectionMode: selectionMode == SelectionMode.IDEAS,
-                    selectedItems: selectedIdeas,
+                  Expanded(
+                    child: TabBarView(
+                      controller: _controller,
+                      children: [
+                        _WordList(
+                          bloc: widget.bloc,
+                          items: widget.words,
+                          appTheme: widget.appTheme,
+                          isSelectionMode: widget.selectionMode == SelectionMode.WORDS,
+                          selectedItems: widget.selectedWords,
+                        ),
+                        _IdeaList(
+                          bloc: widget.bloc,
+                          items: widget.ideas,
+                          appTheme: widget.appTheme,
+                          isSelectionMode: widget.selectionMode == SelectionMode.IDEAS,
+                          selectedItems: widget.selectedIdeas,
+                        ),
+                      ],
+                    ),
                   ),
-                  selectionMode == SelectionMode.NONE ? _TabBar(
-                    bloc: bloc,
-                    appTheme: appTheme,
-                    isWordTab: isWordTab,
-                  ) : selectionMode == SelectionMode.WORDS ? _WordsSelectionBar(
-                    bloc: bloc,
-                    appTheme: appTheme,
-                    selectedItems: selectedWords,
+                  widget.selectionMode == SelectionMode.NONE ? _TabBar(
+                    bloc: widget.bloc,
+                    appTheme: widget.appTheme,
+                    isWordTab: widget.isWordTab,
+                  ) : widget.selectionMode == SelectionMode.WORDS ? _WordsSelectionBar(
+                    bloc: widget.bloc,
+                    appTheme: widget.appTheme,
+                    selectedItems: widget.selectedWords,
                   ) : _IdeasSelectionBar(
-                    bloc: bloc,
-                    appTheme: appTheme,
-                    selectedItems: selectedIdeas,
+                    bloc: widget.bloc,
+                    appTheme: widget.appTheme,
+                    selectedItems: widget.selectedIdeas,
                   ),
                 ],
               ),
@@ -448,36 +493,34 @@ class _WordList extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkTheme = appTheme.isDarkTheme;
 
-    return Expanded(
-      child: items.length > 0 ? ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          if (isSelectionMode) {
-            return _SelectionWordItem(
-              bloc: bloc,
-              item: item,
-              isDarkTheme: isDarkTheme,
-              isSelected: selectedItems.containsKey(item),
-            );
-          } else {
-            return _WordItem(
-              bloc: bloc,
-              item: item,
-              isDarkTheme: isDarkTheme,
-            );
-          }
-        },
-      ) : Center(
-        child: Text(
-          AppLocalizations.of(context).noHistory,
-          style: TextStyle(
-            fontSize: 18,
-            color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
-          ),
-          strutStyle: StrutStyle(
-            fontSize: 18,
-          ),
+    return items.length > 0 ? ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        if (isSelectionMode) {
+          return _SelectionWordItem(
+            bloc: bloc,
+            item: item,
+            isDarkTheme: isDarkTheme,
+            isSelected: selectedItems.containsKey(item),
+          );
+        } else {
+          return _WordItem(
+            bloc: bloc,
+            item: item,
+            isDarkTheme: isDarkTheme,
+          );
+        }
+      },
+    ) : Center(
+      child: Text(
+        AppLocalizations.of(context).noHistory,
+        style: TextStyle(
+          fontSize: 18,
+          color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+        ),
+        strutStyle: StrutStyle(
+          fontSize: 18,
         ),
       ),
     );
@@ -645,36 +688,34 @@ class _IdeaList extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkTheme = appTheme.isDarkTheme;
 
-    return Expanded(
-      child: items.length > 0 ? ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          if (isSelectionMode) {
-            return _SelectionIdeaItem(
-              bloc: bloc,
-              item: item,
-              isDarkTheme: isDarkTheme,
-              isSelected: selectedItems.containsKey(item),
-            );
-          } else {
-            return _IdeaItem(
-              bloc: bloc,
-              item: item,
-              isDarkTheme: isDarkTheme,
-            );
-          }
-        },
-      ) : Center(
-        child: Text(
-          AppLocalizations.of(context).noHistory,
-          style: TextStyle(
-            fontSize: 18,
-            color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
-          ),
-          strutStyle: StrutStyle(
-            fontSize: 18,
-          ),
+    return items.length > 0 ? ListView.builder(
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        if (isSelectionMode) {
+          return _SelectionIdeaItem(
+            bloc: bloc,
+            item: item,
+            isDarkTheme: isDarkTheme,
+            isSelected: selectedItems.containsKey(item),
+          );
+        } else {
+          return _IdeaItem(
+            bloc: bloc,
+            item: item,
+            isDarkTheme: isDarkTheme,
+          );
+        }
+      },
+    ) : Center(
+      child: Text(
+        AppLocalizations.of(context).noHistory,
+        style: TextStyle(
+          fontSize: 18,
+          color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+        ),
+        strutStyle: StrutStyle(
+          fontSize: 18,
         ),
       ),
     );
