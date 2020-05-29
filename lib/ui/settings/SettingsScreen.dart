@@ -134,6 +134,7 @@ class _MainUI extends StatelessWidget {
         ),
         Expanded(
           child: SafeArea(
+            bottom: false,
             child: Column(
               children: [
                 _SettingsGroup(

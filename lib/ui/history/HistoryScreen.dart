@@ -178,6 +178,7 @@ class _MainUIState extends State<_MainUI> with SingleTickerProviderStateMixin {
         ),
         Expanded(
           child: SafeArea(
+            bottom: false,
             child: ClipRect(
               child: Column(
                 verticalDirection: VerticalDirection.up,

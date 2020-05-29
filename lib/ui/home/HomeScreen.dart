@@ -172,6 +172,7 @@ class _MainUI extends StatelessWidget {
         ),
         Expanded(
           child: SafeArea(
+            bottom: false,
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
