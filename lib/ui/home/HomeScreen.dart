@@ -177,10 +177,27 @@ class _MainUI extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  SizedBox(
-                    width: 178,
-                    height: 64,
-                    child: Placeholder(),
+                  Text(
+                    AppLocalizations.of(context).get(appTheme.titleKey),
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: appTheme.darkColor,
+                    ),
+                    strutStyle: StrutStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    AppLocalizations.of(context).get(appTheme.subtitleKey),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: appTheme.darkColor,
+                    ),
+                    strutStyle: StrutStyle(
+                      fontSize: 18,
+                    ),
                   ),
                   const SizedBox(height: 32,),
                   GestureDetector(
@@ -189,7 +206,7 @@ class _MainUI extends StatelessWidget {
                     child: SizedBox(
                       width: 160,
                       height: 160,
-                      child: Placeholder(),
+                      child: Image.asset(appTheme.mainLogo),
                     ),
                   ),
                   const SizedBox(height: 68,),

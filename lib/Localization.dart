@@ -38,6 +38,9 @@ class AppLocalizations {
   static const INTERVAL_TITLE = 'intervalTitle';
   static const INTERVAL_SUBTITLE = 'intervalSubtitle';
 
+  static const YELLOW_BOX_TITLE = 'yellowBoxTitle';
+  static const YELLOW_BOX_SUBTITLE = 'yellowBoxSubtitle';
+
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
@@ -78,6 +81,8 @@ class AppLocalizations {
       RESET: 'Reset',
       INTERVAL_TITLE: 'Interval',
       INTERVAL_SUBTITLE: 'New ideas will be generated every interval approximately',
+      YELLOW_BOX_TITLE: 'Yellow Box',
+      YELLOW_BOX_SUBTITLE: 'Beginning of your ideas',
     },
     'ko': {
       CANCEL: '취소',
@@ -114,6 +119,8 @@ class AppLocalizations {
       RESET: '리셋',
       INTERVAL_TITLE: '시간 간격',
       INTERVAL_SUBTITLE: '정해진 시간 간격마다 아이디어가 생성됩니다',
+      YELLOW_BOX_TITLE: '옐로 박스',
+      YELLOW_BOX_SUBTITLE: '새로운 아이디어의 시작',
     },
   };
 
@@ -155,6 +162,10 @@ class AppLocalizations {
   String get reset => _localizedValues[locale.languageCode][RESET];
   String get intervalTitle => _localizedValues[locale.languageCode][INTERVAL_TITLE];
   String get intervalSubtitle => _localizedValues[locale.languageCode][INTERVAL_SUBTITLE];
+
+  String get(String key) {
+    return _localizedValues[locale.languageCode][key];
+  }
 
   String getConfirmDeleteTitle(String item) {
     if (locale.languageCode == 'ko') {
