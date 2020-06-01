@@ -21,17 +21,36 @@ class HomeScreen extends StatefulWidget {
   State createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin implements HomeNavigator {
+class _HomeScreenState extends State<HomeScreen>
+  with AutomaticKeepAliveClientMixin, TickerProviderStateMixin
+  implements HomeNavigator {
+
   HomeBloc _bloc;
 
   // one shot flags are not managed in HomeState
   bool _hasShownIdeaBoxFullNoti = false;
   bool _isIdeaBoxFullNotiVisible = false;
 
+  AnimationController _wordAddedAnimationController;
+  AnimationController _ideaAddedAnimationController;
+
+  final GlobalKey _penButtonKey = GlobalKey();
+  final GlobalKey _logoKey = GlobalKey();
+  final GlobalKey _historyButtonKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     _bloc = HomeBloc(this);
+
+    _wordAddedAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    _ideaAddedAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
   }
 
   @override
@@ -46,6 +65,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   @override
   void dispose() {
+    _wordAddedAnimationController.dispose();
+    _ideaAddedAnimationController.dispose();
     super.dispose();
     _bloc.dispose();
   }
@@ -64,6 +85,16 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       _hasShownIdeaBoxFullNoti = false;
     }
 
+    final penButtonPosition = ViewLayoutInfo.create(
+      _penButtonKey.currentContext?.findRenderObject(),
+    );
+    final logoPosition = ViewLayoutInfo.create(
+      _logoKey.currentContext?.findRenderObject(),
+    );
+    final historyButtonPosition = ViewLayoutInfo.create(
+      _historyButtonKey.currentContext?.findRenderObject(),
+    );
+
     return WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress(),
       child: Stack(
@@ -72,6 +103,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
             appTheme: appTheme,
             bloc: _bloc,
             isWordEditorShown: state.isWordEditorShown,
+            penButtonKey: _penButtonKey,
+            logoKey: _logoKey,
+            historyButtonKey: _historyButtonKey,
           ),
           state.isWordEditorShown ? _WordEditor(
             bloc: _bloc,
@@ -101,6 +135,30 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
               _bloc.onIdeaBoxFullNotiClicked();
             }
+          ) : const SizedBox.shrink(),
+          _wordAddedAnimationController.isAnimating && penButtonPosition.isValid && historyButtonPosition.isValid ? PositionedTransition(
+            rect: RelativeRectTween(
+              begin: penButtonPosition.createCenterRelativeRect(context, 36, 36),
+              end: historyButtonPosition.createCenterRelativeRect(context, 36, 36),
+            ).animate(_wordAddedAnimationController),
+            child: FadeTransition(
+              opacity: Tween<double>(begin: 1, end: 0).animate(_wordAddedAnimationController),
+              child: Container(
+                color: Colors.blue,
+              ),
+            ),
+          ) : const SizedBox.shrink(),
+          _ideaAddedAnimationController.isAnimating && logoPosition.isValid && historyButtonPosition.isValid ? PositionedTransition(
+            rect: RelativeRectTween(
+              begin: logoPosition.createCenterRelativeRect(context, 36, 36),
+              end: historyButtonPosition.createCenterRelativeRect(context, 36, 36),
+            ).animate(_ideaAddedAnimationController),
+            child: FadeTransition(
+              opacity: Tween<double>(begin: 1, end: 0).animate(_ideaAddedAnimationController),
+              child: Container(
+                color: Colors.blue,
+              ),
+            ),
           ) : const SizedBox.shrink(),
         ],
       ),
@@ -147,17 +205,84 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     Utils.showToast(AppLocalizations.of(context).ideaBoxFullToast);
   }
 
+  @override
+  void showWordAddedAnimation() {
+    setState(() { });
+    _wordAddedAnimationController.reset();
+    _wordAddedAnimationController.forward();
+  }
+
+  @override
+  void showIdeaAddedAnimation() {
+    setState(() { });
+    _ideaAddedAnimationController.reset();
+    _ideaAddedAnimationController.forward();
+  }
+
+}
+
+class ViewLayoutInfo {
+  static ViewLayoutInfo create(RenderBox renderBox, {
+    Offset offset = Offset.zero,
+  }) {
+    if (renderBox == null) {
+      return ViewLayoutInfo(left: -1, top: -1, right: -1, bottom: -1);
+    } else {
+      final position = renderBox.localToGlobal(offset);
+      final size = renderBox.size;
+      return ViewLayoutInfo(
+        left: position.dx, top: position.dy,
+        right: position.dx + size.width, bottom: position.dy + size.height);
+    }
+  }
+
+  final double left;
+  final double top;
+  final double right;
+  final double bottom;
+
+  const ViewLayoutInfo({
+    @required this.left,
+    @required this.top,
+    @required this.right,
+    @required this.bottom,
+  });
+
+  bool get isValid => left != -1 && top != -1 && right != -1 && bottom != -1;
+  double get centerX => (left + right) / 2;
+  double get centerY => (top + bottom) / 2;
+
+  RelativeRect createCenterRelativeRect(BuildContext context, int width, int height) {
+    final Size screenSize = MediaQuery.of(context).size;
+    return RelativeRect.fromLTRB(
+      centerX - width / 2,
+      centerY - height / 2,
+      screenSize.width - centerX - width / 2,
+      screenSize.height - centerY - height / 2,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'ViewLayoutInfo(left: $left, top: $top, right: $right, bottom: $bottom)';
+  }
 }
 
 class _MainUI extends StatelessWidget {
   final AppTheme appTheme;
   final HomeBloc bloc;
   final bool isWordEditorShown;
+  final Key penButtonKey;
+  final Key logoKey;
+  final Key historyButtonKey;
 
   _MainUI({
     @required this.appTheme,
     @required this.bloc,
     @required this.isWordEditorShown,
+    @required this.penButtonKey,
+    @required this.logoKey,
+    @required this.historyButtonKey,
   });
 
   @override
@@ -169,6 +294,7 @@ class _MainUI extends StatelessWidget {
           currentChildScreenKey: ChildScreenKey.HOME,
           onItemClicked: bloc.onNavigationBarItemClicked,
           isVisible: !isWordEditorShown,
+          historyButtonKey: historyButtonKey,
         ),
         Expanded(
           child: SafeArea(
@@ -204,6 +330,7 @@ class _MainUI extends StatelessWidget {
                     onTap: () => bloc.onLogoClicked(),
                     behavior: HitTestBehavior.opaque,
                     child: SizedBox(
+                      key: logoKey,
                       width: 160,
                       height: 160,
                       child: Image.asset(appTheme.mainLogo),
@@ -211,6 +338,7 @@ class _MainUI extends StatelessWidget {
                   ),
                   const SizedBox(height: 68,),
                   FloatingActionButton(
+                    key: penButtonKey,
                     child: Image.asset('assets/ic_pen.png'),
                     backgroundColor: appTheme.darkColor,
                     onPressed: () => bloc.onAddWordClicked(),

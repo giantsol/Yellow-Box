@@ -6,4 +6,6 @@ abstract class HomeNavigator {
   void showSpeechToTextNotReady();
   void showAddMoreWordsForIdea();
   void showIdeaBoxFull();
+  void showWordAddedAnimation();
+  void showIdeaAddedAnimation();
 }

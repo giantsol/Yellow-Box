@@ -8,11 +8,13 @@ class ChildScreenNavigationBar extends StatelessWidget {
   final ChildScreenKey currentChildScreenKey;
   final Function(ChildScreenKey key) onItemClicked;
   final bool isVisible;
+  final Key historyButtonKey;
 
   ChildScreenNavigationBar({
     @required this.currentChildScreenKey,
     @required this.onItemClicked,
     this.isVisible = true,
+    this.historyButtonKey,
   });
 
   @override
@@ -30,6 +32,7 @@ class ChildScreenNavigationBar extends StatelessWidget {
         children: List.generate(items.length, (index) {
           final item = items[index];
           return Expanded(
+            key: item.key == ChildScreenKey.HISTORY ? historyButtonKey : null,
             child: Material(
               child: InkWell(
                 onTap: () => onItemClicked(item.key),

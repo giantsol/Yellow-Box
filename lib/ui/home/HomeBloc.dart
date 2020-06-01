@@ -107,10 +107,13 @@ class HomeBloc extends BaseBloc {
     } else if (result == AddWordResult.ALREADY_EXISTS) {
       _navigator.showEditingWordAlreadyExists();
     } else {
+      // SUCCESS
       _state.value = _state.value.buildNew(
         isWordEditorShown: false,
         editingWord: '',
       );
+
+      _navigator.showWordAddedAnimation();
     }
 
     _hideProgress();
@@ -189,9 +192,14 @@ class HomeBloc extends BaseBloc {
   }
 
   void onCloseIdeaPopUpClicked() {
+    final bool wasNewIdea = _state.value.ideaPopUpData.type == IdeaPopUpData.TYPE_NEW;
     _state.value = _state.value.buildNew(
       ideaPopUpData: IdeaPopUpData.NONE,
     );
+
+    if (wasNewIdea) {
+      _navigator.showIdeaAddedAnimation();
+    }
   }
 
   void onIdeaBoxFullNotiClicked() {

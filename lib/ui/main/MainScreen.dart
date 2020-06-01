@@ -19,7 +19,7 @@ class MainScreen extends StatefulWidget {
   State createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateMixin implements MainNavigator {
+class _MainScreenState extends State<MainScreen> implements MainNavigator {
   MainBloc _bloc;
 
   PageController _pageController;
