@@ -70,22 +70,21 @@ class _MainScreenState extends State<MainScreen> implements MainNavigator {
       data: Theme.of(context).copyWith(
         accentColor: appTheme.darkColor,
       ),
-      child: Scaffold(
-        backgroundColor: appTheme.lightColor,
-        resizeToAvoidBottomInset: false,
-        body: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            _BackgroundDeco(
-              appTheme: appTheme,
-            ),
-            PageView(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          _BackgroundDeco(
+            appTheme: appTheme,
+          ),
+          Scaffold(
+            resizeToAvoidBottomInset: false,
+            body: PageView(
               controller: _pageController,
               children: _childScreens,
               physics: NeverScrollableScrollPhysics(),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -106,21 +105,28 @@ class _BackgroundDeco extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topCenter,
+    return Stack(
+      children: [
+        Container(
+          color: appTheme.lightColor,
+        ),
+        Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            width: double.infinity,
             child: Image.asset(
               appTheme.topBackgroundDeco,
               fit: BoxFit.fitWidth,
               alignment: Alignment.topCenter,
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 60),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 60 + MediaQuery.of(context).padding.bottom),
+            child: Container(
+              width: double.infinity,
               child: Image.asset(
                 appTheme.bottomBackgroundDeco,
                 fit: BoxFit.fitWidth,
@@ -128,8 +134,8 @@ class _BackgroundDeco extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

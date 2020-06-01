@@ -204,6 +204,10 @@ class _MainUIState extends State<_MainUI> with SingleTickerProviderStateMixin {
                       ],
                     ),
                   ),
+                  Container(
+                    height: 1,
+                    color: widget.appTheme.isDarkTheme ? AppColors.DIVIDER_WHITE : AppColors.DIVIDER_BLACK,
+                  ),
                   widget.selectionMode == SelectionMode.NONE ? _TabBar(
                     bloc: widget.bloc,
                     appTheme: widget.appTheme,
@@ -243,29 +247,25 @@ class _TabBar extends StatelessWidget {
     final isDarkTheme = appTheme.isDarkTheme;
 
     return IntrinsicHeight(
-      child: Material(
-        color: appTheme.lightColor,
-        elevation: 4,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: 56,
-          ),
-          child: Row(
-            children: <Widget>[
-              _TabBarItem(
-                title: AppLocalizations.of(context).word,
-                onTap: bloc.onWordTabClicked,
-                isDarkTheme: isDarkTheme,
-                isSelected: isWordTab,
-              ),
-              _TabBarItem(
-                title: AppLocalizations.of(context).idea,
-                onTap: bloc.onIdeaTabClicked,
-                isDarkTheme: isDarkTheme,
-                isSelected: !isWordTab,
-              ),
-            ],
-          ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: 56,
+        ),
+        child: Row(
+          children: <Widget>[
+            _TabBarItem(
+              title: AppLocalizations.of(context).word,
+              onTap: bloc.onWordTabClicked,
+              isDarkTheme: isDarkTheme,
+              isSelected: isWordTab,
+            ),
+            _TabBarItem(
+              title: AppLocalizations.of(context).idea,
+              onTap: bloc.onIdeaTabClicked,
+              isDarkTheme: isDarkTheme,
+              isSelected: !isWordTab,
+            ),
+          ],
         ),
       ),
     );
@@ -344,77 +344,6 @@ class _WordsSelectionBar extends StatelessWidget {
     final isDarkTheme = appTheme.isDarkTheme;
 
     return IntrinsicHeight(
-      child: Material(
-        color: appTheme.lightColor,
-        elevation: 4,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: 56,
-          ),
-          child: Row(
-            children: <Widget>[
-              InkWell(
-                onTap: () => bloc.onSelectionModeCloseClicked(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 21, horizontal: 24),
-                  child: Image.asset(
-                    'assets/ic_close.png',
-                    color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Text(
-                  AppLocalizations.of(context).getSelectionTitle(selectedItems.length),
-                  style: TextStyle(
-                    color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  strutStyle: StrutStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () => bloc.onDeleteWordsClicked(),
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Image.asset(
-                    'assets/ic_delete.png',
-                    color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-}
-
-class _IdeasSelectionBar extends StatelessWidget {
-  final HistoryBloc bloc;
-  final AppTheme appTheme;
-  final Map<Idea, bool> selectedItems;
-
-  _IdeasSelectionBar({
-    @required this.bloc,
-    @required this.appTheme,
-    @required this.selectedItems,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDarkTheme = appTheme.isDarkTheme;
-
-    return Material(
-      color: appTheme.lightColor,
-      elevation: 4,
       child: ConstrainedBox(
         constraints: BoxConstraints(
           minHeight: 56,
@@ -446,17 +375,7 @@ class _IdeasSelectionBar extends StatelessWidget {
               ),
             ),
             InkWell(
-              onTap: () => bloc.onBlockIdeasClicked(),
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Image.asset(
-                  'assets/ic_block.png',
-                  color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
-                ),
-              ),
-            ),
-            InkWell(
-              onTap: () => bloc.onDeleteIdeasClicked(),
+              onTap: () => bloc.onDeleteWordsClicked(),
               child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: Image.asset(
@@ -468,6 +387,79 @@ class _IdeasSelectionBar extends StatelessWidget {
             const SizedBox(width: 10),
           ],
         ),
+      ),
+    );
+  }
+
+}
+
+class _IdeasSelectionBar extends StatelessWidget {
+  final HistoryBloc bloc;
+  final AppTheme appTheme;
+  final Map<Idea, bool> selectedItems;
+
+  _IdeasSelectionBar({
+    @required this.bloc,
+    @required this.appTheme,
+    @required this.selectedItems,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkTheme = appTheme.isDarkTheme;
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minHeight: 56,
+      ),
+      child: Row(
+        children: <Widget>[
+          InkWell(
+            onTap: () => bloc.onSelectionModeCloseClicked(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 21, horizontal: 24),
+              child: Image.asset(
+                'assets/ic_close.png',
+                color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              AppLocalizations.of(context).getSelectionTitle(selectedItems.length),
+              style: TextStyle(
+                color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              strutStyle: StrutStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () => bloc.onBlockIdeasClicked(),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Image.asset(
+                'assets/ic_block.png',
+                color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () => bloc.onDeleteIdeasClicked(),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Image.asset(
+                'assets/ic_delete.png',
+                color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+        ],
       ),
     );
   }

@@ -8,11 +8,11 @@ class AppTheme {
     primaryColor: Color(0xFFEEB163),
     lightColor: Color(0xFFFFE392),
     darkColor: Color(0xFFB08236),
-    mainLogo: 'assets/main_logo_yellow_box.png',
+    mainLogo: 'assets/yellow_box_main_logo.png',
     titleKey: AppLocalizations.YELLOW_BOX_TITLE,
     subtitleKey: AppLocalizations.YELLOW_BOX_SUBTITLE,
-    topBackgroundDeco: 'assets/ic_mic.png',
-    bottomBackgroundDeco: 'assets/ic_pen.png',
+    topBackgroundDeco: 'assets/yellow_box_top_bg.png',
+    bottomBackgroundDeco: 'assets/yellow_box_bottom_bg.png',
     isDarkTheme: false,
   );
 
