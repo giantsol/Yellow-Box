@@ -31,25 +31,32 @@ class _HomeScreenState extends State<HomeScreen>
   bool _hasShownIdeaBoxFullNoti = false;
   bool _isIdeaBoxFullNotiVisible = false;
 
-  AnimationController _wordAddedAnimationController;
-  AnimationController _ideaAddedAnimationController;
+  AnimationController _wordAddedAnimation;
+  AnimationController _ideaAddedAnimation;
 
   final GlobalKey _penButtonKey = GlobalKey();
   final GlobalKey _logoKey = GlobalKey();
   final GlobalKey _historyButtonKey = GlobalKey();
+  
+  AppTheme _prevAppTheme;
+  AnimationController _logoInAnimation;
 
   @override
   void initState() {
     super.initState();
     _bloc = HomeBloc(this);
 
-    _wordAddedAnimationController = AnimationController(
+    _wordAddedAnimation = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     );
-    _ideaAddedAnimationController = AnimationController(
+    _ideaAddedAnimation = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
+    );
+    _logoInAnimation = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
     );
   }
 
@@ -65,8 +72,9 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
-    _wordAddedAnimationController.dispose();
-    _ideaAddedAnimationController.dispose();
+    _wordAddedAnimation.dispose();
+    _ideaAddedAnimation.dispose();
+    _logoInAnimation.dispose();
     super.dispose();
     _bloc.dispose();
   }
@@ -95,6 +103,11 @@ class _HomeScreenState extends State<HomeScreen>
       _historyButtonKey.currentContext?.findRenderObject(),
     );
 
+    if (_prevAppTheme != appTheme) {
+      _runLogoInAnimation(_prevAppTheme == null ? 500 : 0);
+      _prevAppTheme = appTheme;
+    }
+
     return WillPopScope(
       onWillPop: () async => !_bloc.handleBackPress(),
       child: Stack(
@@ -106,6 +119,7 @@ class _HomeScreenState extends State<HomeScreen>
             penButtonKey: _penButtonKey,
             logoKey: _logoKey,
             historyButtonKey: _historyButtonKey,
+            logoInAnimation: _logoInAnimation,
           ),
           state.isWordEditorShown ? _WordEditor(
             bloc: _bloc,
@@ -136,25 +150,25 @@ class _HomeScreenState extends State<HomeScreen>
               _bloc.onIdeaBoxFullNotiClicked();
             }
           ) : const SizedBox.shrink(),
-          _wordAddedAnimationController.isAnimating && penButtonPosition.isValid && historyButtonPosition.isValid ? PositionedTransition(
+          _wordAddedAnimation.isAnimating && penButtonPosition.isValid && historyButtonPosition.isValid ? PositionedTransition(
             rect: RelativeRectTween(
               begin: penButtonPosition.createCenterRelativeRect(context, 36, 36),
               end: historyButtonPosition.createCenterRelativeRect(context, 36, 36),
-            ).animate(_wordAddedAnimationController),
+            ).animate(_wordAddedAnimation),
             child: FadeTransition(
-              opacity: Tween<double>(begin: 1, end: 0).animate(_wordAddedAnimationController),
+              opacity: Tween<double>(begin: 1, end: 0).animate(_wordAddedAnimation),
               child: Container(
                 color: Colors.blue,
               ),
             ),
           ) : const SizedBox.shrink(),
-          _ideaAddedAnimationController.isAnimating && logoPosition.isValid && historyButtonPosition.isValid ? PositionedTransition(
+          _ideaAddedAnimation.isAnimating && logoPosition.isValid && historyButtonPosition.isValid ? PositionedTransition(
             rect: RelativeRectTween(
               begin: logoPosition.createCenterRelativeRect(context, 36, 36),
               end: historyButtonPosition.createCenterRelativeRect(context, 36, 36),
-            ).animate(_ideaAddedAnimationController),
+            ).animate(_ideaAddedAnimation),
             child: FadeTransition(
-              opacity: Tween<double>(begin: 1, end: 0).animate(_ideaAddedAnimationController),
+              opacity: Tween<double>(begin: 1, end: 0).animate(_ideaAddedAnimation),
               child: Container(
                 color: Colors.blue,
               ),
@@ -173,6 +187,12 @@ class _HomeScreenState extends State<HomeScreen>
         _isIdeaBoxFullNotiVisible = false;
       });
     }
+  }
+
+  Future<void> _runLogoInAnimation(int delayMillis) async {
+    await Future<void>.delayed(Duration(milliseconds: delayMillis));
+    _logoInAnimation.reset();
+    _logoInAnimation.forward();
   }
 
   @override
@@ -208,15 +228,15 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void showWordAddedAnimation() {
     setState(() { });
-    _wordAddedAnimationController.reset();
-    _wordAddedAnimationController.forward();
+    _wordAddedAnimation.reset();
+    _wordAddedAnimation.forward();
   }
 
   @override
   void showIdeaAddedAnimation() {
     setState(() { });
-    _ideaAddedAnimationController.reset();
-    _ideaAddedAnimationController.forward();
+    _ideaAddedAnimation.reset();
+    _ideaAddedAnimation.forward();
   }
 
 }
@@ -275,6 +295,7 @@ class _MainUI extends StatelessWidget {
   final Key penButtonKey;
   final Key logoKey;
   final Key historyButtonKey;
+  final Animation<double> logoInAnimation;
 
   _MainUI({
     @required this.appTheme,
@@ -283,6 +304,7 @@ class _MainUI extends StatelessWidget {
     @required this.penButtonKey,
     @required this.logoKey,
     @required this.historyButtonKey,
+    @required this.logoInAnimation,
   });
 
   @override
@@ -329,11 +351,15 @@ class _MainUI extends StatelessWidget {
                   GestureDetector(
                     onTap: () => bloc.onLogoClicked(),
                     behavior: HitTestBehavior.opaque,
-                    child: SizedBox(
-                      key: logoKey,
-                      width: 160,
-                      height: 160,
-                      child: Image.asset(appTheme.mainLogo),
+                    child: SlideTransition(
+                      position: Tween<Offset>(begin: Offset(0, 0.5), end: Offset(0, 0))
+                        .animate(CurvedAnimation(parent: logoInAnimation, curve: Curves.easeOutQuint)),
+                      child: SizedBox(
+                        key: logoKey,
+                        width: 160,
+                        height: 160,
+                        child: Image.asset(appTheme.mainLogo),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 68,),

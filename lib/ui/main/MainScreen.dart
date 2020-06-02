@@ -19,7 +19,9 @@ class MainScreen extends StatefulWidget {
   State createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> implements MainNavigator {
+class _MainScreenState extends State<MainScreen>
+  with SingleTickerProviderStateMixin
+  implements MainNavigator {
   MainBloc _bloc;
 
   PageController _pageController;
@@ -36,11 +38,18 @@ class _MainScreenState extends State<MainScreen> implements MainNavigator {
     SettingsScreen(),
   ];
 
+  AnimationController _backgroundDecoInAnimation;
+  AppTheme _prevAppTheme;
+
   @override
   void initState() {
     super.initState();
     _bloc = MainBloc(this);
     _pageController = PageController();
+    _backgroundDecoInAnimation = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
+    );
   }
 
   @override
@@ -54,6 +63,7 @@ class _MainScreenState extends State<MainScreen> implements MainNavigator {
 
   @override
   void dispose() {
+    _backgroundDecoInAnimation.dispose();
     super.dispose();
     _bloc.dispose();
     _pageController.dispose();
@@ -66,6 +76,11 @@ class _MainScreenState extends State<MainScreen> implements MainNavigator {
       _pageController.jumpToPage(page);
     }
 
+    if (_prevAppTheme != appTheme) {
+      _runBackgroundDecoInAnimation(_prevAppTheme == null ? 500 : 0);
+      _prevAppTheme = appTheme;
+    }
+
     return Theme(
       data: Theme.of(context).copyWith(
         accentColor: appTheme.darkColor,
@@ -75,6 +90,7 @@ class _MainScreenState extends State<MainScreen> implements MainNavigator {
         children: [
           _BackgroundDeco(
             appTheme: appTheme,
+            animation: _backgroundDecoInAnimation,
           ),
           Scaffold(
             resizeToAvoidBottomInset: false,
@@ -89,6 +105,12 @@ class _MainScreenState extends State<MainScreen> implements MainNavigator {
     );
   }
 
+  Future<void> _runBackgroundDecoInAnimation(int delayMillis) async {
+    await Future<void>.delayed(Duration(milliseconds: delayMillis));
+    _backgroundDecoInAnimation.reset();
+    _backgroundDecoInAnimation.forward();
+  }
+
   @override
   void showRemainingMiniBoxWordsCount(int count) {
     Utils.showToast(AppLocalizations.of(context).getRemainingMiniBoxWordsCount(count), toastLength: Toast.LENGTH_LONG);
@@ -98,9 +120,11 @@ class _MainScreenState extends State<MainScreen> implements MainNavigator {
 
 class _BackgroundDeco extends StatelessWidget {
   final AppTheme appTheme;
+  final Animation<double> animation;
 
   _BackgroundDeco({
     @required this.appTheme,
+    @required this.animation,
   });
 
   @override
@@ -112,12 +136,16 @@ class _BackgroundDeco extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.topCenter,
-          child: Container(
-            width: double.infinity,
-            child: Image.asset(
-              appTheme.topBackgroundDeco,
-              fit: BoxFit.fitWidth,
-              alignment: Alignment.topCenter,
+          child: SlideTransition(
+            position: Tween<Offset>(begin: Offset(0, -1), end: Offset(0, 0))
+              .animate(CurvedAnimation(parent: animation, curve: Curves.elasticOut)),
+            child: Container(
+              width: double.infinity,
+              child: Image.asset(
+                appTheme.topBackgroundDeco,
+                fit: BoxFit.fitWidth,
+                alignment: Alignment.topCenter,
+              ),
             ),
           ),
         ),
@@ -125,12 +153,16 @@ class _BackgroundDeco extends StatelessWidget {
           alignment: Alignment.bottomCenter,
           child: Padding(
             padding: EdgeInsets.only(bottom: 60 + MediaQuery.of(context).padding.bottom),
-            child: Container(
-              width: double.infinity,
-              child: Image.asset(
-                appTheme.bottomBackgroundDeco,
-                fit: BoxFit.fitWidth,
-                alignment: Alignment.bottomCenter,
+            child: SlideTransition(
+              position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
+                .animate(CurvedAnimation(parent: animation, curve: Curves.elasticOut)),
+              child: Container(
+                width: double.infinity,
+                child: Image.asset(
+                  appTheme.bottomBackgroundDeco,
+                  fit: BoxFit.fitWidth,
+                  alignment: Alignment.bottomCenter,
+                ),
               ),
             ),
           ),
