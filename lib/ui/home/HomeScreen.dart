@@ -49,8 +49,8 @@ class _HomeScreenState extends State<HomeScreen>
 
     _wordAddedAnimation = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
+      duration: const Duration(milliseconds: 700),
+    )..addStatusListener(_wordAddedAnimationStatusListener);
     _ideaAddedAnimation = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
@@ -63,6 +63,15 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this,
       duration: const Duration(milliseconds: 2000),
     );
+  }
+
+  void _wordAddedAnimationStatusListener(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      _logoIdleAnimation.repeat();
+    } else if (status == AnimationStatus.dismissed) {
+      _logoInAnimation.reset();
+      _logoIdleAnimation.reset();
+    }
   }
 
   void _logoInAnimationStatusListener(AnimationStatus status) {
@@ -85,6 +94,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
+    _wordAddedAnimation.removeStatusListener(_wordAddedAnimationStatusListener);
     _wordAddedAnimation.dispose();
     _ideaAddedAnimation.dispose();
     _logoInAnimation.removeStatusListener(_logoInAnimationStatusListener);
@@ -139,6 +149,10 @@ class _HomeScreenState extends State<HomeScreen>
               begin: 0,
               end: pi,
             ).animate(CurvedAnimation(parent: _logoIdleAnimation, curve: Curves.easeInOutQuad)),
+            wordAddedAnimation: Tween<double>(
+              begin: 0,
+              end: pi * 2,
+            ).animate(CurvedAnimation(parent: _wordAddedAnimation, curve: Curves.fastOutSlowIn)),
           ),
           state.isWordEditorShown ? _WordEditor(
             bloc: _bloc,
@@ -168,18 +182,6 @@ class _HomeScreenState extends State<HomeScreen>
 
               _bloc.onIdeaBoxFullNotiClicked();
             }
-          ) : const SizedBox.shrink(),
-          _wordAddedAnimation.isAnimating && penButtonPosition.isValid && historyButtonPosition.isValid ? PositionedTransition(
-            rect: RelativeRectTween(
-              begin: penButtonPosition.createCenterRelativeRect(context, 36, 36),
-              end: historyButtonPosition.createCenterRelativeRect(context, 36, 36),
-            ).animate(_wordAddedAnimation),
-            child: FadeTransition(
-              opacity: Tween<double>(begin: 1, end: 0).animate(_wordAddedAnimation),
-              child: Container(
-                color: Colors.blue,
-              ),
-            ),
           ) : const SizedBox.shrink(),
           _ideaAddedAnimation.isAnimating && logoPosition.isValid && historyButtonPosition.isValid ? PositionedTransition(
             rect: RelativeRectTween(
@@ -316,6 +318,7 @@ class _MainUI extends StatelessWidget {
   final Key historyButtonKey;
   final Animation<double> logoInAnimation;
   final Animation<double> logoIdleAnimation;
+  final Animation<double> wordAddedAnimation;
 
   _MainUI({
     @required this.appTheme,
@@ -326,6 +329,7 @@ class _MainUI extends StatelessWidget {
     @required this.historyButtonKey,
     @required this.logoInAnimation,
     @required this.logoIdleAnimation,
+    @required this.wordAddedAnimation,
   });
 
   @override
@@ -380,15 +384,24 @@ class _MainUI extends StatelessWidget {
                           .animate(CurvedAnimation(parent: logoInAnimation, curve: Curves.easeOutQuint)),
                         child: AnimatedBuilder(
                           animation: logoIdleAnimation,
-                          child: SizedBox(
-                            key: logoKey,
-                            width: 160,
-                            height: 160,
-                            child: Image.asset(appTheme.mainLogo),
+                          child: AnimatedBuilder(
+                            animation: wordAddedAnimation,
+                            child: SizedBox(
+                              key: logoKey,
+                              width: 160,
+                              height: 160,
+                              child: Image.asset(appTheme.mainLogo),
+                            ),
+                            builder: (context, child) {
+                              return Transform.scale(
+                                scale: 1 + 0.2 * sin(wordAddedAnimation.value),
+                                child: child,
+                              );
+                            },
                           ),
                           builder: (context, child) {
                             return FractionalTranslation(
-                              translation: Offset(0, 0.02* -sin(logoIdleAnimation.value)),
+                              translation: Offset(0, 0.02 * -sin(logoIdleAnimation.value)),
                               child: child,
                             );
                           },
