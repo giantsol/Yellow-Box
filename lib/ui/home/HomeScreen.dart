@@ -40,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen>
   
   AppTheme _prevAppTheme;
   AnimationController _logoInAnimation;
+  AnimationController _logoIdleAnimation;
 
   @override
   void initState() {
@@ -57,7 +58,19 @@ class _HomeScreenState extends State<HomeScreen>
     _logoInAnimation = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3000),
+    )..addStatusListener(_logoInAnimationStatusListener);
+    _logoIdleAnimation = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
     );
+  }
+
+  void _logoInAnimationStatusListener(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      _logoIdleAnimation.repeat();
+    } else if (status == AnimationStatus.dismissed) {
+      _logoIdleAnimation.reset();
+    }
   }
 
   @override
@@ -74,7 +87,9 @@ class _HomeScreenState extends State<HomeScreen>
   void dispose() {
     _wordAddedAnimation.dispose();
     _ideaAddedAnimation.dispose();
+    _logoInAnimation.removeStatusListener(_logoInAnimationStatusListener);
     _logoInAnimation.dispose();
+    _logoIdleAnimation.dispose();
     super.dispose();
     _bloc.dispose();
   }
@@ -120,6 +135,10 @@ class _HomeScreenState extends State<HomeScreen>
             logoKey: _logoKey,
             historyButtonKey: _historyButtonKey,
             logoInAnimation: _logoInAnimation,
+            logoIdleAnimation: Tween<double>(
+              begin: 0,
+              end: pi,
+            ).animate(CurvedAnimation(parent: _logoIdleAnimation, curve: Curves.easeInOutQuad)),
           ),
           state.isWordEditorShown ? _WordEditor(
             bloc: _bloc,
@@ -296,6 +315,7 @@ class _MainUI extends StatelessWidget {
   final Key logoKey;
   final Key historyButtonKey;
   final Animation<double> logoInAnimation;
+  final Animation<double> logoIdleAnimation;
 
   _MainUI({
     @required this.appTheme,
@@ -305,6 +325,7 @@ class _MainUI extends StatelessWidget {
     @required this.logoKey,
     @required this.historyButtonKey,
     @required this.logoInAnimation,
+    @required this.logoIdleAnimation,
   });
 
   @override
@@ -354,11 +375,24 @@ class _MainUI extends StatelessWidget {
                     child: SlideTransition(
                       position: Tween<Offset>(begin: Offset(0, 0.5), end: Offset(0, 0))
                         .animate(CurvedAnimation(parent: logoInAnimation, curve: Curves.easeOutQuint)),
-                      child: SizedBox(
-                        key: logoKey,
-                        width: 160,
-                        height: 160,
-                        child: Image.asset(appTheme.mainLogo),
+                      child: FadeTransition(
+                        opacity: Tween<double>(begin: 0, end: 1)
+                          .animate(CurvedAnimation(parent: logoInAnimation, curve: Curves.easeOutQuint)),
+                        child: AnimatedBuilder(
+                          animation: logoIdleAnimation,
+                          child: SizedBox(
+                            key: logoKey,
+                            width: 160,
+                            height: 160,
+                            child: Image.asset(appTheme.mainLogo),
+                          ),
+                          builder: (context, child) {
+                            return FractionalTranslation(
+                              translation: Offset(0, 0.02* -sin(logoIdleAnimation.value)),
+                              child: child,
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
