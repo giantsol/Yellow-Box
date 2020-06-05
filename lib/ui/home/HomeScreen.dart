@@ -53,8 +53,8 @@ class _HomeScreenState extends State<HomeScreen>
     )..addStatusListener(_wordAddedAnimationStatusListener);
     _ideaAddedAnimation = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
+      duration: const Duration(milliseconds: 2000),
+    )..addStatusListener(_ideaAddedAnimationStatusListener);
     _logoInAnimation = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 3000),
@@ -69,7 +69,20 @@ class _HomeScreenState extends State<HomeScreen>
     if (status == AnimationStatus.completed) {
       _logoIdleAnimation.repeat();
     } else if (status == AnimationStatus.dismissed) {
-      _logoInAnimation.reset();
+      if (_logoInAnimation.isAnimating) {
+        _logoInAnimation.reset();
+      }
+      _logoIdleAnimation.reset();
+    }
+  }
+
+  void _ideaAddedAnimationStatusListener(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      _logoIdleAnimation.repeat();
+    } else if (status == AnimationStatus.dismissed) {
+      if (_logoInAnimation.isAnimating) {
+        _logoInAnimation.reset();
+      }
       _logoIdleAnimation.reset();
     }
   }
@@ -96,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen>
   void dispose() {
     _wordAddedAnimation.removeStatusListener(_wordAddedAnimationStatusListener);
     _wordAddedAnimation.dispose();
+    _ideaAddedAnimation.removeStatusListener(_ideaAddedAnimationStatusListener);
     _ideaAddedAnimation.dispose();
     _logoInAnimation.removeStatusListener(_logoInAnimationStatusListener);
     _logoInAnimation.dispose();
@@ -153,6 +167,10 @@ class _HomeScreenState extends State<HomeScreen>
               begin: 0,
               end: pi * 2,
             ).animate(CurvedAnimation(parent: _wordAddedAnimation, curve: Curves.fastOutSlowIn)),
+            ideaAddedAnimation: Tween<double>(
+              begin: 0,
+              end: pi,
+            ).animate(CurvedAnimation(parent: _ideaAddedAnimation, curve: Interval(0, 0.2, curve: Curves.fastOutSlowIn))),
           ),
           state.isWordEditorShown ? _WordEditor(
             bloc: _bloc,
@@ -187,11 +205,19 @@ class _HomeScreenState extends State<HomeScreen>
             rect: RelativeRectTween(
               begin: logoPosition.createCenterRelativeRect(context, 36, 36),
               end: historyButtonPosition.createCenterRelativeRect(context, 36, 36),
-            ).animate(_ideaAddedAnimation),
+            ).animate(CurvedAnimation(parent: _ideaAddedAnimation, curve: Curves.fastOutSlowIn)),
             child: FadeTransition(
               opacity: Tween<double>(begin: 1, end: 0).animate(_ideaAddedAnimation),
-              child: Container(
-                color: Colors.blue,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 1, end: 0).animate(_ideaAddedAnimation),
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: appTheme.pointColor,
+                  ),
+                ),
               ),
             ),
           ) : const SizedBox.shrink(),
@@ -319,6 +345,7 @@ class _MainUI extends StatelessWidget {
   final Animation<double> logoInAnimation;
   final Animation<double> logoIdleAnimation;
   final Animation<double> wordAddedAnimation;
+  final Animation<double> ideaAddedAnimation;
 
   _MainUI({
     @required this.appTheme,
@@ -330,6 +357,7 @@ class _MainUI extends StatelessWidget {
     @required this.logoInAnimation,
     @required this.logoIdleAnimation,
     @required this.wordAddedAnimation,
+    @required this.ideaAddedAnimation,
   });
 
   @override
@@ -386,11 +414,20 @@ class _MainUI extends StatelessWidget {
                           animation: logoIdleAnimation,
                           child: AnimatedBuilder(
                             animation: wordAddedAnimation,
-                            child: SizedBox(
-                              key: logoKey,
-                              width: 160,
-                              height: 160,
-                              child: Image.asset(appTheme.mainLogo),
+                            child: AnimatedBuilder(
+                              animation: ideaAddedAnimation,
+                              child: SizedBox(
+                                key: logoKey,
+                                width: 160,
+                                height: 160,
+                                child: Image.asset(appTheme.mainLogo),
+                              ),
+                              builder: (context, child) {
+                                return Transform.scale(
+                                  scale: 1 + 0.2 * sin(ideaAddedAnimation.value),
+                                  child: child,
+                                );
+                              },
                             ),
                             builder: (context, child) {
                               return Transform.scale(

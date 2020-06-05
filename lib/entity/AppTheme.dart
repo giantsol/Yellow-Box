@@ -8,6 +8,7 @@ class AppTheme {
     primaryColor: Color(0xFFEEB163),
     lightColor: Color(0xFFFFE392),
     darkColor: Color(0xFFB08236),
+    pointColor: Color(0xFFFFF763),
     mainLogo: 'assets/yellow_box_main_logo.png',
     titleKey: AppLocalizations.YELLOW_BOX_TITLE,
     subtitleKey: AppLocalizations.YELLOW_BOX_SUBTITLE,
@@ -19,6 +20,7 @@ class AppTheme {
   final Color primaryColor;
   final Color lightColor;
   final Color darkColor;
+  final Color pointColor;
   final String mainLogo;
   final String titleKey;
   final String subtitleKey;
@@ -30,6 +32,7 @@ class AppTheme {
     this.primaryColor,
     this.lightColor,
     this.darkColor,
+    this.pointColor,
     this.mainLogo,
     this.titleKey,
     this.subtitleKey,
