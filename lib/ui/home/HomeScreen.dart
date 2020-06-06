@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen>
     )..addStatusListener(_wordAddedAnimationStatusListener);
     _ideaAddedAnimation = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1000),
     )..addStatusListener(_ideaAddedAnimationStatusListener);
     _logoInAnimation = AnimationController(
       vsync: this,
@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen>
   void _wordAddedAnimationStatusListener(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
       _logoIdleAnimation.repeat();
-    } else if (status == AnimationStatus.dismissed) {
+    } else if (status == AnimationStatus.forward) {
       if (_logoInAnimation.isAnimating) {
         _logoInAnimation.reset();
       }
@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen>
   void _ideaAddedAnimationStatusListener(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
       _logoIdleAnimation.repeat();
-    } else if (status == AnimationStatus.dismissed) {
+    } else if (status == AnimationStatus.forward) {
       if (_logoInAnimation.isAnimating) {
         _logoInAnimation.reset();
       }
@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen>
   void _logoInAnimationStatusListener(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
       _logoIdleAnimation.repeat();
-    } else if (status == AnimationStatus.dismissed) {
+    } else if (status == AnimationStatus.forward) {
       _logoIdleAnimation.reset();
     }
   }
@@ -145,6 +145,10 @@ class _HomeScreenState extends State<HomeScreen>
     if (_prevAppTheme != appTheme) {
       _runLogoInAnimation(_prevAppTheme == null ? 500 : 0);
       _prevAppTheme = appTheme;
+    }
+
+    if (state.isScrimVisible && _ideaAddedAnimation.isAnimating) {
+      _ideaAddedAnimation.reset();
     }
 
     return WillPopScope(
@@ -360,7 +364,7 @@ class _MainUI extends StatelessWidget {
       this.ideaAddedAnimation = Tween<double>(
         begin: 0,
         end: pi,
-      ).animate(CurvedAnimation(parent: ideaAddedAnimation, curve: Interval(0, 0.2, curve: Curves.fastOutSlowIn)));
+      ).animate(CurvedAnimation(parent: ideaAddedAnimation, curve: Interval(0, 0.4, curve: Curves.fastOutSlowIn)));
 
   @override
   Widget build(BuildContext context) {
