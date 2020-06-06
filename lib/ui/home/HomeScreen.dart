@@ -159,18 +159,9 @@ class _HomeScreenState extends State<HomeScreen>
             logoKey: _logoKey,
             historyButtonKey: _historyButtonKey,
             logoInAnimation: _logoInAnimation,
-            logoIdleAnimation: Tween<double>(
-              begin: 0,
-              end: pi,
-            ).animate(CurvedAnimation(parent: _logoIdleAnimation, curve: Curves.easeInOutQuad)),
-            wordAddedAnimation: Tween<double>(
-              begin: 0,
-              end: pi * 2,
-            ).animate(CurvedAnimation(parent: _wordAddedAnimation, curve: Curves.fastOutSlowIn)),
-            ideaAddedAnimation: Tween<double>(
-              begin: 0,
-              end: pi,
-            ).animate(CurvedAnimation(parent: _ideaAddedAnimation, curve: Interval(0, 0.2, curve: Curves.fastOutSlowIn))),
+            logoIdleAnimation: _logoIdleAnimation,
+            wordAddedAnimation: _wordAddedAnimation,
+            ideaAddedAnimation: _ideaAddedAnimation,
           ),
           state.isWordEditorShown ? _WordEditor(
             bloc: _bloc,
@@ -355,10 +346,21 @@ class _MainUI extends StatelessWidget {
     @required this.logoKey,
     @required this.historyButtonKey,
     @required this.logoInAnimation,
-    @required this.logoIdleAnimation,
-    @required this.wordAddedAnimation,
-    @required this.ideaAddedAnimation,
-  });
+    @required Animation<double> logoIdleAnimation,
+    @required Animation<double> wordAddedAnimation,
+    @required Animation<double> ideaAddedAnimation,
+  }) : this.logoIdleAnimation = Tween<double>(
+    begin: 0,
+    end: pi,
+  ).animate(CurvedAnimation(parent: logoIdleAnimation, curve: Curves.easeInOutQuad)),
+      this.wordAddedAnimation = Tween<double>(
+        begin: 0,
+        end: pi * 2,
+      ).animate(CurvedAnimation(parent: wordAddedAnimation, curve: Curves.fastOutSlowIn)),
+      this.ideaAddedAnimation = Tween<double>(
+        begin: 0,
+        end: pi,
+      ).animate(CurvedAnimation(parent: ideaAddedAnimation, curve: Interval(0, 0.2, curve: Curves.fastOutSlowIn)));
 
   @override
   Widget build(BuildContext context) {
@@ -438,7 +440,7 @@ class _MainUI extends StatelessWidget {
                           ),
                           builder: (context, child) {
                             return FractionalTranslation(
-                              translation: Offset(0, 0.02 * -sin(logoIdleAnimation.value)),
+                              translation: Offset(0, 0.05 * -sin(logoIdleAnimation.value)),
                               child: child,
                             );
                           },
