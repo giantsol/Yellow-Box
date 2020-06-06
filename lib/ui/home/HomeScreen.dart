@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     _wordAddedAnimation = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 1000),
     )..addStatusListener(_wordAddedAnimationStatusListener);
     _ideaAddedAnimation = AnimationController(
       vsync: this,
@@ -437,7 +437,7 @@ class _MainUI extends StatelessWidget {
                             ),
                             builder: (context, child) {
                               return Transform.scale(
-                                scale: 1 + 0.2 * sin(wordAddedAnimation.value),
+                                scale: 1 + 0.08 * sin(wordAddedAnimation.value),
                                 child: child,
                               );
                             },
