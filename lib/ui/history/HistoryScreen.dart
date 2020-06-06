@@ -12,6 +12,7 @@ import 'package:yellow_box/ui/history/HistoryBloc.dart';
 import 'package:yellow_box/ui/history/HistoryState.dart';
 import 'package:yellow_box/ui/widget/AppAlertDialog.dart';
 import 'package:yellow_box/ui/widget/AppChoiceListDialog.dart';
+import 'package:yellow_box/ui/widget/CenterProgress.dart';
 import 'package:yellow_box/ui/widget/ChildScreenNavigationBar.dart';
 import 'package:yellow_box/ui/widget/Scrim.dart';
 
@@ -102,6 +103,9 @@ class _HistoryScreenState extends State<HistoryScreen> with AutomaticKeepAliveCl
             onPrimaryButtonClicked: _bloc.onConfirmBlockIdeasClicked,
             secondaryButtonText: AppLocalizations.of(context).cancel,
             onSecondaryButtonClicked: _bloc.onCloseBlockIdeasClicked,
+          ) : const SizedBox.shrink(),
+          state.isProgressShown ? CenterProgress(
+            appTheme: appTheme,
           ) : const SizedBox.shrink(),
         ],
       ),

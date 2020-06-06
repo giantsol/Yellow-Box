@@ -13,6 +13,7 @@ import 'package:yellow_box/ui/home/HomeBloc.dart';
 import 'package:yellow_box/ui/home/HomeNavigator.dart';
 import 'package:yellow_box/ui/home/HomeState.dart';
 import 'package:yellow_box/ui/widget/AppTextField.dart';
+import 'package:yellow_box/ui/widget/CenterProgress.dart';
 import 'package:yellow_box/ui/widget/ChildScreenNavigationBar.dart';
 import 'package:yellow_box/ui/widget/Scrim.dart';
 
@@ -184,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen>
             data: state.ideaPopUpData,
             appTheme: appTheme,
           ) : const SizedBox.shrink(),
-          state.isProgressShown ? _OverlayProgress(
+          state.isProgressShown ? CenterProgress(
             appTheme: appTheme,
           ) : const SizedBox.shrink(),
           _isIdeaBoxFullNotiVisible ? _IdeaBoxFullNoti(
@@ -583,24 +584,6 @@ class _WordEditor extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-}
-
-class _OverlayProgress extends StatelessWidget {
-  final AppTheme appTheme;
-
-  _OverlayProgress({
-    @required this.appTheme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation(appTheme.darkColor),
       ),
     );
   }

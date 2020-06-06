@@ -41,6 +41,9 @@ class HistoryBloc extends BaseBloc {
   final _deleteIdeas = DeleteIdeas();
   final _blockIdeas = BlockIdeas();
 
+  bool _wordsLoaded = false;
+  bool _ideasLoaded = false;
+
   HistoryBloc() {
     _observeAppTheme.invoke()
       .listen((appTheme) {
@@ -51,15 +54,19 @@ class HistoryBloc extends BaseBloc {
 
     _observeWords.invoke()
       .listen((words) {
+      _wordsLoaded = true;
       _state.value = _state.value.buildNew(
         words: words,
+        isProgressShown: !_wordsLoaded || !_ideasLoaded,
       );
     }).addTo(_subscriptions);
 
     _observeIdeas.invoke()
       .listen((ideas) {
+      _ideasLoaded = true;
       _state.value = _state.value.buildNew(
         ideas: ideas,
+        isProgressShown: !_wordsLoaded || !_ideasLoaded,
       );
     }).addTo(_subscriptions);
   }
