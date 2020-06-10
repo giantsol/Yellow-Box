@@ -134,15 +134,9 @@ class _HomeScreenState extends State<HomeScreen>
       _hasShownIdeaBoxFullNoti = false;
     }
 
-    final penButtonPosition = ViewLayoutInfo.create(
-      _penButtonKey.currentContext?.findRenderObject(),
-    );
-    final logoPosition = ViewLayoutInfo.create(
-      _logoKey.currentContext?.findRenderObject(),
-    );
-    final historyButtonPosition = ViewLayoutInfo.create(
-      _historyButtonKey.currentContext?.findRenderObject(),
-    );
+    final penButtonRect = _getRect(_penButtonKey.currentContext?.findRenderObject());
+    final logoRect = _getRect(_logoKey.currentContext?.findRenderObject());
+    final historyButtonRect = _getRect(_historyButtonKey.currentContext?.findRenderObject());
 
     if (_prevAppTheme != appTheme) {
       _runLogoInAnimation(_prevAppTheme == null ? 500 : 0);
@@ -198,10 +192,10 @@ class _HomeScreenState extends State<HomeScreen>
               _bloc.onIdeaBoxFullNotiClicked();
             }
           ) : const SizedBox.shrink(),
-          _ideaAddedAnimation.isAnimating && logoPosition.isValid && historyButtonPosition.isValid ? PositionedTransition(
+          _ideaAddedAnimation.isAnimating && !logoRect.isEmpty && !historyButtonRect.isEmpty ? PositionedTransition(
             rect: RelativeRectTween(
-              begin: logoPosition.createCenterRelativeRect(context, 36, 36),
-              end: historyButtonPosition.createCenterRelativeRect(context, 36, 36),
+              begin: _getCenteredRelativeRect(logoRect, 36, 36),
+              end: _getCenteredRelativeRect(historyButtonRect, 36, 36),
             ).animate(CurvedAnimation(parent: _ideaAddedAnimation, curve: Curves.fastOutSlowIn)),
             child: FadeTransition(
               opacity: Tween<double>(begin: 1, end: 0).animate(_ideaAddedAnimation),
@@ -291,61 +285,34 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _showTutorialOne() {
-    Tutorial.of(context).showTutorialOne(_penButtonFinder);
+    Tutorial.of(context).showTutorialOne(_penRectFinder);
   }
 
-  ViewLayoutInfo _penButtonFinder() {
-    final RenderBox box = _penButtonKey.currentContext?.findRenderObject();
-    return ViewLayoutInfo.create(box);
+  Rect _penRectFinder() {
+    return _getRect(_penButtonKey.currentContext?.findRenderObject());
   }
 
-}
-
-class ViewLayoutInfo {
-  static ViewLayoutInfo create(RenderBox renderBox, {
-    Offset offset = Offset.zero,
-  }) {
+  Rect _getRect(RenderBox renderBox) {
     if (renderBox == null) {
-      return ViewLayoutInfo(left: -1, top: -1, right: -1, bottom: -1);
-    } else {
-      final position = renderBox.localToGlobal(offset);
-      final size = renderBox.size;
-      return ViewLayoutInfo(
-        left: position.dx, top: position.dy,
-        right: position.dx + size.width, bottom: position.dy + size.height);
+      return Rect.zero;
     }
+
+    final position = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+    return Rect.fromLTRB(position.dx, position.dy, position.dx + size.width, position.dy + size.height);
   }
 
-  final double left;
-  final double top;
-  final double right;
-  final double bottom;
-
-  const ViewLayoutInfo({
-    @required this.left,
-    @required this.top,
-    @required this.right,
-    @required this.bottom,
-  });
-
-  bool get isValid => left != -1 && top != -1 && right != -1 && bottom != -1;
-  double get centerX => (left + right) / 2;
-  double get centerY => (top + bottom) / 2;
-
-  RelativeRect createCenterRelativeRect(BuildContext context, int width, int height) {
+  RelativeRect _getCenteredRelativeRect(Rect rect, int width, int height) {
     final Size screenSize = MediaQuery.of(context).size;
+    final Offset center = rect.center;
     return RelativeRect.fromLTRB(
-      centerX - width / 2,
-      centerY - height / 2,
-      screenSize.width - centerX - width / 2,
-      screenSize.height - centerY - height / 2,
+      center.dx - width / 2,
+      center.dy - height / 2,
+      screenSize.width - center.dx - width / 2,
+      screenSize.height - center.dy - height / 2,
     );
   }
 
-  @override
-  String toString() {
-    return 'ViewLayoutInfo(left: $left, top: $top, right: $right, bottom: $bottom)';
-  }
 }
 
 class _MainUI extends StatelessWidget {

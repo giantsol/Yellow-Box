@@ -1,6 +1,5 @@
 
 import 'package:flutter/widgets.dart';
-import 'package:yellow_box/ui/home/HomeScreen.dart';
 
 class Tutorial extends StatefulWidget {
   final Widget child;
@@ -20,7 +19,7 @@ class Tutorial extends StatefulWidget {
 class TutorialState extends State<Tutorial> {
   int _currentPhase = -1;
 
-  ViewLayoutInfoFinder _penButtonFinder;
+  RectFinder _penRectFinder;
 
   @override
   Widget build(BuildContext context) {
@@ -30,28 +29,28 @@ class TutorialState extends State<Tutorial> {
         widget.child,
         Visibility(
           visible: _currentPhase == 0,
-          child: _TutorialOne(_penButtonFinder),
+          child: _TutorialOne(_penRectFinder),
         ),
       ],
     );
   }
 
-  void showTutorialOne(ViewLayoutInfoFinder penButtonFinder) {
+  void showTutorialOne(RectFinder penRectFinder) {
     if (_currentPhase == 0) {
       return;
     }
 
     setState(() {
       _currentPhase = 0;
-      _penButtonFinder = penButtonFinder;
+      _penRectFinder = penRectFinder;
     });
   }
 }
 
-typedef ViewLayoutInfoFinder = ViewLayoutInfo Function();
+typedef RectFinder = Rect Function();
 
 class _TutorialOne extends StatelessWidget {
-  final ViewLayoutInfoFinder _penButtonFinder;
+  final RectFinder _penButtonFinder;
 
   _TutorialOne(this._penButtonFinder);
 
@@ -65,7 +64,7 @@ class _TutorialOne extends StatelessWidget {
 }
 
 class _TutorialOnePainter extends CustomPainter {
-  final ViewLayoutInfoFinder _penButtonFinder;
+  final RectFinder _penButtonFinder;
 
   final Path _path = Path();
   final Paint _paint = Paint()
@@ -77,9 +76,9 @@ class _TutorialOnePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final penLayoutInfo = _penButtonFinder();
+    final penRect = _penButtonFinder();
     _circle = Rect.fromCircle(
-      center: Offset(penLayoutInfo.centerX, penLayoutInfo.centerY),
+      center: penRect.center,
       radius: size.width * 0.45);
     _path
       ..reset()
