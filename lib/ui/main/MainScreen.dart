@@ -13,6 +13,7 @@ import 'package:yellow_box/ui/main/MainNavigator.dart';
 import 'package:yellow_box/ui/main/MainState.dart';
 import 'package:yellow_box/ui/settings/SettingsScreen.dart';
 import 'package:yellow_box/ui/theme/ThemeScreen.dart';
+import 'package:yellow_box/ui/widget/Tutorial.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -94,10 +95,12 @@ class _MainScreenState extends State<MainScreen>
           ),
           Scaffold(
             resizeToAvoidBottomInset: false,
-            body: PageView(
-              controller: _pageController,
-              children: _childScreens,
-              physics: NeverScrollableScrollPhysics(),
+            body: Tutorial(
+              child: PageView(
+                controller: _pageController,
+                children: _childScreens,
+                physics: NeverScrollableScrollPhysics(),
+              ),
             ),
           ),
         ],

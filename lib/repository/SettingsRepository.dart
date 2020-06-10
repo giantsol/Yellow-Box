@@ -44,4 +44,12 @@ class SettingsRepository {
   Future<void> setLastActiveTime(int time) {
     return _prefs.setLastActiveTime(time);
   }
+
+  Future<int> getTutorialPhase() {
+    return _prefs.getTutorialPhase();
+  }
+
+  Future<void> setTutorialPhase(int phase) {
+    return _prefs.setTutorialPhase(phase);
+  }
 }

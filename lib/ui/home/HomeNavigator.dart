@@ -8,4 +8,5 @@ abstract class HomeNavigator {
   void showIdeaBoxFull();
   void showWordAddedAnimation();
   void showIdeaAddedAnimation();
+  void showTutorial(int phase);
 }

@@ -6,6 +6,7 @@ class AppPreferences {
   static const KEY_AUTO_GENERATE_IDEAS = 'auto.generate.ideas';
   static const KEY_AUTO_GENERATE_INTERVAL_HOURS = 'auto.generate.interval.hours';
   static const KEY_LAST_ACTIVE_TIME = 'last.active.time';
+  static const KEY_TUTORIAL_PHASE = 'tutorial.phase';
 
   static const DEFAULT_AUTO_GENERATE_IDEAS = false;
   static const DEFAULT_AUTO_GENERATE_INTERVAL_HOURS = 12;
@@ -48,5 +49,15 @@ class AppPreferences {
   Future<void> setLastActiveTime(int value) async {
     final prefs = await _prefs.first;
     return prefs.setInt(KEY_LAST_ACTIVE_TIME, value);
+  }
+
+  Future<int> getTutorialPhase() async {
+    final prefs = await _prefs.first;
+    return prefs.getInt(KEY_TUTORIAL_PHASE) ?? 0;
+  }
+
+  Future<void> setTutorialPhase(int value) async {
+    final prefs = await _prefs.first;
+    return prefs.setInt(KEY_TUTORIAL_PHASE, value);
   }
 }

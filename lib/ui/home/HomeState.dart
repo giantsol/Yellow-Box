@@ -11,6 +11,7 @@ class HomeState {
   final bool isListeningToSpeech;
   final IdeaPopUpData ideaPopUpData;
   final bool isIdeaBoxFull;
+  final bool isInTutorial;
 
   const HomeState({
     this.appTheme = AppTheme.DEFAULT,
@@ -20,6 +21,7 @@ class HomeState {
     this.isListeningToSpeech = false,
     this.ideaPopUpData = IdeaPopUpData.NONE,
     this.isIdeaBoxFull = false,
+    this.isInTutorial = false,
   });
 
   bool get isScrimVisible => isListeningToSpeech || ideaPopUpData.isValid();
@@ -32,6 +34,7 @@ class HomeState {
     bool isListeningToSpeech,
     IdeaPopUpData ideaPopUpData,
     bool isIdeaBoxFull,
+    bool isInTutorial,
   }) {
     return HomeState(
       appTheme: appTheme ?? this.appTheme,
@@ -41,6 +44,7 @@ class HomeState {
       isListeningToSpeech: isListeningToSpeech ?? this.isListeningToSpeech,
       ideaPopUpData: ideaPopUpData ?? this.ideaPopUpData,
       isIdeaBoxFull: isIdeaBoxFull ?? this.isIdeaBoxFull,
+      isInTutorial: isInTutorial ?? this.isInTutorial,
     );
   }
 

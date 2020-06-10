@@ -16,6 +16,7 @@ import 'package:yellow_box/ui/widget/AppTextField.dart';
 import 'package:yellow_box/ui/widget/CenterProgress.dart';
 import 'package:yellow_box/ui/widget/ChildScreenNavigationBar.dart';
 import 'package:yellow_box/ui/widget/Scrim.dart';
+import 'package:yellow_box/ui/widget/Tutorial.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -280,6 +281,22 @@ class _HomeScreenState extends State<HomeScreen>
     setState(() { });
     _ideaAddedAnimation.reset();
     _ideaAddedAnimation.forward();
+  }
+
+  @override
+  void showTutorial(int phase) {
+    if (phase == 0) {
+      _showTutorialOne();
+    }
+  }
+
+  void _showTutorialOne() {
+    Tutorial.of(context).showTutorialOne(_penButtonFinder);
+  }
+
+  ViewLayoutInfo _penButtonFinder() {
+    final RenderBox box = _penButtonKey.currentContext?.findRenderObject();
+    return ViewLayoutInfo.create(box);
   }
 
 }

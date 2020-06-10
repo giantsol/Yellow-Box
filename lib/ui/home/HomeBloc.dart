@@ -12,6 +12,7 @@ import 'package:yellow_box/ui/home/HomeNavigator.dart';
 import 'package:yellow_box/ui/home/HomeState.dart';
 import 'package:yellow_box/usecase/AddIdea.dart';
 import 'package:yellow_box/usecase/AddWord.dart';
+import 'package:yellow_box/usecase/GetTutorialPhase.dart';
 import 'package:yellow_box/usecase/IsIdeasFull.dart';
 import 'package:yellow_box/usecase/ObserveAppTheme.dart';
 import 'package:yellow_box/usecase/ObserveIdeas.dart';
@@ -33,6 +34,7 @@ class HomeBloc extends BaseBloc {
   final _addWord = AddWord();
   final _addIdea = AddIdea();
   final _setChildScreen = SetChildScreen();
+  final _getTutorialPhase = GetTutorialPhase();
 
   final _stt = SpeechToText();
   bool _sttInitializingOrInitialized = false;
@@ -41,7 +43,7 @@ class HomeBloc extends BaseBloc {
     _init();
   }
 
-  void _init() {
+  void _init() async {
     _observeAppTheme.invoke()
       .listen((appTheme) {
       _state.value = _state.value.buildNew(
@@ -55,6 +57,15 @@ class HomeBloc extends BaseBloc {
         isIdeaBoxFull: await _isIdeasFull.invoke(),
       );
     }).addTo(_subscriptions);
+
+    final tutorialPhase = await _getTutorialPhase.invoke();
+    if (tutorialPhase >= 0 && tutorialPhase < 1) {
+      _navigator.showTutorial(tutorialPhase);
+      _state.value = _state.value.buildNew(
+        isInTutorial: true,
+      );
+    }
+
   }
 
   @override
