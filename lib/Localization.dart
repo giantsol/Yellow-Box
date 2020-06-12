@@ -37,9 +37,12 @@ class AppLocalizations {
   static const RESET = 'reset';
   static const INTERVAL_TITLE = 'intervalTitle';
   static const INTERVAL_SUBTITLE = 'intervalSubtitle';
-
   static const YELLOW_BOX_TITLE = 'yellowBoxTitle';
   static const YELLOW_BOX_SUBTITLE = 'yellowBoxSubtitle';
+  static const TUTORIAL_ONE_TITLE = 'tutorialOneTitle';
+  static const START = 'start';
+  static const TUTORIAL_FIRST_WORD = 'tutorialFirstWord';
+  static const TUTORIAL_SECOND_WORD = 'tutorialSecondWord';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -83,6 +86,10 @@ class AppLocalizations {
       INTERVAL_SUBTITLE: 'New ideas will be generated every interval approximately',
       YELLOW_BOX_TITLE: 'Yellow Box',
       YELLOW_BOX_SUBTITLE: 'Beginning of your ideas',
+      TUTORIAL_ONE_TITLE: 'Welcome!',
+      START: 'Start',
+      TUTORIAL_FIRST_WORD: 'Green',
+      TUTORIAL_SECOND_WORD: 'Day',
     },
     'ko': {
       CANCEL: '취소',
@@ -121,6 +128,10 @@ class AppLocalizations {
       INTERVAL_SUBTITLE: '정해진 시간 간격마다 아이디어가 생성됩니다',
       YELLOW_BOX_TITLE: '옐로 박스',
       YELLOW_BOX_SUBTITLE: '새로운 아이디어의 시작',
+      TUTORIAL_ONE_TITLE: '환영합니다!',
+      START: '시작하기',
+      TUTORIAL_FIRST_WORD: '초록색',
+      TUTORIAL_SECOND_WORD: '하루',
     },
   };
 
@@ -162,6 +173,10 @@ class AppLocalizations {
   String get reset => _localizedValues[locale.languageCode][RESET];
   String get intervalTitle => _localizedValues[locale.languageCode][INTERVAL_TITLE];
   String get intervalSubtitle => _localizedValues[locale.languageCode][INTERVAL_SUBTITLE];
+  String get tutorialOneTitle => _localizedValues[locale.languageCode][TUTORIAL_ONE_TITLE];
+  String get start => _localizedValues[locale.languageCode][START];
+  String get tutorialFirstWord => _localizedValues[locale.languageCode][TUTORIAL_FIRST_WORD];
+  String get tutorialSecondWord => _localizedValues[locale.languageCode][TUTORIAL_SECOND_WORD];
 
   String get(String key) {
     return _localizedValues[locale.languageCode][key];

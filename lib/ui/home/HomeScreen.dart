@@ -2,6 +2,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yellow_box/AppColors.dart';
 import 'package:yellow_box/Localization.dart';
@@ -17,6 +18,8 @@ import 'package:yellow_box/ui/widget/CenterProgress.dart';
 import 'package:yellow_box/ui/widget/ChildScreenNavigationBar.dart';
 import 'package:yellow_box/ui/widget/Scrim.dart';
 import 'package:yellow_box/ui/widget/Tutorial.dart';
+
+const double _MAIN_LOGO_SIZE = 160;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -280,24 +283,48 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void showTutorial(int phase) {
     if (phase == 0) {
-      _showTutorialOne();
+      Tutorial.of(context).showTutorialZero(() {
+        _bloc.onTutorialZeroFinished();
+      });
+    } else if (phase == 1) {
+      Tutorial.of(context).showTutorialOne(_penRectFinder);
+    } else if (phase == 2) {
+      Tutorial.of(context).showTutorialTwo(_logoRectFinder);
+    } else if (phase == 3) {
+      Tutorial.of(context).showTutorialThree(_historyButtonFinder);
     }
+
   }
 
-  void _showTutorialOne() {
-    Tutorial.of(context).showTutorialOne(_penRectFinder);
+  @override
+  void hideTutorial() {
+    Tutorial.of(context).hide();
   }
 
   Rect _penRectFinder() {
     return _getRect(_penButtonKey.currentContext?.findRenderObject());
   }
 
-  Rect _getRect(RenderBox renderBox) {
+  Rect _logoRectFinder() {
+    Offset offset;
+    if (_logoInAnimation.isAnimating) {
+      offset = Offset(0, -_MAIN_LOGO_SIZE * 0.5 * (1 - _logoInAnimation.value));
+    } else {
+      offset = Offset.zero;
+    }
+    return _getRect(_logoKey.currentContext?.findRenderObject(), offset: offset);
+  }
+
+  Rect _historyButtonFinder() {
+    return _getRect(_historyButtonKey.currentContext?.findRenderObject());
+  }
+
+  Rect _getRect(RenderBox renderBox, {Offset offset = Offset.zero}) {
     if (renderBox == null) {
       return Rect.zero;
     }
 
-    final position = renderBox.localToGlobal(Offset.zero);
+    final position = renderBox.localToGlobal(offset);
     final size = renderBox.size;
     return Rect.fromLTRB(position.dx, position.dy, position.dx + size.width, position.dy + size.height);
   }
@@ -393,7 +420,7 @@ class _MainUI extends StatelessWidget {
                   ),
                   const SizedBox(height: 32,),
                   GestureDetector(
-                    onTap: () => bloc.onLogoClicked(),
+                    onTap: () => bloc.onLogoClicked(context),
                     behavior: HitTestBehavior.opaque,
                     child: SlideTransition(
                       position: Tween<Offset>(begin: Offset(0, 0.5), end: Offset(0, 0))
@@ -409,8 +436,8 @@ class _MainUI extends StatelessWidget {
                               animation: ideaAddedAnimation,
                               child: SizedBox(
                                 key: logoKey,
-                                width: 160,
-                                height: 160,
+                                width: _MAIN_LOGO_SIZE,
+                                height: _MAIN_LOGO_SIZE,
                                 child: Image.asset(appTheme.mainLogo),
                               ),
                               builder: (context, child) {
@@ -509,7 +536,7 @@ class _WordEditor extends StatelessWidget {
                       cursorColor: appTheme.darkColor,
                       autoFocus: true,
                       onChanged: (s) => bloc.onEditingWordChanged(s),
-                      onEditingComplete: () => bloc.onWordEditingAddClicked(),
+                      onEditingComplete: () => bloc.onWordEditingAddClicked(context),
                     ),
                   ),
                 ),
@@ -545,7 +572,7 @@ class _WordEditor extends StatelessWidget {
                     minHeight: 36,
                   ),
                   child: InkWell(
-                    onTap: () => bloc.onWordEditingAddClicked(),
+                    onTap: () => bloc.onWordEditingAddClicked(context),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
                       child: Text(

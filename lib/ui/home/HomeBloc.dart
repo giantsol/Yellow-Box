@@ -1,6 +1,8 @@
+import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:yellow_box/Localization.dart';
 import 'package:yellow_box/StreamSubscriptionExtension.dart';
 import 'package:yellow_box/entity/AddIdeaResult.dart';
 import 'package:yellow_box/entity/AddWordResult.dart';
@@ -16,9 +18,14 @@ import 'package:yellow_box/usecase/GetTutorialPhase.dart';
 import 'package:yellow_box/usecase/IsIdeasFull.dart';
 import 'package:yellow_box/usecase/ObserveAppTheme.dart';
 import 'package:yellow_box/usecase/ObserveIdeas.dart';
+import 'package:yellow_box/usecase/ObserveWords.dart';
 import 'package:yellow_box/usecase/SetChildScreen.dart';
+import 'package:yellow_box/usecase/SetTutorialPhase.dart';
 
 class HomeBloc extends BaseBloc {
+
+  static const _FIRST_TUTORIAL = 0;
+  static const _LAST_TUTORIAL = 3;
 
   final HomeNavigator _navigator;
 
@@ -35,6 +42,7 @@ class HomeBloc extends BaseBloc {
   final _addIdea = AddIdea();
   final _setChildScreen = SetChildScreen();
   final _getTutorialPhase = GetTutorialPhase();
+  final _setTutorialPhase = SetTutorialPhase();
 
   final _stt = SpeechToText();
   bool _sttInitializingOrInitialized = false;
@@ -59,13 +67,12 @@ class HomeBloc extends BaseBloc {
     }).addTo(_subscriptions);
 
     final tutorialPhase = await _getTutorialPhase.invoke();
-    if (tutorialPhase >= 0 && tutorialPhase < 1) {
+    if (tutorialPhase >= _FIRST_TUTORIAL && tutorialPhase <= _LAST_TUTORIAL) {
       _navigator.showTutorial(tutorialPhase);
       _state.value = _state.value.buildNew(
         isInTutorial: true,
       );
     }
-
   }
 
   @override
@@ -73,17 +80,30 @@ class HomeBloc extends BaseBloc {
     _subscriptions.dispose();
   }
 
-  void onAddWordClicked() {
+  void onAddWordClicked() async {
     final isShown = _state.value.isWordEditorShown;
     if (!isShown) {
       _state.value = _state.value.buildNew(
         isWordEditorShown: true
       );
+
+      if ((await _getTutorialPhase.invoke()) == 1) {
+        _navigator.hideTutorial();
+      }
     }
   }
 
-  void onNavigationBarItemClicked(ChildScreenKey key) {
+  void onNavigationBarItemClicked(ChildScreenKey key) async {
     _setChildScreen.invoke(key);
+
+    if ((await _getTutorialPhase.invoke()) == 3) {
+      _setTutorialPhase.invoke(4);
+      _navigator.hideTutorial();
+
+      _state.value = _state.value.buildNew(
+        isInTutorial: false,
+      );
+    }
   }
 
   void onEditingWordChanged(String s) {
@@ -99,7 +119,7 @@ class HomeBloc extends BaseBloc {
     );
   }
 
-  void onWordEditingAddClicked() async {
+  void onWordEditingAddClicked(BuildContext context) async {
     if (_isProgressShown()) {
       return;
     }
@@ -125,6 +145,13 @@ class HomeBloc extends BaseBloc {
       );
 
       _navigator.showWordAddedAnimation();
+
+      if ((await _getTutorialPhase.invoke()) == 1) {
+        _addWord.invoke(Word(AppLocalizations.of(context).tutorialFirstWord, DateTime.now().millisecondsSinceEpoch));
+        _addWord.invoke(Word(AppLocalizations.of(context).tutorialSecondWord, DateTime.now().millisecondsSinceEpoch));
+        _setTutorialPhase.invoke(2);
+        _navigator.showTutorial(2);
+      }
     }
 
     _hideProgress();
@@ -166,14 +193,16 @@ class HomeBloc extends BaseBloc {
     _stt.cancel();
   }
 
-  void onLogoClicked() async {
+  void onLogoClicked(BuildContext context) async {
     if (_isProgressShown()) {
       return;
     }
 
     _showProgress();
 
-    final result = await _addIdea.invoke();
+    final String fakeIdeaForTutorial = (await _getTutorialPhase.invoke()) == 2 ? "${AppLocalizations.of(context).tutorialFirstWord} ${AppLocalizations.of(context).tutorialSecondWord}"
+      : "";
+    final result = await _addIdea.invoke(idea: fakeIdeaForTutorial);
     switch (result.item1) {
       case AddIdeaResult.SUCCESS:
         _state.value = _state.value.buildNew(
@@ -200,9 +229,13 @@ class HomeBloc extends BaseBloc {
     }
 
     _hideProgress();
+
+    if (_state.value.ideaPopUpData.isValid() && (await _getTutorialPhase.invoke()) == 2) {
+      _navigator.hideTutorial();
+    }
   }
 
-  void onCloseIdeaPopUpClicked() {
+  void onCloseIdeaPopUpClicked() async {
     final bool wasNewIdea = _state.value.ideaPopUpData.type == IdeaPopUpData.TYPE_NEW;
     _state.value = _state.value.buildNew(
       ideaPopUpData: IdeaPopUpData.NONE,
@@ -211,10 +244,20 @@ class HomeBloc extends BaseBloc {
     if (wasNewIdea) {
       _navigator.showIdeaAddedAnimation();
     }
+
+    if ((await _getTutorialPhase.invoke()) == 2) {
+      _setTutorialPhase.invoke(3);
+      _navigator.showTutorial(3);
+    }
   }
 
   void onIdeaBoxFullNotiClicked() {
     _setChildScreen.invoke(ChildScreenKey.HISTORY);
+  }
+
+  void onTutorialZeroFinished() {
+    _setTutorialPhase.invoke(1);
+    _navigator.showTutorial(1);
   }
 
   bool handleBackPress() {

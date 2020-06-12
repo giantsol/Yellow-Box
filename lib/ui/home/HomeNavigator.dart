@@ -9,4 +9,5 @@ abstract class HomeNavigator {
   void showWordAddedAnimation();
   void showIdeaAddedAnimation();
   void showTutorial(int phase);
+  void hideTutorial();
 }
