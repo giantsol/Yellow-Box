@@ -18,6 +18,7 @@ class HistoryState {
   final bool isDeleteIdeasDialogShown;
   final bool isBlockIdeasDialogShown;
   final bool isProgressShown;
+  final bool isInTutorial;
 
   const HistoryState({
     this.appTheme = AppTheme.DEFAULT,
@@ -33,6 +34,7 @@ class HistoryState {
     this.isDeleteIdeasDialogShown = false,
     this.isBlockIdeasDialogShown = false,
     this.isProgressShown = true,
+    this.isInTutorial = false,
   });
 
   bool get isScrimVisible => wordItemDialog.isValid() || ideaItemDialog.isValid()
@@ -53,6 +55,7 @@ class HistoryState {
     bool isDeleteIdeasDialogShown,
     bool isBlockIdeasDialogShown,
     bool isProgressShown,
+    bool isInTutorial,
   }) {
     return HistoryState(
       appTheme: appTheme ?? this.appTheme,
@@ -68,6 +71,7 @@ class HistoryState {
       isDeleteIdeasDialogShown: isDeleteIdeasDialogShown ?? this.isDeleteIdeasDialogShown,
       isBlockIdeasDialogShown: isBlockIdeasDialogShown ?? this.isBlockIdeasDialogShown,
       isProgressShown: isProgressShown ?? this.isProgressShown,
+      isInTutorial: isInTutorial ?? this.isInTutorial,
     );
   }
 }

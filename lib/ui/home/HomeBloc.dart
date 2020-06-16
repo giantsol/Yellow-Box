@@ -18,7 +18,6 @@ import 'package:yellow_box/usecase/GetTutorialPhase.dart';
 import 'package:yellow_box/usecase/IsIdeasFull.dart';
 import 'package:yellow_box/usecase/ObserveAppTheme.dart';
 import 'package:yellow_box/usecase/ObserveIdeas.dart';
-import 'package:yellow_box/usecase/ObserveWords.dart';
 import 'package:yellow_box/usecase/SetChildScreen.dart';
 import 'package:yellow_box/usecase/SetTutorialPhase.dart';
 
@@ -96,7 +95,7 @@ class HomeBloc extends BaseBloc {
   void onNavigationBarItemClicked(ChildScreenKey key) async {
     _setChildScreen.invoke(key);
 
-    if ((await _getTutorialPhase.invoke()) == 3) {
+    if (key == ChildScreenKey.HISTORY && (await _getTutorialPhase.invoke()) == 3) {
       _setTutorialPhase.invoke(4);
       _navigator.hideTutorial();
 

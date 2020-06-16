@@ -6,6 +6,7 @@ import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/entity/Idea.dart';
 import 'package:yellow_box/entity/Word.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
+import 'package:yellow_box/ui/history/HistoryNavigator.dart';
 import 'package:yellow_box/ui/history/HistoryState.dart';
 import 'package:yellow_box/usecase/BlockIdea.dart';
 import 'package:yellow_box/usecase/BlockIdeas.dart';
@@ -14,13 +15,20 @@ import 'package:yellow_box/usecase/DeleteIdeas.dart';
 import 'package:yellow_box/usecase/DeleteWord.dart';
 import 'package:yellow_box/usecase/DeleteWords.dart';
 import 'package:yellow_box/usecase/FavoriteIdea.dart';
+import 'package:yellow_box/usecase/GetTutorialPhase.dart';
 import 'package:yellow_box/usecase/ObserveAppTheme.dart';
 import 'package:yellow_box/usecase/ObserveIdeas.dart';
 import 'package:yellow_box/usecase/ObserveWords.dart';
 import 'package:yellow_box/usecase/SetChildScreen.dart';
+import 'package:yellow_box/usecase/SetTutorialPhase.dart';
 import 'package:yellow_box/usecase/UnfavoriteIdea.dart';
 
 class HistoryBloc extends BaseBloc {
+
+  static const _FIRST_TUTORIAL = 4;
+  static const _LAST_TUTORIAL = 4;
+
+  final HistoryNavigator _navigator;
 
   final _state = BehaviorSubject<HistoryState>.seeded(HistoryState());
   HistoryState getInitialState() => _state.value;
@@ -40,11 +48,17 @@ class HistoryBloc extends BaseBloc {
   final _deleteWords = DeleteWords();
   final _deleteIdeas = DeleteIdeas();
   final _blockIdeas = BlockIdeas();
+  final _getTutorialPhase = GetTutorialPhase();
+  final _setTutorialPhase = SetTutorialPhase();
 
   bool _wordsLoaded = false;
   bool _ideasLoaded = false;
 
-  HistoryBloc() {
+  HistoryBloc(this._navigator) {
+    _init();
+  }
+
+  void _init() async {
     _observeAppTheme.invoke()
       .listen((appTheme) {
       _state.value = _state.value.buildNew(
@@ -69,6 +83,14 @@ class HistoryBloc extends BaseBloc {
         isProgressShown: !_wordsLoaded || !_ideasLoaded,
       );
     }).addTo(_subscriptions);
+
+    final tutorialPhase = await _getTutorialPhase.invoke();
+    if (tutorialPhase >= _FIRST_TUTORIAL && tutorialPhase <= _LAST_TUTORIAL) {
+      _navigator.showTutorial(tutorialPhase);
+      _state.value = _state.value.buildNew(
+        isInTutorial: true,
+      );
+    }
   }
 
   @override
@@ -86,10 +108,15 @@ class HistoryBloc extends BaseBloc {
     );
   }
 
-  void onIdeaTabClicked() {
+  void onIdeaTabClicked() async {
     _state.value = _state.value.buildNew(
       isWordTab: false,
     );
+
+    if ((await _getTutorialPhase.invoke()) == 4) {
+      _setTutorialPhase.invoke(5);
+      _navigator.showTutorial(5);
+    }
   }
 
   void onWordItemClicked(Word item) {
@@ -198,11 +225,16 @@ class HistoryBloc extends BaseBloc {
     );
   }
 
-  void onIdeaItemFavoriteClicked(Idea item) {
+  void onIdeaItemFavoriteClicked(Idea item) async {
     if (item.isFavorite) {
       _unfavoriteIdea.invoke(item);
     } else {
       _favoriteIdea.invoke(item);
+    }
+
+    if ((await _getTutorialPhase.invoke()) == 5) {
+      _setTutorialPhase.invoke(6);
+      _navigator.showTutorial(6);
     }
   }
 
@@ -287,6 +319,11 @@ class HistoryBloc extends BaseBloc {
     _state.value = _state.value.buildNew(
       isBlockIdeasDialogShown: false,
     );
+  }
+
+  void onTutorialFourFinished() {
+    _setTutorialPhase.invoke(5);
+    _navigator.hideTutorial();
   }
 
   bool handleBackPress() {

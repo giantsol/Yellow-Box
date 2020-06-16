@@ -137,9 +137,9 @@ class _HomeScreenState extends State<HomeScreen>
       _hasShownIdeaBoxFullNoti = false;
     }
 
-    final penButtonRect = _getRect(_penButtonKey.currentContext?.findRenderObject());
-    final logoRect = _getRect(_logoKey.currentContext?.findRenderObject());
-    final historyButtonRect = _getRect(_historyButtonKey.currentContext?.findRenderObject());
+    final penButtonRect = Utils.getRect(_penButtonKey.currentContext?.findRenderObject());
+    final logoRect = Utils.getRect(_logoKey.currentContext?.findRenderObject());
+    final historyButtonRect = Utils.getRect(_historyButtonKey.currentContext?.findRenderObject());
 
     if (_prevAppTheme != appTheme) {
       _runLogoInAnimation(_prevAppTheme == null ? 500 : 0);
@@ -197,8 +197,8 @@ class _HomeScreenState extends State<HomeScreen>
           ) : const SizedBox.shrink(),
           _ideaAddedAnimation.isAnimating && !logoRect.isEmpty && !historyButtonRect.isEmpty ? PositionedTransition(
             rect: RelativeRectTween(
-              begin: _getCenteredRelativeRect(logoRect, 36, 36),
-              end: _getCenteredRelativeRect(historyButtonRect, 36, 36),
+              begin: Utils.getCenteredRelativeRect(context, logoRect, 36, 36),
+              end: Utils.getCenteredRelativeRect(context, historyButtonRect, 36, 36),
             ).animate(CurvedAnimation(parent: _ideaAddedAnimation, curve: Curves.fastOutSlowIn)),
             child: FadeTransition(
               opacity: Tween<double>(begin: 1, end: 0).animate(_ideaAddedAnimation),
@@ -293,7 +293,6 @@ class _HomeScreenState extends State<HomeScreen>
     } else if (phase == 3) {
       Tutorial.of(context).showTutorialThree(_historyButtonFinder);
     }
-
   }
 
   @override
@@ -302,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Rect _penRectFinder() {
-    return _getRect(_penButtonKey.currentContext?.findRenderObject());
+    return Utils.getRect(_penButtonKey.currentContext?.findRenderObject());
   }
 
   Rect _logoRectFinder() {
@@ -312,32 +311,11 @@ class _HomeScreenState extends State<HomeScreen>
     } else {
       offset = Offset.zero;
     }
-    return _getRect(_logoKey.currentContext?.findRenderObject(), offset: offset);
+    return Utils.getRect(_logoKey.currentContext?.findRenderObject(), offset: offset);
   }
 
   Rect _historyButtonFinder() {
-    return _getRect(_historyButtonKey.currentContext?.findRenderObject());
-  }
-
-  Rect _getRect(RenderBox renderBox, {Offset offset = Offset.zero}) {
-    if (renderBox == null) {
-      return Rect.zero;
-    }
-
-    final position = renderBox.localToGlobal(offset);
-    final size = renderBox.size;
-    return Rect.fromLTRB(position.dx, position.dy, position.dx + size.width, position.dy + size.height);
-  }
-
-  RelativeRect _getCenteredRelativeRect(Rect rect, int width, int height) {
-    final Size screenSize = MediaQuery.of(context).size;
-    final Offset center = rect.center;
-    return RelativeRect.fromLTRB(
-      center.dx - width / 2,
-      center.dy - height / 2,
-      screenSize.width - center.dx - width / 2,
-      screenSize.height - center.dy - height / 2,
-    );
+    return Utils.getRect(_historyButtonKey.currentContext?.findRenderObject());
   }
 
 }

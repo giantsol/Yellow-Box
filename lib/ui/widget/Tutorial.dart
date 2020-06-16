@@ -23,16 +23,19 @@ class TutorialState extends State<Tutorial> {
   int currentPhase = -1;
 
   void Function() _onTutorialZeroFinished;
+  void Function() _onTutorialFourFinished;
 
   RectFinder _penRectFinder;
   RectFinder _logoRectFinder;
-  RectFinder _historyButtonFinder;
+  RectFinder _historyButtonRectFinder;
+  RectFinder _wordListRectFinder;
 
   @override
   Widget build(BuildContext context) {
     final penRect = _penRectFinder?.call() ?? Rect.zero;
     final logoRect = _logoRectFinder?.call() ?? Rect.zero;
-    final historyButtonRect = _historyButtonFinder?.call() ?? Rect.zero;
+    final historyButtonRect = _historyButtonRectFinder?.call() ?? Rect.zero;
+    final wordListRect = _wordListRectFinder?.call() ?? Rect.zero;
 
     return Stack(
       fit: StackFit.expand,
@@ -53,6 +56,10 @@ class TutorialState extends State<Tutorial> {
         Visibility(
           visible: currentPhase == 3 && !historyButtonRect.isEmpty,
           child: _TutorialThree(historyButtonRect),
+        ),
+        Visibility(
+          visible: currentPhase == 4 && !wordListRect.isEmpty,
+          child: _TutorialFour(wordListRect, _onTutorialFourFinished),
         ),
       ],
     );
@@ -97,14 +104,26 @@ class TutorialState extends State<Tutorial> {
     });
   }
 
-  void showTutorialThree(RectFinder historyButtonFinder) {
+  void showTutorialThree(RectFinder historyButtonRectFinder) {
     if (currentPhase == 3) {
       return;
     }
 
     setState(() {
       currentPhase = 3;
-      _historyButtonFinder = historyButtonFinder;
+      _historyButtonRectFinder = historyButtonRectFinder;
+    });
+  }
+
+  void showTutorialFour(RectFinder wordListRectFinder, void Function() onTutorialFourFinished) {
+    if (currentPhase == 4) {
+      return;
+    }
+
+    setState(() {
+      currentPhase = 4;
+      _wordListRectFinder = wordListRectFinder;
+      _onTutorialFourFinished = onTutorialFourFinished;
     });
   }
 }
@@ -226,10 +245,18 @@ class _TutorialOneState extends State<_TutorialOne> with SingleTickerProviderSta
   }
 }
 
+enum _HighlightGravity {
+  TOP,
+  CENTER,
+  BOTTOM
+}
+
 class _HighlightPainter extends CustomPainter {
   final Rect _targetRect;
   final bool useLongestSide;
   final double highlightSize;
+  final _HighlightGravity gravity;
+  final bool absorbPointer;
 
   final Path _path = Path();
   final Paint _paint = Paint()
@@ -240,12 +267,16 @@ class _HighlightPainter extends CustomPainter {
   _HighlightPainter(this._targetRect, {
     this.useLongestSide = true,
     this.highlightSize = 1.5,
+    this.gravity = _HighlightGravity.CENTER,
+    this.absorbPointer = false,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     _circle = Rect.fromCircle(
-      center: _targetRect.center,
+      center: gravity == _HighlightGravity.TOP ? _targetRect.topCenter
+        : gravity == _HighlightGravity.BOTTOM ? _targetRect.bottomCenter
+        : _targetRect.center,
       radius: (useLongestSide ? _targetRect.longestSide : _targetRect.shortestSide) / 2 * highlightSize);
     _path
       ..reset()
@@ -260,7 +291,7 @@ class _HighlightPainter extends CustomPainter {
 
   @override
   bool hitTest(Offset position) {
-    return !_circle.contains(position);
+    return absorbPointer || !_circle.contains(position);
   }
 
 }
@@ -371,3 +402,87 @@ class _TutorialThreeState extends State<_TutorialThree> with SingleTickerProvide
   }
 }
 
+class _TutorialFour extends StatefulWidget {
+  final Rect wordListRect;
+  final void Function() callback;
+
+  _TutorialFour(this.wordListRect, this.callback);
+
+  @override
+  State createState() => _TutorialFourState();
+}
+
+class _TutorialFourState extends State<_TutorialFour> with SingleTickerProviderStateMixin {
+  AnimationController _inAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _inAnimation = AnimationController(
+      duration: const Duration(milliseconds: 4000),
+      vsync: this,
+    );
+    _inAnimation.forward();
+  }
+
+  @override
+  void dispose() {
+    _inAnimation.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final wordListRect = widget.wordListRect;
+
+    return FadeTransition(
+      opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+        parent: _inAnimation,
+        curve: Interval(0, 0.25),
+      )),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          CustomPaint(
+            size: Size.infinite,
+            painter: _HighlightPainter(
+              wordListRect,
+              useLongestSide: false,
+              highlightSize: 1.0,
+              gravity: _HighlightGravity.TOP,
+              absorbPointer: true,
+            ),
+          ),
+          Positioned(
+            top: wordListRect.bottom + 20,
+            child: Text(
+              'Hello World!',
+            ),
+          ),
+          Positioned(
+            top: wordListRect.bottom + 20,
+            child: FadeTransition(
+              opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+                parent: _inAnimation,
+                curve: Interval(0.75, 1),
+              )),
+              child: GestureDetector(
+                onTap: widget.callback,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.BACKGROUND_WHITE,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                    AppLocalizations.of(context).start,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

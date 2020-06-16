@@ -4,30 +4,38 @@ import 'package:flutter/widgets.dart';
 import 'package:yellow_box/AppColors.dart';
 import 'package:yellow_box/IntExtension.dart';
 import 'package:yellow_box/Localization.dart';
+import 'package:yellow_box/Utils.dart';
 import 'package:yellow_box/entity/AppTheme.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
 import 'package:yellow_box/entity/Idea.dart';
 import 'package:yellow_box/entity/Word.dart';
 import 'package:yellow_box/ui/history/HistoryBloc.dart';
+import 'package:yellow_box/ui/history/HistoryNavigator.dart';
 import 'package:yellow_box/ui/history/HistoryState.dart';
 import 'package:yellow_box/ui/widget/AppAlertDialog.dart';
 import 'package:yellow_box/ui/widget/AppChoiceListDialog.dart';
 import 'package:yellow_box/ui/widget/CenterProgress.dart';
 import 'package:yellow_box/ui/widget/ChildScreenNavigationBar.dart';
 import 'package:yellow_box/ui/widget/Scrim.dart';
+import 'package:yellow_box/ui/widget/Tutorial.dart';
 
 class HistoryScreen extends StatefulWidget {
   @override
   State createState() => _HistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> with AutomaticKeepAliveClientMixin<HistoryScreen> {
+class _HistoryScreenState extends State<HistoryScreen>
+  with AutomaticKeepAliveClientMixin<HistoryScreen>
+  implements HistoryNavigator {
+
   HistoryBloc _bloc;
+
+  final GlobalKey _wordListKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    _bloc = HistoryBloc();
+    _bloc = HistoryBloc(this);
   }
 
   @override
@@ -65,6 +73,7 @@ class _HistoryScreenState extends State<HistoryScreen> with AutomaticKeepAliveCl
             selectionMode: state.selectionMode,
             selectedWords: state.selectedWords,
             selectedIdeas: state.selectedIdeas,
+            wordListKey: _wordListKey,
           ),
           state.isScrimVisible ? Scrim(
             onTap: _bloc.handleBackPress,
@@ -111,6 +120,25 @@ class _HistoryScreenState extends State<HistoryScreen> with AutomaticKeepAliveCl
       ),
     );
   }
+
+  @override
+  void showTutorial(int phase) {
+    if (phase == 4) {
+      Tutorial.of(context).showTutorialFour(_wordListRectFinder, () {
+        _bloc.onTutorialFourFinished();
+      });
+    }
+  }
+
+  @override
+  void hideTutorial() {
+    Tutorial.of(context).hide();
+  }
+
+  Rect _wordListRectFinder() {
+    return Utils.getRect(_wordListKey.currentContext?.findRenderObject());
+  }
+
 }
 
 class _MainUI extends StatefulWidget {
@@ -122,6 +150,7 @@ class _MainUI extends StatefulWidget {
   final SelectionMode selectionMode;
   final Map<Word, bool> selectedWords;
   final Map<Idea, bool> selectedIdeas;
+  final Key wordListKey;
 
   _MainUI({
     @required this.appTheme,
@@ -132,6 +161,7 @@ class _MainUI extends StatefulWidget {
     @required this.selectionMode,
     @required this.selectedWords,
     @required this.selectedIdeas,
+    @required this.wordListKey,
   });
 
   @override
@@ -192,6 +222,7 @@ class _MainUIState extends State<_MainUI> with SingleTickerProviderStateMixin {
                       controller: _controller,
                       children: [
                         _WordList(
+                          key: widget.wordListKey,
                           bloc: widget.bloc,
                           items: widget.words,
                           appTheme: widget.appTheme,
@@ -479,12 +510,13 @@ class _WordList extends StatelessWidget {
   final Map<Word, bool> selectedItems;
 
   _WordList({
+    Key key,
     @required this.bloc,
     @required this.items,
     @required this.appTheme,
     @required this.isSelectionMode,
     @required this.selectedItems,
-  });
+  }): super(key: key);
 
   @override
   Widget build(BuildContext context) {
