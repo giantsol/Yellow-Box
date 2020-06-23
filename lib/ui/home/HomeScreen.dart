@@ -147,6 +147,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (state.isScrimVisible && _ideaAddedAnimation.isAnimating) {
       _ideaAddedAnimation.reset();
+      _logoIdleAnimation.repeat();
     }
 
     return WillPopScope(
@@ -268,7 +269,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void showWordAddedAnimation() {
-    setState(() { });
     _wordAddedAnimation.reset();
     _wordAddedAnimation.forward();
   }
