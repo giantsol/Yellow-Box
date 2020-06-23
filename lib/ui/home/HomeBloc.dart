@@ -254,6 +254,15 @@ class HomeBloc extends BaseBloc {
     _setChildScreen.invoke(ChildScreenKey.HISTORY);
   }
 
+  void onSkipTutorialClicked() {
+    _setTutorialPhase.invoke(5);
+    _navigator.hideTutorial();
+
+    _state.value = _state.value.buildNew(
+      isInTutorial: false,
+    );
+  }
+
   void onTutorialZeroFinished() {
     _setTutorialPhase.invoke(1);
     _navigator.showTutorial(1);

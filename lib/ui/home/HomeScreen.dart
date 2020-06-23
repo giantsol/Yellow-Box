@@ -137,7 +137,6 @@ class _HomeScreenState extends State<HomeScreen>
       _hasShownIdeaBoxFullNoti = false;
     }
 
-    final penButtonRect = Utils.getRect(_penButtonKey.currentContext?.findRenderObject());
     final logoRect = Utils.getRect(_logoKey.currentContext?.findRenderObject());
     final historyButtonRect = Utils.getRect(_historyButtonKey.currentContext?.findRenderObject());
 
@@ -170,6 +169,7 @@ class _HomeScreenState extends State<HomeScreen>
             bloc: _bloc,
             appTheme: appTheme,
             text: state.editingWord,
+            isInTutorial: state.isInTutorial,
           ) : const SizedBox.shrink(),
           state.isScrimVisible ? Scrim(
             onTap: _bloc.handleBackPress,
@@ -284,6 +284,8 @@ class _HomeScreenState extends State<HomeScreen>
   void showTutorial(int phase) {
     if (phase == 0) {
       Tutorial.of(context).showTutorialZero(() {
+        _bloc.onSkipTutorialClicked();
+      }, () {
         _bloc.onTutorialZeroFinished();
       });
     } else if (phase == 1) {
@@ -463,11 +465,13 @@ class _WordEditor extends StatelessWidget {
   final HomeBloc bloc;
   final AppTheme appTheme;
   final String text;
+  final bool isInTutorial;
 
   _WordEditor({
     @required this.bloc,
     @required this.appTheme,
     @required this.text,
+    @required this.isInTutorial,
   });
 
   @override
@@ -508,7 +512,7 @@ class _WordEditor extends StatelessWidget {
                       text: text,
                       textSize: 16,
                       textColor: AppColors.TEXT_BLACK,
-                      hintText: AppLocalizations.of(context).wordEditorHint,
+                      hintText: isInTutorial ? AppLocalizations.of(context).howAboutGreen : AppLocalizations.of(context).wordEditorHint,
                       hintTextSize: 16,
                       hintTextColor: AppColors.TEXT_BLACK_LIGHT,
                       cursorColor: appTheme.darkColor,

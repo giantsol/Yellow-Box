@@ -42,6 +42,15 @@ class App extends StatelessWidget {
         const Locale('en'),
         const Locale('ko'),
       ],
+      localeListResolutionCallback: (locales, supportedLocales) {
+        if (locales == null || locales.isEmpty) {
+          return const Locale('en');
+        } else if (locales[0].languageCode == 'ko'){
+          return const Locale('ko');
+        } else {
+          return const Locale('en');
+        }
+      },
       builder: (context, widget) {
         // do NOT show red error screen in production build although there's an error
         if (kReleaseMode) {

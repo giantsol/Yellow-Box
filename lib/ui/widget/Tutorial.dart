@@ -20,9 +20,10 @@ class Tutorial extends StatefulWidget {
 }
 
 class TutorialState extends State<Tutorial> {
-  int currentPhase = -1;
+  int _currentPhase = -1;
 
-  void Function() _onTutorialZeroFinished;
+  void Function() _onSkipTutorial;
+  void Function() _onStartTutorial;
   void Function() _onTutorialFourFinished;
 
   RectFinder _penRectFinder;
@@ -42,23 +43,23 @@ class TutorialState extends State<Tutorial> {
       children: [
         widget.child,
         Visibility(
-          visible: currentPhase == 0,
-          child: _TutorialZero(_onTutorialZeroFinished),
+          visible: _currentPhase == 0,
+          child: _TutorialZero(_onSkipTutorial, _onStartTutorial),
         ),
         Visibility(
-          visible: currentPhase == 1 && !penRect.isEmpty,
+          visible: _currentPhase == 1 && !penRect.isEmpty,
           child: _TutorialOne(penRect),
         ),
         Visibility(
-          visible: currentPhase == 2 && !logoRect.isEmpty,
+          visible: _currentPhase == 2 && !logoRect.isEmpty,
           child: _TutorialTwo(logoRect),
         ),
         Visibility(
-          visible: currentPhase == 3 && !historyButtonRect.isEmpty,
+          visible: _currentPhase == 3 && !historyButtonRect.isEmpty,
           child: _TutorialThree(historyButtonRect),
         ),
         Visibility(
-          visible: currentPhase == 4 && !wordListRect.isEmpty,
+          visible: _currentPhase == 4 && !wordListRect.isEmpty,
           child: _TutorialFour(wordListRect, _onTutorialFourFinished),
         ),
       ],
@@ -67,61 +68,62 @@ class TutorialState extends State<Tutorial> {
 
   void hide() {
     setState(() {
-      currentPhase = -1;
+      _currentPhase = -1;
     });
   }
 
-  void showTutorialZero(void Function() onTutorialZeroFinished) {
-    if (currentPhase == 0) {
+  void showTutorialZero(void Function() onSkipTutorial, void Function() onTutorialZeroFinished) {
+    if (_currentPhase == 0) {
       return;
     }
 
     setState(() {
-      currentPhase = 0;
-      _onTutorialZeroFinished = onTutorialZeroFinished;
+      _currentPhase = 0;
+      _onSkipTutorial = onSkipTutorial;
+      _onStartTutorial = onTutorialZeroFinished;
     });
   }
 
   void showTutorialOne(RectFinder penRectFinder) {
-    if (currentPhase == 1) {
+    if (_currentPhase == 1) {
       return;
     }
 
     setState(() {
-      currentPhase = 1;
+      _currentPhase = 1;
       _penRectFinder = penRectFinder;
     });
   }
 
   void showTutorialTwo(RectFinder logoRectFinder) {
-    if (currentPhase == 2) {
+    if (_currentPhase == 2) {
       return;
     }
 
     setState(() {
-      currentPhase = 2;
+      _currentPhase = 2;
       _logoRectFinder = logoRectFinder;
     });
   }
 
   void showTutorialThree(RectFinder historyButtonRectFinder) {
-    if (currentPhase == 3) {
+    if (_currentPhase == 3) {
       return;
     }
 
     setState(() {
-      currentPhase = 3;
+      _currentPhase = 3;
       _historyButtonRectFinder = historyButtonRectFinder;
     });
   }
 
   void showTutorialFour(RectFinder wordListRectFinder, void Function() onTutorialFourFinished) {
-    if (currentPhase == 4) {
+    if (_currentPhase == 4) {
       return;
     }
 
     setState(() {
-      currentPhase = 4;
+      _currentPhase = 4;
       _wordListRectFinder = wordListRectFinder;
       _onTutorialFourFinished = onTutorialFourFinished;
     });
@@ -131,9 +133,10 @@ class TutorialState extends State<Tutorial> {
 typedef RectFinder = Rect Function();
 
 class _TutorialZero extends StatefulWidget {
-  final void Function() callback;
+  final void Function() skipCallback;
+  final void Function() startCallback;
 
-  _TutorialZero(this.callback);
+  _TutorialZero(this.skipCallback, this.startCallback);
 
   @override
   State createState() => _TutorialZeroState();
@@ -146,7 +149,7 @@ class _TutorialZeroState extends State<_TutorialZero> with SingleTickerProviderS
   void initState() {
     super.initState();
     _inAnimation = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 3000),
       vsync: this,
     );
     _inAnimation.forward();
@@ -161,31 +164,82 @@ class _TutorialZeroState extends State<_TutorialZero> with SingleTickerProviderS
   @override
   Widget build(BuildContext context) {
     return FadeTransition(
-      opacity: Tween<double>(begin: 0, end: 1).animate(_inAnimation),
+      opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+        parent: _inAnimation,
+        curve: Interval(0, 0.33, curve: Curves.easeInQuint),
+      )),
       child: Container(
         color: AppColors.SCRIM,
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                AppLocalizations.of(context).tutorialOneTitle,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Center(
+              child: Text(
+                AppLocalizations.of(context).tutorialZeroTitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.TEXT_WHITE,
+                  fontSize: 16,
+                ),
+                strutStyle: StrutStyle(
+                  fontSize: 16,
+                ),
               ),
-              GestureDetector(
-                onTap: widget.callback,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.BACKGROUND_WHITE,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    AppLocalizations.of(context).start,
+            ),
+            FadeTransition(
+              opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+                parent: _inAnimation,
+                curve: Interval(0.66, 1.0),
+              )),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Material(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16, top: 16, right: 16, bottom: 76),
+                    child: Row(
+                      children: [
+                        InkWell(
+                          splashColor: AppColors.SELECTION_WHITE,
+                          onTap: widget.skipCallback,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(
+                              AppLocalizations.of(context).skip,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.TEXT_WHITE,
+                              ),
+                              strutStyle: StrutStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        InkWell(
+                          splashColor: AppColors.SELECTION_WHITE,
+                          onTap: widget.startCallback,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(
+                              AppLocalizations.of(context).start,
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: AppColors.TEXT_WHITE,
+                              ),
+                              strutStyle: StrutStyle(
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -234,9 +288,19 @@ class _TutorialOneState extends State<_TutorialOne> with SingleTickerProviderSta
             painter: _HighlightPainter(penRect),
           ),
           Positioned(
-            top: penRect.bottom + 20,
+            left: 0,
+            right: 0,
+            top: penRect.top - (penRect.longestSide / 4) - 48,
             child: Text(
-              'Hello World!',
+              AppLocalizations.of(context).tutorialOneTitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.TEXT_WHITE,
+              ),
+              strutStyle: StrutStyle(
+                fontSize: 16,
+              ),
             ),
           ),
         ],
@@ -338,9 +402,19 @@ class _TutorialTwoState extends State<_TutorialTwo> with SingleTickerProviderSta
             painter: _HighlightPainter(logoRect),
           ),
           Positioned(
-            top: logoRect.bottom + 20,
+            left: 0,
+            right: 0,
+            top: logoRect.bottom + (logoRect.longestSide / 4) + 28,
             child: Text(
-              'Hello World!',
+              AppLocalizations.of(context).tutorialTwoTitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.TEXT_WHITE,
+              ),
+              strutStyle: StrutStyle(
+                fontSize: 16,
+              ),
             ),
           ),
         ],
@@ -391,9 +465,19 @@ class _TutorialThreeState extends State<_TutorialThree> with SingleTickerProvide
             painter: _HighlightPainter(historyButtonRect, useLongestSide: false),
           ),
           Positioned(
-            top: historyButtonRect.bottom + 20,
+            left: 0,
+            right: 0,
+            top: historyButtonRect.top - (historyButtonRect.longestSide / 2) - 48,
             child: Text(
-              'Hello World!',
+              AppLocalizations.of(context).tutorialThreeTitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.TEXT_WHITE,
+              ),
+              strutStyle: StrutStyle(
+                fontSize: 16,
+              ),
             ),
           ),
         ],
@@ -453,29 +537,65 @@ class _TutorialFourState extends State<_TutorialFour> with SingleTickerProviderS
               absorbPointer: true,
             ),
           ),
-          Positioned(
-            top: wordListRect.bottom + 20,
+          Center(
             child: Text(
-              'Hello World!',
+              AppLocalizations.of(context).tutorialFourTitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.TEXT_WHITE,
+              ),
+              strutStyle: StrutStyle(
+                fontSize: 16,
+              ),
             ),
           ),
-          Positioned(
-            top: wordListRect.bottom + 20,
-            child: FadeTransition(
-              opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-                parent: _inAnimation,
-                curve: Interval(0.75, 1),
-              )),
-              child: GestureDetector(
-                onTap: widget.callback,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.BACKGROUND_WHITE,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    AppLocalizations.of(context).start,
+          FadeTransition(
+            opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+              parent: _inAnimation,
+              curve: Interval(0.75, 1.0),
+            )),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Material(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, top: 16, right: 16, bottom: 76),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context).tutorialFourSubtitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColors.TEXT_WHITE,
+                        ),
+                        strutStyle: StrutStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 28,),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: InkWell(
+                          splashColor: AppColors.SELECTION_WHITE,
+                          onTap: widget.callback,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(
+                              AppLocalizations.of(context).start,
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: AppColors.TEXT_WHITE,
+                              ),
+                              strutStyle: StrutStyle(
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

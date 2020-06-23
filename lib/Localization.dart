@@ -39,10 +39,17 @@ class AppLocalizations {
   static const INTERVAL_SUBTITLE = 'intervalSubtitle';
   static const YELLOW_BOX_TITLE = 'yellowBoxTitle';
   static const YELLOW_BOX_SUBTITLE = 'yellowBoxSubtitle';
-  static const TUTORIAL_ONE_TITLE = 'tutorialOneTitle';
+  static const TUTORIAL_ZERO_TITLE = 'tutorialZeroTitle';
   static const START = 'start';
+  static const SKIP = 'skip';
   static const TUTORIAL_FIRST_WORD = 'tutorialFirstWord';
   static const TUTORIAL_SECOND_WORD = 'tutorialSecondWord';
+  static const TUTORIAL_ONE_TITLE = 'tutorialOneTitle';
+  static const TUTORIAL_TWO_TITLE = 'tutorialTwoTitle';
+  static const TUTORIAL_THREE_TITLE = 'tutorialThreeTitle';
+  static const TUTORIAL_FOUR_TITLE = 'tutorialFourTitle';
+  static const TUTORIAL_FOUR_SUBTITLE = 'tutorialFourSubtitle';
+  static const HOW_ABOUT_GREEN = 'howAboutGreen';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -86,10 +93,17 @@ class AppLocalizations {
       INTERVAL_SUBTITLE: 'New ideas will be generated every interval approximately',
       YELLOW_BOX_TITLE: 'Yellow Box',
       YELLOW_BOX_SUBTITLE: 'Beginning of your ideas',
-      TUTORIAL_ONE_TITLE: 'Welcome!',
+      TUTORIAL_ZERO_TITLE: 'Welcome!\nLet me help you get started.',
       START: 'Start',
+      SKIP: 'Skip',
       TUTORIAL_FIRST_WORD: 'Green',
       TUTORIAL_SECOND_WORD: 'Day',
+      TUTORIAL_ONE_TITLE: 'Press the pen to add your first word.',
+      TUTORIAL_TWO_TITLE: 'Now click the box!',
+      TUTORIAL_THREE_TITLE: 'You just got your first crazy idea.\nCheck it out!',
+      TUTORIAL_FOUR_TITLE: 'You see, I\'ve added two dummy words secretly :P\nYou can view and edit history here.',
+      TUTORIAL_FOUR_SUBTITLE: 'That\'s it!\nGo make your own crazy ideas!',
+      HOW_ABOUT_GREEN: 'e.g. Green',
     },
     'ko': {
       CANCEL: '취소',
@@ -128,10 +142,17 @@ class AppLocalizations {
       INTERVAL_SUBTITLE: '정해진 시간 간격마다 아이디어가 생성됩니다',
       YELLOW_BOX_TITLE: '옐로 박스',
       YELLOW_BOX_SUBTITLE: '새로운 아이디어의 시작',
-      TUTORIAL_ONE_TITLE: '환영합니다!',
+      TUTORIAL_ZERO_TITLE: '환영합니다!\n앱의 사용법을 알려드리겠습니다.',
       START: '시작하기',
+      SKIP: '건너뛰기',
       TUTORIAL_FIRST_WORD: '초록색',
       TUTORIAL_SECOND_WORD: '하루',
+      TUTORIAL_ONE_TITLE: '먼저 펜을 눌러 첫 단어를 추가해보세요!',
+      TUTORIAL_TWO_TITLE: '이제 박스를 눌러보세요!',
+      TUTORIAL_THREE_TITLE: '방금 당신의 첫 아이디어를 얻었습니다!\n확인해보세요!',
+      TUTORIAL_FOUR_TITLE: '제가 몰래 넣어둔 단어도 보이네요 ^^..\n이 화면에서 조회와 삭제가 가능합니다.',
+      TUTORIAL_FOUR_SUBTITLE: '끝났습니다!\n당신만의 아이디어를 맘껏 만들어보세요!',
+      HOW_ABOUT_GREEN: '예) 초록색',
     },
   };
 
@@ -173,10 +194,17 @@ class AppLocalizations {
   String get reset => _localizedValues[locale.languageCode][RESET];
   String get intervalTitle => _localizedValues[locale.languageCode][INTERVAL_TITLE];
   String get intervalSubtitle => _localizedValues[locale.languageCode][INTERVAL_SUBTITLE];
-  String get tutorialOneTitle => _localizedValues[locale.languageCode][TUTORIAL_ONE_TITLE];
+  String get tutorialZeroTitle => _localizedValues[locale.languageCode][TUTORIAL_ZERO_TITLE];
   String get start => _localizedValues[locale.languageCode][START];
+  String get skip => _localizedValues[locale.languageCode][SKIP];
   String get tutorialFirstWord => _localizedValues[locale.languageCode][TUTORIAL_FIRST_WORD];
   String get tutorialSecondWord => _localizedValues[locale.languageCode][TUTORIAL_SECOND_WORD];
+  String get tutorialOneTitle => _localizedValues[locale.languageCode][TUTORIAL_ONE_TITLE];
+  String get tutorialTwoTitle => _localizedValues[locale.languageCode][TUTORIAL_TWO_TITLE];
+  String get tutorialThreeTitle => _localizedValues[locale.languageCode][TUTORIAL_THREE_TITLE];
+  String get tutorialFourTitle => _localizedValues[locale.languageCode][TUTORIAL_FOUR_TITLE];
+  String get tutorialFourSubtitle => _localizedValues[locale.languageCode][TUTORIAL_FOUR_SUBTITLE];
+  String get howAboutGreen => _localizedValues[locale.languageCode][HOW_ABOUT_GREEN];
 
   String get(String key) {
     return _localizedValues[locale.languageCode][key];
