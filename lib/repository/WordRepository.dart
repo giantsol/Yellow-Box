@@ -27,7 +27,7 @@ class WordRepository {
 
   Future<bool> _hasWord(String wordString) async {
     final words = await _words.first;
-    return words.any((word) => word.title == wordString);
+    return words.any((word) => word.title.toLowerCase() == wordString.toLowerCase());
   }
 
   Future<AddWordResult> addWord(Word word) async {
