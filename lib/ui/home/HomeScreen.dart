@@ -855,7 +855,7 @@ class _HappyLogo extends StatelessWidget {
       child: SizedBox(
         width: 160,
         height: 160,
-        child: Placeholder(),
+        child: Image.asset('assets/yellow_box_new_idea.png')
       ),
     );
   }
@@ -870,7 +870,7 @@ class _SadLogo extends StatelessWidget {
       child: SizedBox(
         width: 160,
         height: 160,
-        child: Placeholder(),
+        child: Image.asset('assets/yellow_box_existing_idea.png')
       ),
     );
   }
@@ -885,7 +885,7 @@ class _BlockedLogo extends StatelessWidget {
       child: SizedBox(
         width: 160,
         height: 160,
-        child: Placeholder(),
+        child: Image.asset('assets/yellow_box_blocked_idea.png')
       ),
     );
   }
