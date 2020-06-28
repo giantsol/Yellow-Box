@@ -13,6 +13,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 
 
 class MiniBoxService : Service(), MiniBox.Callback {
@@ -34,6 +35,14 @@ class MiniBoxService : Service(), MiniBox.Callback {
     private var miniBox: MiniBox? = null
 
     private lateinit var notificationManager: NotificationManager
+    private val notificationBuilder by lazy {
+        NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.group)
+            .setColor(ContextCompat.getColor(this, R.color.defaultThemeLightColor))
+            .setColorized(true)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setOngoing(true)
+    }
 
     private var isTerminating = false
 
@@ -171,13 +180,13 @@ class MiniBoxService : Service(), MiniBox.Callback {
     }
 
     private fun createStartedNotification(): Notification {
-        val view = RemoteViews(packageName, R.layout.mini_box_notification_started)
+        val view = RemoteViews(packageName, R.layout.mini_box_notification)
         val pausePendingIntent = PendingIntent.getService(
             this, REQUEST_CODE_PAUSE_BUTTON,
             Intent(this, MiniBoxService::class.java).apply { action = ACTION_PAUSE_MINI_BOX },
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-        view.setOnClickPendingIntent(R.id.pause_button, pausePendingIntent)
+        view.setOnClickPendingIntent(R.id.pause_or_resume_button, pausePendingIntent)
 
         val stopPendingIntent = PendingIntent.getService(
             this, REQUEST_CODE_STOP_BUTTON,
@@ -186,24 +195,20 @@ class MiniBoxService : Service(), MiniBox.Callback {
         )
         view.setOnClickPendingIntent(R.id.stop_button, stopPendingIntent)
 
-        val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_mini_box)
-            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setCustomContentView(view)
-            .setOngoing(true)
-            .build()
+        view.setTextViewText(R.id.title, getText(R.string.notification_title_started))
+        view.setTextViewText(R.id.pause_or_resume_button, getText(R.string.notification_pause))
 
-        return notification
+        return notificationBuilder.setCustomContentView(view).build()
     }
 
     private fun createPausedNotification(): Notification {
-        val view = RemoteViews(packageName, R.layout.mini_box_notification_paused)
-        val pausePendingIntent = PendingIntent.getService(
+        val view = RemoteViews(packageName, R.layout.mini_box_notification)
+        val resumePendingIntent = PendingIntent.getService(
             this, REQUEST_CODE_RESUME_BUTTON,
             Intent(this, MiniBoxService::class.java).apply { action = ACTION_RESUME_MINI_BOX },
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-        view.setOnClickPendingIntent(R.id.resume_button, pausePendingIntent)
+        view.setOnClickPendingIntent(R.id.pause_or_resume_button, resumePendingIntent)
 
         val stopPendingIntent = PendingIntent.getService(
             this, REQUEST_CODE_STOP_BUTTON,
@@ -212,14 +217,10 @@ class MiniBoxService : Service(), MiniBox.Callback {
         )
         view.setOnClickPendingIntent(R.id.stop_button, stopPendingIntent)
 
-        val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_mini_box)
-            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setCustomContentView(view)
-            .setOngoing(true)
-            .build()
+        view.setTextViewText(R.id.title, getText(R.string.notification_title_paused))
+        view.setTextViewText(R.id.pause_or_resume_button, getText(R.string.notification_resume))
 
-        return notification
+        return notificationBuilder.setCustomContentView(view).build()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {

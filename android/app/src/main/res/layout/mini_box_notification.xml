@@ -1,41 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="horizontal"
     android:gravity="center_vertical"
     >
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/notification_title_paused"
         style="@style/TextAppearance.Compat.Notification.Title"
         />
 
-    <TextView
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         />
 
-    <Button
-        android:id="@+id/resume_button"
+    <TextView
+        android:id="@+id/pause_or_resume_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/notification_resume"
         android:textStyle="bold"
-        style="@android:style/Widget.Material.Button.Borderless"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp"
         />
 
-    <Button
+    <FrameLayout
+        android:layout_width="1dp"
+        android:layout_height="16dp"
+        android:background="@color/defaultThemePrimaryColor"
+        />
+
+    <TextView
         android:id="@+id/stop_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/notification_stop"
         android:textStyle="bold"
-        style="@android:style/Widget.Material.Button.Borderless"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp"
         />
 
 </LinearLayout>
