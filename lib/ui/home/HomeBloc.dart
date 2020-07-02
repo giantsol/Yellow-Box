@@ -12,14 +12,14 @@ import 'package:yellow_box/entity/Word.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
 import 'package:yellow_box/ui/home/HomeNavigator.dart';
 import 'package:yellow_box/ui/home/HomeState.dart';
-import 'package:yellow_box/usecase/AddIdea.dart';
-import 'package:yellow_box/usecase/AddWord.dart';
-import 'package:yellow_box/usecase/GetTutorialPhase.dart';
-import 'package:yellow_box/usecase/IsIdeasFull.dart';
+import 'package:yellow_box/usecase/idea/AddIdea.dart';
+import 'package:yellow_box/usecase/word/AddWord.dart';
+import 'package:yellow_box/usecase/tutorial/GetTutorialPhase.dart';
+import 'package:yellow_box/usecase/idea/IsIdeasFull.dart';
 import 'package:yellow_box/usecase/ObserveAppTheme.dart';
-import 'package:yellow_box/usecase/ObserveIdeas.dart';
+import 'package:yellow_box/usecase/idea/ObserveIdeas.dart';
 import 'package:yellow_box/usecase/SetChildScreen.dart';
-import 'package:yellow_box/usecase/SetTutorialPhase.dart';
+import 'package:yellow_box/usecase/tutorial/SetTutorialPhase.dart';
 
 class HomeBloc extends BaseBloc {
 

@@ -7,14 +7,13 @@ import 'package:yellow_box/StreamSubscriptionExtension.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
 import 'package:yellow_box/ui/main/MainNavigator.dart';
 import 'package:yellow_box/ui/main/MainState.dart';
-import 'package:yellow_box/usecase/AddRemainingMiniBoxWords.dart';
-import 'package:yellow_box/usecase/AddWords.dart';
-import 'package:yellow_box/usecase/AutoGenerateAndAddIdeas.dart';
-import 'package:yellow_box/usecase/ClearDeliveredMiniBoxWords.dart';
-import 'package:yellow_box/usecase/MarkLastActiveTime.dart';
 import 'package:yellow_box/usecase/ObserveAppTheme.dart';
 import 'package:yellow_box/usecase/ObserveChildScreen.dart';
-import 'package:yellow_box/usecase/ObserveDeliveredMiniBoxWords.dart';
+import 'package:yellow_box/usecase/idea/AutoGenerateAndAddIdeas.dart';
+import 'package:yellow_box/usecase/word/AddRemainingMiniBoxWords.dart';
+import 'package:yellow_box/usecase/word/AddWords.dart';
+import 'package:yellow_box/usecase/word/ClearDeliveredMiniBoxWords.dart';
+import 'package:yellow_box/usecase/word/ObserveDeliveredMiniBoxWords.dart';
 
 class MainBloc extends BaseBloc {
 
@@ -32,7 +31,6 @@ class MainBloc extends BaseBloc {
   final _addWords = AddWords();
   final _clearDeliveredMiniBoxWords = ClearDeliveredMiniBoxWords();
   final _addRemainingMiniBoxWords = AddRemainingMiniBoxWords();
-  final _markLastActiveTime = MarkLastActiveTime();
   final _autoGenerateAndAddIdeas = AutoGenerateAndAddIdeas();
 
   MainBloc(this._navigator) {
@@ -69,15 +67,12 @@ class MainBloc extends BaseBloc {
       _clearDeliveredMiniBoxWords.invoke();
     }).addTo(_subscriptions);
 
-    await _autoGenerateAndAddIdeas.invoke();
-
-    _markLastActiveTime.invoke();
+    _autoGenerateAndAddIdeas.invoke();
   }
 
   @override
   void dispose() {
     _subscriptions.dispose();
-    _markLastActiveTime.invoke();
   }
 
 }

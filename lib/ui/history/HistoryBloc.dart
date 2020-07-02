@@ -8,20 +8,20 @@ import 'package:yellow_box/entity/Word.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
 import 'package:yellow_box/ui/history/HistoryNavigator.dart';
 import 'package:yellow_box/ui/history/HistoryState.dart';
-import 'package:yellow_box/usecase/BlockIdea.dart';
-import 'package:yellow_box/usecase/BlockIdeas.dart';
-import 'package:yellow_box/usecase/DeleteIdea.dart';
-import 'package:yellow_box/usecase/DeleteIdeas.dart';
-import 'package:yellow_box/usecase/DeleteWord.dart';
-import 'package:yellow_box/usecase/DeleteWords.dart';
-import 'package:yellow_box/usecase/FavoriteIdea.dart';
-import 'package:yellow_box/usecase/GetTutorialPhase.dart';
+import 'package:yellow_box/usecase/idea/BlockIdea.dart';
+import 'package:yellow_box/usecase/idea/BlockIdeas.dart';
+import 'package:yellow_box/usecase/idea/DeleteIdea.dart';
+import 'package:yellow_box/usecase/idea/DeleteIdeas.dart';
+import 'package:yellow_box/usecase/word/DeleteWord.dart';
+import 'package:yellow_box/usecase/word/DeleteWords.dart';
+import 'package:yellow_box/usecase/idea/FavoriteIdea.dart';
+import 'package:yellow_box/usecase/tutorial/GetTutorialPhase.dart';
 import 'package:yellow_box/usecase/ObserveAppTheme.dart';
-import 'package:yellow_box/usecase/ObserveIdeas.dart';
-import 'package:yellow_box/usecase/ObserveWords.dart';
+import 'package:yellow_box/usecase/idea/ObserveIdeas.dart';
+import 'package:yellow_box/usecase/word/ObserveWords.dart';
 import 'package:yellow_box/usecase/SetChildScreen.dart';
-import 'package:yellow_box/usecase/SetTutorialPhase.dart';
-import 'package:yellow_box/usecase/UnfavoriteIdea.dart';
+import 'package:yellow_box/usecase/tutorial/SetTutorialPhase.dart';
+import 'package:yellow_box/usecase/idea/UnfavoriteIdea.dart';
 
 class HistoryBloc extends BaseBloc {
 

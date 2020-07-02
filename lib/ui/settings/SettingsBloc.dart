@@ -10,11 +10,11 @@ import 'package:yellow_box/ui/BaseBloc.dart';
 import 'package:yellow_box/ui/settings/SettingsNavigator.dart';
 import 'package:yellow_box/ui/settings/SettingsState.dart';
 import 'package:yellow_box/usecase/ObserveAppTheme.dart';
-import 'package:yellow_box/usecase/ObserveAutoGenerateIdeas.dart';
-import 'package:yellow_box/usecase/ObserveAutoGenerateIntervalHours.dart';
-import 'package:yellow_box/usecase/ResetBlockedIdeas.dart';
-import 'package:yellow_box/usecase/SetAutoGenerateIdeas.dart';
-import 'package:yellow_box/usecase/SetAutoGenerateIntervalHours.dart';
+import 'package:yellow_box/usecase/idea/ObserveAutoGenerateIdeas.dart';
+import 'package:yellow_box/usecase/idea/ObserveAutoGenerateIntervalHours.dart';
+import 'package:yellow_box/usecase/idea/ResetBlockedIdeas.dart';
+import 'package:yellow_box/usecase/idea/SetAutoGenerateIdeas.dart';
+import 'package:yellow_box/usecase/idea/SetAutoGenerateIntervalHours.dart';
 import 'package:yellow_box/usecase/SetChildScreen.dart';
 import 'package:yellow_box/usecase/ShowMiniBox.dart';
 
