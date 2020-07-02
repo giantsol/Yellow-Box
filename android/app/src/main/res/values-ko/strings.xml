@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">옐로 박스</string>
+
     <string name="word">단어</string>
     <string name="add">추가</string>
 
