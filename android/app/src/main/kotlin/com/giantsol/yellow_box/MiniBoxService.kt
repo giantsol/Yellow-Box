@@ -39,6 +39,10 @@ class MiniBoxService : Service(), MiniBox.Callback {
         NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.group)
             .setColor(ContextCompat.getColor(this, R.color.defaultThemeLightColor))
+            .setContentIntent(PendingIntent.getActivity(this, 0,
+                Intent(this, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }, 0))
             .setColorized(true)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setOngoing(true)
