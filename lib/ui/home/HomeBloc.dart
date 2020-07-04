@@ -133,7 +133,8 @@ class HomeBloc extends BaseBloc {
 
     _showProgress();
 
-    final result = await _addWord.invoke(Word(word, DateTime.now().millisecondsSinceEpoch));
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final result = await _addWord.invoke(Word(word, now));
     if (result == AddWordResult.FULL) {
       _navigator.showWordBoxFull();
     } else if (result == AddWordResult.ALREADY_EXISTS) {
@@ -148,8 +149,8 @@ class HomeBloc extends BaseBloc {
       _navigator.showWordAddedAnimation();
 
       if ((await _getTutorialPhase.invoke()) == 1) {
-        _addWord.invoke(Word(AppLocalizations.of(context).tutorialFirstWord, DateTime.now().millisecondsSinceEpoch));
-        _addWord.invoke(Word(AppLocalizations.of(context).tutorialSecondWord, DateTime.now().millisecondsSinceEpoch));
+        _addWord.invoke(Word(AppLocalizations.of(context).tutorialFirstWord, now - 1));
+        _addWord.invoke(Word(AppLocalizations.of(context).tutorialSecondWord, now - 1));
         _setTutorialPhase.invoke(2);
         _navigator.showTutorial(2);
       }

@@ -25,6 +25,7 @@ class TutorialState extends State<Tutorial> {
   void Function() _onSkipTutorial;
   void Function() _onStartTutorial;
   void Function() _onTutorialFourFinished;
+  void Function() _onTutorialFiveFinished;
 
   RectFinder _penRectFinder;
   RectFinder _logoRectFinder;
@@ -61,6 +62,10 @@ class TutorialState extends State<Tutorial> {
         Visibility(
           visible: _currentPhase == 4 && !wordListRect.isEmpty,
           child: _TutorialFour(wordListRect, _onTutorialFourFinished),
+        ),
+        Visibility(
+          visible: _currentPhase == 5,
+          child: _TutorialFive(_onTutorialFiveFinished),
         ),
       ],
     );
@@ -126,6 +131,17 @@ class TutorialState extends State<Tutorial> {
       _currentPhase = 4;
       _wordListRectFinder = wordListRectFinder;
       _onTutorialFourFinished = onTutorialFourFinished;
+    });
+  }
+
+  void showTutorialFive(void Function() onTutorialFiveFinished) {
+    if (_currentPhase == 5) {
+      return;
+    }
+
+    setState(() {
+      _currentPhase = 5;
+      _onTutorialFiveFinished = onTutorialFiveFinished;
     });
   }
 }
@@ -503,7 +519,7 @@ class _TutorialFourState extends State<_TutorialFour> with SingleTickerProviderS
   void initState() {
     super.initState();
     _inAnimation = AnimationController(
-      duration: const Duration(milliseconds: 4000),
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
     _inAnimation.forward();
@@ -520,10 +536,7 @@ class _TutorialFourState extends State<_TutorialFour> with SingleTickerProviderS
     final wordListRect = widget.wordListRect;
 
     return FadeTransition(
-      opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-        parent: _inAnimation,
-        curve: Interval(0, 0.25),
-      )),
+      opacity: Tween<double>(begin: 0, end: 1).animate(_inAnimation),
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -550,52 +563,120 @@ class _TutorialFourState extends State<_TutorialFour> with SingleTickerProviderS
               ),
             ),
           ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Material(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, top: 16, right: 16, bottom: 76),
+                child: InkWell(
+                  splashColor: AppColors.SELECTION_WHITE,
+                  onTap: widget.callback,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      AppLocalizations.of(context).next,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: AppColors.TEXT_WHITE,
+                      ),
+                      strutStyle: StrutStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TutorialFive extends StatefulWidget {
+  final void Function() callback;
+
+  _TutorialFive(this.callback);
+
+  @override
+  State createState() => _TutorialFiveState();
+}
+
+class _TutorialFiveState extends State<_TutorialFive> with SingleTickerProviderStateMixin {
+  AnimationController _inAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _inAnimation = AnimationController(
+      duration: const Duration(milliseconds: 3000),
+      vsync: this,
+    );
+    _inAnimation.forward();
+  }
+
+  @override
+  void dispose() {
+    _inAnimation.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+        parent: _inAnimation,
+        curve: Interval(0, 0.33),
+      )),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          CustomPaint(
+            size: Size.infinite,
+            painter: _HighlightPainter(
+              Rect.zero,
+            ),
+          ),
+          Center(
+            child: Text(
+              AppLocalizations.of(context).tutorialFiveTitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.TEXT_WHITE,
+              ),
+              strutStyle: StrutStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
           FadeTransition(
             opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
               parent: _inAnimation,
-              curve: Interval(0.75, 1.0),
+              curve: Interval(0.66, 1.0),
             )),
             child: Align(
-              alignment: Alignment.bottomCenter,
+              alignment: Alignment.bottomRight,
               child: Material(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16, top: 16, right: 16, bottom: 76),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context).tutorialFourSubtitle,
-                        textAlign: TextAlign.center,
+                  child: InkWell(
+                    splashColor: AppColors.SELECTION_WHITE,
+                    onTap: widget.callback,
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        AppLocalizations.of(context).done,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 20,
                           color: AppColors.TEXT_WHITE,
                         ),
                         strutStyle: StrutStyle(
-                          fontSize: 16,
+                          fontSize: 20,
                         ),
                       ),
-                      const SizedBox(height: 28,),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: InkWell(
-                          splashColor: AppColors.SELECTION_WHITE,
-                          onTap: widget.callback,
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            child: Text(
-                              AppLocalizations.of(context).start,
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: AppColors.TEXT_WHITE,
-                              ),
-                              strutStyle: StrutStyle(
-                                fontSize: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),

@@ -127,6 +127,10 @@ class _HistoryScreenState extends State<HistoryScreen>
       Tutorial.of(context).showTutorialFour(_wordListRectFinder, () {
         _bloc.onTutorialFourFinished();
       });
+    } else if (phase == 5) {
+      Tutorial.of(context).showTutorialFive(() {
+        _bloc.onTutorialFiveFinished();
+      });
     }
   }
 

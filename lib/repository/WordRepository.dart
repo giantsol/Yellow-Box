@@ -40,7 +40,7 @@ class WordRepository {
       return AddWordResult.ALREADY_EXISTS;
     }
 
-    final insertIndex = max(words.indexWhere((it) => it.dateMillis <= word.dateMillis), 0);
+    final insertIndex = max(words.indexWhere((it) => it.dateMillis <= word.dateMillis), words.length);
     words.insert(insertIndex, word);
     _words.value = words;
 

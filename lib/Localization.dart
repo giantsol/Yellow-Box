@@ -48,10 +48,12 @@ class AppLocalizations {
   static const TUTORIAL_TWO_TITLE = 'tutorialTwoTitle';
   static const TUTORIAL_THREE_TITLE = 'tutorialThreeTitle';
   static const TUTORIAL_FOUR_TITLE = 'tutorialFourTitle';
-  static const TUTORIAL_FOUR_SUBTITLE = 'tutorialFourSubtitle';
+  static const TUTORIAL_FIVE_TITLE = 'tutorialFiveTitle';
   static const HOW_ABOUT_GREEN = 'howAboutGreen';
   static const NAH = 'nah';
   static const NICE = 'nice';
+  static const NEXT = 'next';
+  static const DONE = 'done';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -102,12 +104,14 @@ class AppLocalizations {
       TUTORIAL_SECOND_WORD: 'Day',
       TUTORIAL_ONE_TITLE: 'Press the pen to add your first word.',
       TUTORIAL_TWO_TITLE: 'Now click the box!',
-      TUTORIAL_THREE_TITLE: 'You just got your first crazy idea.\nCheck it out!',
-      TUTORIAL_FOUR_TITLE: 'You see, I\'ve added two dummy words secretly :P\nYou can view and edit history here.',
-      TUTORIAL_FOUR_SUBTITLE: 'That\'s it!\nGo make your own crazy ideas!',
+      TUTORIAL_THREE_TITLE: 'How was your first idea?\nAll histories are kept here.',
+      TUTORIAL_FOUR_TITLE: 'You see, I\'ve added two dummy words, too :P\nYou can view and edit history here.',
+      TUTORIAL_FIVE_TITLE: 'That\'s it!\nLook around, add any words you see or think of.\nLet your own crazy ideas happen!',
       HOW_ABOUT_GREEN: 'e.g. Green',
       NAH: 'Nah..',
       NICE: 'Nice!',
+      NEXT: 'Next',
+      DONE: 'Done',
     },
     'ko': {
       CANCEL: '취소',
@@ -153,12 +157,14 @@ class AppLocalizations {
       TUTORIAL_SECOND_WORD: '하루',
       TUTORIAL_ONE_TITLE: '먼저 펜을 눌러 첫 단어를 추가해보세요!',
       TUTORIAL_TWO_TITLE: '이제 박스를 눌러보세요!',
-      TUTORIAL_THREE_TITLE: '방금 당신의 첫 아이디어를 얻었습니다!\n확인해보세요!',
+      TUTORIAL_THREE_TITLE: '첫 아이디어는 어떠셨나요?\n모든 히스토리는 여기 보관됩니다.',
       TUTORIAL_FOUR_TITLE: '제가 몰래 넣어둔 단어도 보이네요 ^^..\n이 화면에서 조회와 삭제가 가능합니다.',
-      TUTORIAL_FOUR_SUBTITLE: '끝났습니다!\n당신만의 아이디어를 맘껏 만들어보세요!',
+      TUTORIAL_FIVE_TITLE: '끝났습니다!\n떠오르는 단어 무엇이든 넣어보세요.\n당신만의 특별한 아이디어가 나올겁니다!',
       HOW_ABOUT_GREEN: '예) 초록색',
       NAH: '별로..',
       NICE: '좋아요!',
+      NEXT: '다음',
+      DONE: '완료',
     },
   };
 
@@ -209,10 +215,12 @@ class AppLocalizations {
   String get tutorialTwoTitle => _localizedValues[locale.languageCode][TUTORIAL_TWO_TITLE];
   String get tutorialThreeTitle => _localizedValues[locale.languageCode][TUTORIAL_THREE_TITLE];
   String get tutorialFourTitle => _localizedValues[locale.languageCode][TUTORIAL_FOUR_TITLE];
-  String get tutorialFourSubtitle => _localizedValues[locale.languageCode][TUTORIAL_FOUR_SUBTITLE];
+  String get tutorialFiveTitle => _localizedValues[locale.languageCode][TUTORIAL_FIVE_TITLE];
   String get howAboutGreen => _localizedValues[locale.languageCode][HOW_ABOUT_GREEN];
   String get nah => _localizedValues[locale.languageCode][NAH];
   String get nice => _localizedValues[locale.languageCode][NICE];
+  String get next => _localizedValues[locale.languageCode][NEXT];
+  String get done => _localizedValues[locale.languageCode][DONE];
 
   String get(String key) {
     return _localizedValues[locale.languageCode][key];

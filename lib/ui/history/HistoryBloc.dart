@@ -26,7 +26,7 @@ import 'package:yellow_box/usecase/idea/UnfavoriteIdea.dart';
 class HistoryBloc extends BaseBloc {
 
   static const _FIRST_TUTORIAL = 4;
-  static const _LAST_TUTORIAL = 4;
+  static const _LAST_TUTORIAL = 5;
 
   final HistoryNavigator _navigator;
 
@@ -323,7 +323,16 @@ class HistoryBloc extends BaseBloc {
 
   void onTutorialFourFinished() {
     _setTutorialPhase.invoke(5);
+    _navigator.showTutorial(5);
+  }
+
+  void onTutorialFiveFinished() {
+    _setTutorialPhase.invoke(6);
     _navigator.hideTutorial();
+
+    _state.value = _state.value.buildNew(
+      isInTutorial: false,
+    );
   }
 
   bool handleBackPress() {
