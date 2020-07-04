@@ -1,7 +1,7 @@
 
 import 'package:rxdart/rxdart.dart';
 import 'package:yellow_box/datasource/AppDatabase.dart';
-import 'package:yellow_box/entity/AddIdeaResult.dart';
+import 'package:yellow_box/entity/CreateIdeaResult.dart';
 import 'package:yellow_box/entity/Idea.dart';
 
 class IdeaRepository {
@@ -35,29 +35,33 @@ class IdeaRepository {
     return ideas.any((idea) => idea.title == title);
   }
 
-  Future<AddIdeaResult> addIdea(String title) async {
+  Future<CreateIdeaResult> createIdea(String title) async {
     final ideas = await _ideas.first;
     if (ideas.length >= _MAX_COUNT) {
-      return AddIdeaResult.FULL;
+      return CreateIdeaResult.FULL;
     }
 
     final isAlreadySavedIdea = await _hasIdea(title);
     if (isAlreadySavedIdea) {
-      return AddIdeaResult.ALREADY_EXISTS;
+      return CreateIdeaResult.ALREADY_EXISTS;
     }
 
     final isBlockedIdea = await _isBlocked(title);
     if (isBlockedIdea) {
-      return AddIdeaResult.BLOCKED;
+      return CreateIdeaResult.BLOCKED;
     }
+
+    return CreateIdeaResult.SUCCESS;
+  }
+
+  Future<void> addIdea(String title) async {
+    final ideas = await _ideas.first;
 
     final idea = Idea(title, DateTime.now().millisecondsSinceEpoch, false, false);
     ideas.insert(0, idea);
     _ideas.value = ideas;
 
-    _database.addIdea(idea);
-    
-    return AddIdeaResult.SUCCESS;
+    return _database.addIdea(idea);
   }
 
   Future<void> deleteIdea(Idea item) async {

@@ -4,22 +4,23 @@ import 'package:rxdart/subjects.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:yellow_box/Localization.dart';
 import 'package:yellow_box/StreamSubscriptionExtension.dart';
-import 'package:yellow_box/entity/AddIdeaResult.dart';
 import 'package:yellow_box/entity/AddWordResult.dart';
 import 'package:yellow_box/entity/ChildScreenKey.dart';
+import 'package:yellow_box/entity/CreateIdeaResult.dart';
 import 'package:yellow_box/entity/IdeaPopUpData.dart';
 import 'package:yellow_box/entity/Word.dart';
 import 'package:yellow_box/ui/BaseBloc.dart';
 import 'package:yellow_box/ui/home/HomeNavigator.dart';
 import 'package:yellow_box/ui/home/HomeState.dart';
-import 'package:yellow_box/usecase/idea/AddIdea.dart';
-import 'package:yellow_box/usecase/word/AddWord.dart';
-import 'package:yellow_box/usecase/tutorial/GetTutorialPhase.dart';
-import 'package:yellow_box/usecase/idea/IsIdeasFull.dart';
 import 'package:yellow_box/usecase/ObserveAppTheme.dart';
-import 'package:yellow_box/usecase/idea/ObserveIdeas.dart';
 import 'package:yellow_box/usecase/SetChildScreen.dart';
+import 'package:yellow_box/usecase/idea/AddIdea.dart';
+import 'package:yellow_box/usecase/idea/CreateIdea.dart';
+import 'package:yellow_box/usecase/idea/IsIdeasFull.dart';
+import 'package:yellow_box/usecase/idea/ObserveIdeas.dart';
+import 'package:yellow_box/usecase/tutorial/GetTutorialPhase.dart';
 import 'package:yellow_box/usecase/tutorial/SetTutorialPhase.dart';
+import 'package:yellow_box/usecase/word/AddWord.dart';
 
 class HomeBloc extends BaseBloc {
 
@@ -38,6 +39,7 @@ class HomeBloc extends BaseBloc {
   final _observeIdeas = ObserveIdeas();
   final _isIdeasFull = IsIdeasFull();
   final _addWord = AddWord();
+  final _createIdea = CreateIdea();
   final _addIdea = AddIdea();
   final _setChildScreen = SetChildScreen();
   final _getTutorialPhase = GetTutorialPhase();
@@ -201,25 +203,25 @@ class HomeBloc extends BaseBloc {
 
     final String fakeIdeaForTutorial = (await _getTutorialPhase.invoke()) == 2 ? "${AppLocalizations.of(context).tutorialFirstWord} ${AppLocalizations.of(context).tutorialSecondWord}"
       : "";
-    final result = await _addIdea.invoke(idea: fakeIdeaForTutorial);
+    final result = await _createIdea.invoke(idea: fakeIdeaForTutorial);
     switch (result.item1) {
-      case AddIdeaResult.SUCCESS:
+      case CreateIdeaResult.SUCCESS:
         _state.value = _state.value.buildNew(
           ideaPopUpData: IdeaPopUpData(result.item2, IdeaPopUpData.TYPE_NEW),
         );
         break;
-      case AddIdeaResult.NEED_MORE_WORDS:
+      case CreateIdeaResult.NEED_MORE_WORDS:
         _navigator.showAddMoreWordsForIdea();
         break;
-      case AddIdeaResult.FULL:
+      case CreateIdeaResult.FULL:
         _navigator.showIdeaBoxFull();
         break;
-      case AddIdeaResult.ALREADY_EXISTS:
+      case CreateIdeaResult.ALREADY_EXISTS:
         _state.value = _state.value.buildNew(
           ideaPopUpData: IdeaPopUpData(result.item2, IdeaPopUpData.TYPE_EXISTS),
         );
         break;
-      case AddIdeaResult.BLOCKED:
+      case CreateIdeaResult.BLOCKED:
       // show oops! you picked out a blocked idea!
         _state.value = _state.value.buildNew(
           ideaPopUpData: IdeaPopUpData(result.item2, IdeaPopUpData.TYPE_BLOCKED),
@@ -234,15 +236,18 @@ class HomeBloc extends BaseBloc {
     }
   }
 
+  void onNiceClicked() async {
+    final idea = _state.value.ideaPopUpData.title;
+    _addIdea.invoke(idea);
+
+    _navigator.showIdeaAddedAnimation();
+    onCloseIdeaPopUpClicked();
+  }
+
   void onCloseIdeaPopUpClicked() async {
-    final bool wasNewIdea = _state.value.ideaPopUpData.type == IdeaPopUpData.TYPE_NEW;
     _state.value = _state.value.buildNew(
       ideaPopUpData: IdeaPopUpData.NONE,
     );
-
-    if (wasNewIdea) {
-      _navigator.showIdeaAddedAnimation();
-    }
 
     if ((await _getTutorialPhase.invoke()) == 2) {
       _setTutorialPhase.invoke(3);
@@ -280,7 +285,9 @@ class HomeBloc extends BaseBloc {
     }
 
     if (_state.value.ideaPopUpData.isValid()) {
-      onCloseIdeaPopUpClicked();
+      if (_state.value.ideaPopUpData.type != IdeaPopUpData.TYPE_NEW) {
+        onCloseIdeaPopUpClicked();
+      }
       return true;
     }
 

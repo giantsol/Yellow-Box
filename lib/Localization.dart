@@ -50,6 +50,8 @@ class AppLocalizations {
   static const TUTORIAL_FOUR_TITLE = 'tutorialFourTitle';
   static const TUTORIAL_FOUR_SUBTITLE = 'tutorialFourSubtitle';
   static const HOW_ABOUT_GREEN = 'howAboutGreen';
+  static const NAH = 'nah';
+  static const NICE = 'nice';
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
@@ -104,6 +106,8 @@ class AppLocalizations {
       TUTORIAL_FOUR_TITLE: 'You see, I\'ve added two dummy words secretly :P\nYou can view and edit history here.',
       TUTORIAL_FOUR_SUBTITLE: 'That\'s it!\nGo make your own crazy ideas!',
       HOW_ABOUT_GREEN: 'e.g. Green',
+      NAH: 'Nah..',
+      NICE: 'Nice!',
     },
     'ko': {
       CANCEL: '취소',
@@ -153,6 +157,8 @@ class AppLocalizations {
       TUTORIAL_FOUR_TITLE: '제가 몰래 넣어둔 단어도 보이네요 ^^..\n이 화면에서 조회와 삭제가 가능합니다.',
       TUTORIAL_FOUR_SUBTITLE: '끝났습니다!\n당신만의 아이디어를 맘껏 만들어보세요!',
       HOW_ABOUT_GREEN: '예) 초록색',
+      NAH: '별로..',
+      NICE: '좋아요!',
     },
   };
 
@@ -205,6 +211,8 @@ class AppLocalizations {
   String get tutorialFourTitle => _localizedValues[locale.languageCode][TUTORIAL_FOUR_TITLE];
   String get tutorialFourSubtitle => _localizedValues[locale.languageCode][TUTORIAL_FOUR_SUBTITLE];
   String get howAboutGreen => _localizedValues[locale.languageCode][HOW_ABOUT_GREEN];
+  String get nah => _localizedValues[locale.languageCode][NAH];
+  String get nice => _localizedValues[locale.languageCode][NICE];
 
   String get(String key) {
     return _localizedValues[locale.languageCode][key];

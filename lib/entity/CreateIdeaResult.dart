@@ -1,5 +1,5 @@
 
-enum AddIdeaResult {
+enum CreateIdeaResult {
   SUCCESS,
   FULL,
   NEED_MORE_WORDS,

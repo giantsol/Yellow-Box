@@ -1,10 +1,13 @@
 
+import 'package:yellow_box/entity/CreateIdeaResult.dart';
 import 'package:yellow_box/ui/App.dart';
 import 'package:yellow_box/usecase/idea/AddIdea.dart';
+import 'package:yellow_box/usecase/idea/CreateIdea.dart';
 
 class AutoGenerateAndAddIdeas {
   final _settingsRepository = dependencies.settingsRepository;
 
+  final _createIdea = CreateIdea();
   final _addIdea = AddIdea();
 
   Future<void> invoke() async {
@@ -22,7 +25,10 @@ class AutoGenerateAndAddIdeas {
     final int generateCount = deltaMillis ~/ autoGenerateMillis;
     if (generateCount > 0) {
       for (int i = 0; i < generateCount; i++) {
-        await _addIdea.invoke();
+        final tuple = await _createIdea.invoke();
+        if (tuple.item1 == CreateIdeaResult.SUCCESS) {
+          await _addIdea.invoke(tuple.item2);
+        }
       }
       _settingsRepository.setLastActiveTime(currentMillis - (deltaMillis % autoGenerateMillis));
     }
