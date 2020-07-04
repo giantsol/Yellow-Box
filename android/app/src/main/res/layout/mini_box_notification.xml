@@ -30,6 +30,7 @@
         android:paddingTop="8dp"
         android:paddingRight="16dp"
         android:paddingBottom="8dp"
+        style="@style/TextAppearance.Compat.Notification.Info"
         />
 
     <FrameLayout
@@ -49,6 +50,7 @@
         android:paddingTop="8dp"
         android:paddingRight="16dp"
         android:paddingBottom="8dp"
+        style="@style/TextAppearance.Compat.Notification.Info"
         />
 
 </LinearLayout>
