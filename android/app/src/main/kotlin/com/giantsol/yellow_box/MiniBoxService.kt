@@ -37,7 +37,7 @@ class MiniBoxService : Service(), MiniBox.Callback {
     private lateinit var notificationManager: NotificationManager
     private val notificationBuilder by lazy {
         NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.group)
+            .setSmallIcon(R.drawable.ic_notification_mini_box)
             .setColor(ContextCompat.getColor(this, R.color.defaultThemeLightColor))
             .setContentIntent(PendingIntent.getActivity(this, 0,
                 Intent(this, MainActivity::class.java).apply {
