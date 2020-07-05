@@ -261,7 +261,7 @@ class HomeBloc extends BaseBloc {
   }
 
   void onSkipTutorialClicked() {
-    _setTutorialPhase.invoke(5);
+    _setTutorialPhase.invoke(6);
     _navigator.hideTutorial();
 
     _state.value = _state.value.buildNew(

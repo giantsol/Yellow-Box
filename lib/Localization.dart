@@ -106,7 +106,7 @@ class AppLocalizations {
       TUTORIAL_TWO_TITLE: 'Now click the box!',
       TUTORIAL_THREE_TITLE: 'How was your first idea?\nAll histories are kept here.',
       TUTORIAL_FOUR_TITLE: 'You see, I\'ve added two dummy words, too :P\nYou can view and edit history here.',
-      TUTORIAL_FIVE_TITLE: 'That\'s it!\nLook around, add any words you see or think of.\nLet your own crazy ideas happen!',
+      TUTORIAL_FIVE_TITLE: 'That\'s it! Look around,\nadd any words you can think of.\nLet your own crazy ideas happen!',
       HOW_ABOUT_GREEN: 'e.g. Green',
       NAH: 'Nah..',
       NICE: 'Nice!',
