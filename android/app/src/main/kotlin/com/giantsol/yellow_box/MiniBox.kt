@@ -352,7 +352,7 @@ class MiniBox(private val context: Context,
         val word = editorView.text.toString()
         if (word.isNotEmpty()) {
             callback.addWord(word)
-            hideWordEditor()
+            editorView.text = null
 
             wordAddedAnimator.apply {
                 cancel()
