@@ -1,6 +1,4 @@
 
-import 'dart:math';
-
 import 'package:rxdart/rxdart.dart';
 import 'package:yellow_box/datasource/AppDatabase.dart';
 import 'package:yellow_box/entity/AddWordResult.dart';
@@ -40,7 +38,10 @@ class WordRepository {
       return AddWordResult.ALREADY_EXISTS;
     }
 
-    final insertIndex = max(words.indexWhere((it) => it.dateMillis <= word.dateMillis), words.length);
+    int insertIndex = words.indexWhere((it) => it.dateMillis <= word.dateMillis);
+    if (insertIndex < 0) {
+      insertIndex = words.length;
+    }
     words.insert(insertIndex, word);
     _words.value = words;
 
