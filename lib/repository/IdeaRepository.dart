@@ -58,7 +58,12 @@ class IdeaRepository {
     final ideas = await _ideas.first;
 
     final idea = Idea(title, DateTime.now().millisecondsSinceEpoch, false, false);
-    ideas.insert(0, idea);
+    final firstNonFavoriteIdeaIndex = ideas.indexWhere((it) => !it.isFavorite);
+    if (firstNonFavoriteIdeaIndex >= 0) {
+      ideas.insert(firstNonFavoriteIdeaIndex, idea);
+    } else {
+      ideas.add(idea);
+    }
     _ideas.value = ideas;
 
     return _database.addIdea(idea);
