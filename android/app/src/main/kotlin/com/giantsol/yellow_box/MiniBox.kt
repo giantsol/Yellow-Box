@@ -13,9 +13,11 @@ import android.view.animation.OvershootInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sin
 
 class MiniBox(private val context: Context,
               private val callback: Callback): View.OnKeyListener {
@@ -59,6 +61,11 @@ class MiniBox(private val context: Context,
     private val hideWordEditorAnimator = ObjectAnimator.ofFloat(wordEditorView, "x", 0f).apply {
         duration = 400
         interpolator = OvershootInterpolator()
+    }
+
+    private val wordAddedAnimator = ValueAnimator.ofFloat(0f).apply {
+        duration = 400
+        interpolator = FastOutSlowInInterpolator()
     }
 
     private val statusBarHeight: Int
@@ -230,6 +237,12 @@ class MiniBox(private val context: Context,
                 isCancelled = false
             }
         })
+
+        wordAddedAnimator.addUpdateListener {
+            val scale = (1 + 0.2f * sin(it.animatedFraction * Math.PI * 2)).toFloat()
+            miniBoxView.scaleX = scale
+            miniBoxView.scaleY = scale
+        }
     }
 
     private fun getWindowParams(width: Int, height: Int): WindowManager.LayoutParams {
@@ -340,6 +353,11 @@ class MiniBox(private val context: Context,
         if (word.isNotEmpty()) {
             callback.addWord(word)
             hideWordEditor()
+
+            wordAddedAnimator.apply {
+                cancel()
+                start()
+            }
         }
     }
 
@@ -372,6 +390,7 @@ class MiniBox(private val context: Context,
         springBackAnimator.removeAllListeners()
         showWordEditorAnimator.removeAllListeners()
         hideWordEditorAnimator.removeAllListeners()
+        wordAddedAnimator.removeAllListeners()
 
         if (miniBoxView.isAttachedToWindow) {
             wm.removeView(miniBoxView)
