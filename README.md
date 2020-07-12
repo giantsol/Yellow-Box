@@ -18,7 +18,10 @@
 
 ## Screenshots
 
-<img src="https://user-images.githubusercontent.com/4879766/87249466-3ddb2080-c49a-11ea-85b6-c8d17bd478c5.gif" width="200" />
+<p float="left">
+  <img src="https://user-images.githubusercontent.com/4879766/87250136-02425580-c49e-11ea-8bf1-7eb9e3f4a946.gif" width="200" />
+  <img src="https://user-images.githubusercontent.com/4879766/87250145-0b332700-c49e-11ea-83e2-1fbdb916cb29.gif" width="200" />
+</p>
 
 <p float="left">
   <img src="https://user-images.githubusercontent.com/4879766/86593214-c4da5580-bfcf-11ea-8b07-0e70cfe20414.png" width="150" />
