@@ -18,11 +18,13 @@
 
 ## Screenshots
 
+<img src="https://user-images.githubusercontent.com/4879766/87249466-3ddb2080-c49a-11ea-85b6-c8d17bd478c5.gif" width="200" />
+
 <p float="left">
-  <img src="https://user-images.githubusercontent.com/4879766/86593214-c4da5580-bfcf-11ea-8b07-0e70cfe20414.png" width="200" />
-  <img src="https://user-images.githubusercontent.com/4879766/86593253-d4f23500-bfcf-11ea-91ea-942deac11906.png" width="200" /> 
-  <img src="https://user-images.githubusercontent.com/4879766/86593296-ea675f00-bfcf-11ea-8484-ef705abc96ea.png" width="200" />
-  <img src="https://user-images.githubusercontent.com/4879766/86593305-edfae600-bfcf-11ea-85d6-88638088fc73.png" width="200" />
+  <img src="https://user-images.githubusercontent.com/4879766/86593214-c4da5580-bfcf-11ea-8b07-0e70cfe20414.png" width="150" />
+  <img src="https://user-images.githubusercontent.com/4879766/86593253-d4f23500-bfcf-11ea-91ea-942deac11906.png" width="150" /> 
+  <img src="https://user-images.githubusercontent.com/4879766/86593296-ea675f00-bfcf-11ea-8484-ef705abc96ea.png" width="150" />
+  <img src="https://user-images.githubusercontent.com/4879766/86593305-edfae600-bfcf-11ea-85d6-88638088fc73.png" width="150" />
 </p>
 
 ## Download
@@ -33,7 +35,15 @@
 
 ## Description
 
-Simple brainstorming app built with Flutter and BLoC pattern. Everything runs locally, so it's easy to setup and run for yourself: clone the repository, run ```flutter pub get``` from the cloned directory, and run the app.
+Simple brainstorming app built with Flutter and BLoC pattern. This app largely demonstrates:
+
+1. applying BLoC and Clean Architecture in Flutter app.
+2. using MethodChannel to communicate with native Android code.
+3. using intricate animations.
+4. adding tutorial.
+5. applying localizations.
+
+Everything runs locally, so it's easy to setup and run for yourself: clone the repository, run ```flutter pub get``` from the cloned directory, and run the app.
 
 Code is largely divided into five packages: **ui**, **usecase**, **entity**, **repository**, and **datasource**. It's implemented in the way I follow clean architecture.
 
