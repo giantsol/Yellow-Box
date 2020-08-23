@@ -40,11 +40,11 @@
 
 Simple brainstorming app built with Flutter and BLoC pattern. This app largely demonstrates:
 
-1. applying BLoC and Clean Architecture in Flutter app.
-2. using MethodChannel to communicate with native Android code.
-3. using intricate animations.
-4. adding tutorial.
-5. applying localizations.
+1. applying **BLoC** and **Clean Architecture** in Flutter app.
+2. using **MethodChannel** to communicate with native Android code.
+3. using intricate **animations**.
+4. adding **tutorial**.
+5. applying **localizations**.
 
 Everything runs locally, so it's easy to setup and run for yourself: clone the repository, run ```flutter pub get``` from the cloned directory, and run the app.
 
