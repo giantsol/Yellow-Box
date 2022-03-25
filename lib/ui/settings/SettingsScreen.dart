@@ -220,7 +220,7 @@ class _ArrowSettingsItem extends StatelessWidget {
   final bool isDarkTheme;
   final String title;
   final String subtitle;
-  final Function onTap;
+  final VoidCallback onTap;
   final String value;
   final bool isSubSettings;
 
@@ -239,7 +239,7 @@ class _ArrowSettingsItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         InkWell(
-          onTap: () => onTap,
+          onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24,),
             child: Row(
@@ -403,7 +403,7 @@ class _SettingsItem extends StatelessWidget {
   final bool isDarkTheme;
   final String title;
   final String subtitle;
-  final Function onTap;
+  final VoidCallback onTap;
 
   _SettingsItem({
     required this.isDarkTheme,
@@ -418,7 +418,7 @@ class _SettingsItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         InkWell(
-          onTap: () => onTap,
+          onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24,),
             child: Row(
