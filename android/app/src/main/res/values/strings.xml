@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Yellow Box</string>
+
+    <string name="word">Word</string>
+    <string name="add">Add</string>
+
+    <string name="mini_box_notification_channel_name">Mini Box</string>
+    <string name="mini_box_notification_channel_description">Notification required for smooth mini box usage</string>
+
+    <string name="notification_title_started">Mini Box running</string>
+    <string name="notification_title_paused">Mini Box paused</string>
+    <string name="notification_pause">Pause</string>
+    <string name="notification_resume">Resume</string>
+    <string name="notification_stop">Stop</string>
+</resources>

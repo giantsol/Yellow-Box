@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.giantsol.yellow_box.KeyInterceptRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <ImageView
+        android:id="@+id/close"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/floating_close"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        />
+
+    <LinearLayout
+        android:id="@+id/word_editor"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="12dp"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_word_editor"
+        android:elevation="4dp"
+        android:gravity="center_vertical"
+        >
+
+        <EditText
+            android:id="@+id/editor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="4dp"
+            android:textSize="16dp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#7F000000"
+            android:hint="@string/word"
+            android:textCursorDrawable="@drawable/word_editor_cursor"
+            android:background="@null"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            />
+
+        <TextView
+            android:id="@+id/add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="11dp"
+            android:paddingBottom="11dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:text="@string/add"
+            android:textColor="#B08236"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_marginRight="1dp"
+            />
+
+    </LinearLayout>
+
+</com.giantsol.yellow_box.KeyInterceptRelativeLayout>
