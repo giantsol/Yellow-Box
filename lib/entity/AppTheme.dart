@@ -29,16 +29,16 @@ class AppTheme {
   final bool isDarkTheme;
 
   const AppTheme({
-    this.primaryColor,
-    this.lightColor,
-    this.darkColor,
-    this.pointColor,
-    this.mainLogo,
-    this.titleKey,
-    this.subtitleKey,
-    this.topBackgroundDeco,
-    this.bottomBackgroundDeco,
-    this.isDarkTheme,
+    required this.primaryColor,
+    required this.lightColor,
+    required this.darkColor,
+    required this.pointColor,
+    required this.mainLogo,
+    required this.titleKey,
+    required this.subtitleKey,
+    required this.topBackgroundDeco,
+    required this.bottomBackgroundDeco,
+    required this.isDarkTheme,
   });
 
 }

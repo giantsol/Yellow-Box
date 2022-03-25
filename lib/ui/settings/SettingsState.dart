@@ -20,11 +20,11 @@ class SettingsState {
   bool get isScrimVisible => isResetBlockedIdeasDialogShown || isIntervalDialogShown;
 
   SettingsState buildNew({
-    AppTheme appTheme,
-    bool autoGenerateIdeas,
-    bool isResetBlockedIdeasDialogShown,
-    int intervalHours,
-    bool isIntervalDialogShown,
+    AppTheme? appTheme,
+    bool? autoGenerateIdeas,
+    bool? isResetBlockedIdeasDialogShown,
+    int? intervalHours,
+    bool? isIntervalDialogShown,
   }) {
     return SettingsState(
       appTheme: appTheme ?? this.appTheme,

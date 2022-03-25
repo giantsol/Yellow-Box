@@ -8,13 +8,13 @@ class Tutorial extends StatefulWidget {
   final Widget child;
 
   Tutorial({
-    @required this.child,
+    required this.child,
   });
 
   @override
   State createState() => TutorialState();
 
-  static TutorialState of(BuildContext context) {
+  static TutorialState? of(BuildContext context) {
     return context.findAncestorStateOfType<TutorialState>();
   }
 }
@@ -22,15 +22,15 @@ class Tutorial extends StatefulWidget {
 class TutorialState extends State<Tutorial> {
   int _currentPhase = -1;
 
-  void Function() _onSkipTutorial;
-  void Function() _onStartTutorial;
-  void Function() _onTutorialFourFinished;
-  void Function() _onTutorialFiveFinished;
+  late void Function()? _onSkipTutorial = null;
+  late void Function()? _onStartTutorial = null;
+  late void Function()? _onTutorialFourFinished = null;
+  late void Function()? _onTutorialFiveFinished = null;
 
-  RectFinder _penRectFinder;
-  RectFinder _logoRectFinder;
-  RectFinder _historyButtonRectFinder;
-  RectFinder _wordListRectFinder;
+  late RectFinder? _penRectFinder = null;
+  late RectFinder? _logoRectFinder = null;
+  late RectFinder? _historyButtonRectFinder = null;
+  late RectFinder? _wordListRectFinder = null;
 
   @override
   Widget build(BuildContext context) {
@@ -149,8 +149,8 @@ class TutorialState extends State<Tutorial> {
 typedef RectFinder = Rect Function();
 
 class _TutorialZero extends StatefulWidget {
-  final void Function() skipCallback;
-  final void Function() startCallback;
+  void Function()? skipCallback = null;
+  void Function()? startCallback = null;
 
   _TutorialZero(this.skipCallback, this.startCallback);
 
@@ -159,7 +159,7 @@ class _TutorialZero extends StatefulWidget {
 }
 
 class _TutorialZeroState extends State<_TutorialZero> with SingleTickerProviderStateMixin {
-  AnimationController _inAnimation;
+  late AnimationController _inAnimation;
 
   @override
   void initState() {
@@ -191,7 +191,7 @@ class _TutorialZeroState extends State<_TutorialZero> with SingleTickerProviderS
           children: [
             Center(
               child: Text(
-                AppLocalizations.of(context).tutorialZeroTitle,
+                AppLocalizations.of(context)!.tutorialZeroTitle!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.TEXT_WHITE,
@@ -220,7 +220,7 @@ class _TutorialZeroState extends State<_TutorialZero> with SingleTickerProviderS
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             child: Text(
-                              AppLocalizations.of(context).skip,
+                              AppLocalizations.of(context)!.skip!,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: AppColors.TEXT_WHITE,
@@ -238,7 +238,7 @@ class _TutorialZeroState extends State<_TutorialZero> with SingleTickerProviderS
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             child: Text(
-                              AppLocalizations.of(context).start,
+                              AppLocalizations.of(context)!.start!,
                               style: TextStyle(
                                 fontSize: 20,
                                 color: AppColors.TEXT_WHITE,
@@ -272,7 +272,7 @@ class _TutorialOne extends StatefulWidget {
 }
 
 class _TutorialOneState extends State<_TutorialOne> with SingleTickerProviderStateMixin {
-  AnimationController _inAnimation;
+  late AnimationController _inAnimation;
 
   @override
   void initState() {
@@ -308,7 +308,7 @@ class _TutorialOneState extends State<_TutorialOne> with SingleTickerProviderSta
             right: 0,
             top: penRect.top - (penRect.longestSide / 4) - 48,
             child: Text(
-              AppLocalizations.of(context).tutorialOneTitle,
+              AppLocalizations.of(context)!.tutorialOneTitle!,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -342,7 +342,7 @@ class _HighlightPainter extends CustomPainter {
   final Paint _paint = Paint()
     ..color = AppColors.SCRIM;
 
-  Rect _circle;
+  late Rect _circle;
 
   _HighlightPainter(this._targetRect, {
     this.useLongestSide = true,
@@ -386,7 +386,7 @@ class _TutorialTwo extends StatefulWidget {
 }
 
 class _TutorialTwoState extends State<_TutorialTwo> with SingleTickerProviderStateMixin {
-  AnimationController _inAnimation;
+  late AnimationController _inAnimation;
 
   @override
   void initState() {
@@ -422,7 +422,7 @@ class _TutorialTwoState extends State<_TutorialTwo> with SingleTickerProviderSta
             right: 0,
             top: logoRect.bottom + (logoRect.longestSide / 4) + 28,
             child: Text(
-              AppLocalizations.of(context).tutorialTwoTitle,
+              AppLocalizations.of(context)!.tutorialTwoTitle!,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -449,7 +449,7 @@ class _TutorialThree extends StatefulWidget {
 }
 
 class _TutorialThreeState extends State<_TutorialThree> with SingleTickerProviderStateMixin {
-  AnimationController _inAnimation;
+  late AnimationController _inAnimation;
 
   @override
   void initState() {
@@ -485,7 +485,7 @@ class _TutorialThreeState extends State<_TutorialThree> with SingleTickerProvide
             right: 0,
             top: historyButtonRect.top - (historyButtonRect.longestSide / 2) - 48,
             child: Text(
-              AppLocalizations.of(context).tutorialThreeTitle,
+              AppLocalizations.of(context)!.tutorialThreeTitle!,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -504,7 +504,7 @@ class _TutorialThreeState extends State<_TutorialThree> with SingleTickerProvide
 
 class _TutorialFour extends StatefulWidget {
   final Rect wordListRect;
-  final void Function() callback;
+  void Function()? callback = null;
 
   _TutorialFour(this.wordListRect, this.callback);
 
@@ -513,7 +513,7 @@ class _TutorialFour extends StatefulWidget {
 }
 
 class _TutorialFourState extends State<_TutorialFour> with SingleTickerProviderStateMixin {
-  AnimationController _inAnimation;
+  late AnimationController _inAnimation;
 
   @override
   void initState() {
@@ -552,7 +552,7 @@ class _TutorialFourState extends State<_TutorialFour> with SingleTickerProviderS
           ),
           Center(
             child: Text(
-              AppLocalizations.of(context).tutorialFourTitle,
+              AppLocalizations.of(context)!.tutorialFourTitle!,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -574,7 +574,7 @@ class _TutorialFourState extends State<_TutorialFour> with SingleTickerProviderS
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     child: Text(
-                      AppLocalizations.of(context).next,
+                      AppLocalizations.of(context)!.next!,
                       style: TextStyle(
                         fontSize: 20,
                         color: AppColors.TEXT_WHITE,
@@ -595,7 +595,7 @@ class _TutorialFourState extends State<_TutorialFour> with SingleTickerProviderS
 }
 
 class _TutorialFive extends StatefulWidget {
-  final void Function() callback;
+  void Function()? callback = null;
 
   _TutorialFive(this.callback);
 
@@ -604,7 +604,7 @@ class _TutorialFive extends StatefulWidget {
 }
 
 class _TutorialFiveState extends State<_TutorialFive> with SingleTickerProviderStateMixin {
-  AnimationController _inAnimation;
+  late AnimationController _inAnimation;
 
   @override
   void initState() {
@@ -640,7 +640,7 @@ class _TutorialFiveState extends State<_TutorialFive> with SingleTickerProviderS
           ),
           Center(
             child: Text(
-              AppLocalizations.of(context).tutorialFiveTitle,
+              AppLocalizations.of(context)!.tutorialFiveTitle!,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -667,7 +667,7 @@ class _TutorialFiveState extends State<_TutorialFive> with SingleTickerProviderS
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       child: Text(
-                        AppLocalizations.of(context).done,
+                        AppLocalizations.of(context)!.done!,
                         style: TextStyle(
                           fontSize: 20,
                           color: AppColors.TEXT_WHITE,

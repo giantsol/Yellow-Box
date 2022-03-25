@@ -21,7 +21,7 @@ class SettingsRepository {
     return _autoGenerateIdeas;
   }
 
-  Future<void> setAutoGenerateIdeas(bool value) async {
+  Future<bool> setAutoGenerateIdeas(bool value) async {
     await _autoGenerateIdeas.first;
     _autoGenerateIdeas.value = value;
     return _prefs.setAutoGenerateIdeas(value);
@@ -31,7 +31,7 @@ class SettingsRepository {
     return _autoGenerateIntervalHours;
   }
 
-  Future<void> setAutoGenerateIntervalHours(int value) async {
+  Future<bool> setAutoGenerateIntervalHours(int value) async {
     await _autoGenerateIntervalHours.first;
     _autoGenerateIntervalHours.value = value;
     return _prefs.setAutoGenerateIntervalHours(value);

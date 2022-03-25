@@ -14,8 +14,8 @@ class AppChoiceListDialog extends StatelessWidget {
   final List<ChoiceItem> items;
 
   AppChoiceListDialog({
-    @required this.title,
-    @required this.items,
+    required this.title,
+    required this.items,
   });
 
   @override

@@ -8,7 +8,7 @@ class CenterProgress extends StatelessWidget {
   final AppTheme appTheme;
 
   CenterProgress({
-    @required this.appTheme,
+    required this.appTheme,
   });
 
   @override

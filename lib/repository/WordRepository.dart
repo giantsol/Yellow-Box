@@ -70,11 +70,11 @@ class WordRepository {
     return leftOvers;
   }
 
-  Future<void> deleteWord(Word item) async {
+  Future<int> deleteWord(Word item) async {
     final words = await _words.first;
     final index = words.indexWhere((it) => it.title == item.title);
     if (index < 0) {
-      return;
+      return 0;
     }
 
     words.removeAt(index);

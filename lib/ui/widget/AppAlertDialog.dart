@@ -13,13 +13,13 @@ class AppAlertDialog extends StatelessWidget {
   final Function() onSecondaryButtonClicked;
 
   AppAlertDialog({
-    @required this.appTheme,
-    @required this.title,
+    required this.appTheme,
+    required this.title,
     this.subtitle = '',
-    @required this.primaryButtonText,
-    @required this.onPrimaryButtonClicked,
-    @required this.secondaryButtonText,
-    @required this.onSecondaryButtonClicked,
+    required this.primaryButtonText,
+    required this.onPrimaryButtonClicked,
+    required this.secondaryButtonText,
+    required this.onSecondaryButtonClicked,
   });
 
   @override
@@ -112,11 +112,11 @@ class _ButtonBar extends StatelessWidget {
   final Function() onSecondaryButtonClicked;
 
   _ButtonBar({
-    @required this.appTheme,
-    @required this.primaryButtonText,
-    @required this.onPrimaryButtonClicked,
-    @required this.secondaryButtonText,
-    @required this.onSecondaryButtonClicked,
+    required this.appTheme,
+    required this.primaryButtonText,
+    required this.onPrimaryButtonClicked,
+    required this.secondaryButtonText,
+    required this.onSecondaryButtonClicked,
   });
 
   @override

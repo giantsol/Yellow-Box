@@ -8,11 +8,11 @@ class ChildScreenNavigationBar extends StatelessWidget {
   final ChildScreenKey currentChildScreenKey;
   final Function(ChildScreenKey key) onItemClicked;
   final bool isVisible;
-  final Key historyButtonKey;
+  Key? historyButtonKey = null;
 
   ChildScreenNavigationBar({
-    @required this.currentChildScreenKey,
-    @required this.onItemClicked,
+    required this.currentChildScreenKey,
+    required this.onItemClicked,
     this.isVisible = true,
     this.historyButtonKey,
   });

@@ -149,8 +149,8 @@ class HomeBloc extends BaseBloc {
       _navigator.showWordAddedAnimation();
 
       if ((await _getTutorialPhase.invoke()) == 1) {
-        _addWord.invoke(Word(AppLocalizations.of(context).tutorialFirstWord, now - 1));
-        _addWord.invoke(Word(AppLocalizations.of(context).tutorialSecondWord, now - 1));
+        _addWord.invoke(Word(AppLocalizations.of(context)!.tutorialFirstWord!, now - 1));
+        _addWord.invoke(Word(AppLocalizations.of(context)!.tutorialSecondWord!, now - 1));
         _setTutorialPhase.invoke(2);
         _navigator.showTutorial(2);
       }
@@ -202,7 +202,7 @@ class HomeBloc extends BaseBloc {
 
     _showProgress();
 
-    final String fakeIdeaForTutorial = (await _getTutorialPhase.invoke()) == 2 ? "${AppLocalizations.of(context).tutorialFirstWord} ${AppLocalizations.of(context).tutorialSecondWord}"
+    final String fakeIdeaForTutorial = (await _getTutorialPhase.invoke()) == 2 ? "${AppLocalizations.of(context)!.tutorialFirstWord!} ${AppLocalizations.of(context)!.tutorialSecondWord!}"
       : "";
     final result = await _createIdea.invoke(idea: fakeIdeaForTutorial);
     switch (result.item1) {

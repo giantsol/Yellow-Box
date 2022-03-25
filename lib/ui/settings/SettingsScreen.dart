@@ -21,7 +21,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> with AutomaticKeepAliveClientMixin<SettingsScreen>
   implements SettingsNavigator {
-  SettingsBloc _bloc;
+  late SettingsBloc _bloc;
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> with AutomaticKeepAlive
     return StreamBuilder(
       initialData: _bloc.getInitialState(),
       stream: _bloc.observeState(),
-      builder: (context, snapshot) => _buildUI(snapshot.data),
+      builder: (context, snapshot) => _buildUI(snapshot.data as SettingsState),
     );
   }
 
@@ -64,34 +64,34 @@ class _SettingsScreenState extends State<SettingsScreen> with AutomaticKeepAlive
           ) : const SizedBox.shrink(),
           state.isResetBlockedIdeasDialogShown ? AppAlertDialog(
             appTheme: state.appTheme,
-            title: AppLocalizations.of(context).resetBlockedIdeasTitle,
-            subtitle: AppLocalizations.of(context).resetBlockedIdeasDialogSubtitle,
-            primaryButtonText: AppLocalizations.of(context).reset,
+            title: AppLocalizations.of(context)!.resetBlockedIdeasTitle!,
+            subtitle: AppLocalizations.of(context)!.resetBlockedIdeasDialogSubtitle!,
+            primaryButtonText: AppLocalizations.of(context)!.reset!,
             onPrimaryButtonClicked: _bloc.onConfirmResetBlockedIdeasClicked,
-            secondaryButtonText: AppLocalizations.of(context).cancel,
+            secondaryButtonText: AppLocalizations.of(context)!.cancel!,
             onSecondaryButtonClicked: _bloc.onCloseResetBlockedIdeasClicked,
           ) : const SizedBox.shrink(),
           state.isIntervalDialogShown ? AppChoiceListDialog(
-            title: AppLocalizations.of(context).intervalTitle,
+            title: AppLocalizations.of(context)!.intervalTitle!,
             items: [
               ChoiceItem(
-                AppLocalizations.of(context).getIntervalHours(12),
+                AppLocalizations.of(context)!.getIntervalHours(12),
                   () => _bloc.onIntervalChoiceClicked(12),
               ),
               ChoiceItem(
-                AppLocalizations.of(context).getIntervalHours(24),
+                AppLocalizations.of(context)!.getIntervalHours(24),
                   () => _bloc.onIntervalChoiceClicked(24),
               ),
               ChoiceItem(
-                AppLocalizations.of(context).getIntervalHours(36),
+                AppLocalizations.of(context)!.getIntervalHours(36),
                   () => _bloc.onIntervalChoiceClicked(36),
               ),
               ChoiceItem(
-                AppLocalizations.of(context).getIntervalHours(48),
+                AppLocalizations.of(context)!.getIntervalHours(48),
                   () => _bloc.onIntervalChoiceClicked(48),
               ),
               ChoiceItem(
-                AppLocalizations.of(context).close,
+                AppLocalizations.of(context)!.close!,
                   () => _bloc.onCloseIntervalDialogClicked(),
               ),
             ],
@@ -103,7 +103,7 @@ class _SettingsScreenState extends State<SettingsScreen> with AutomaticKeepAlive
 
   @override
   void showMiniBoxLaunchFailedMessage() {
-    Utils.showToast(AppLocalizations.of(context).miniBoxNotSupported);
+    Utils.showToast(AppLocalizations.of(context)!.miniBoxNotSupported!);
   }
 
 }
@@ -115,10 +115,10 @@ class _MainUI extends StatelessWidget {
   final int intervalHours;
 
   _MainUI({
-    @required this.appTheme,
-    @required this.bloc,
-    @required this.autoGenerateIdeas,
-    @required this.intervalHours,
+    required this.appTheme,
+    required this.bloc,
+    required this.autoGenerateIdeas,
+    required this.intervalHours,
   });
 
   @override
@@ -139,33 +139,33 @@ class _MainUI extends StatelessWidget {
               children: [
                 _SettingsGroup(
                   isDarkTheme: isDarkTheme,
-                  title: AppLocalizations.of(context).general,
+                  title: AppLocalizations.of(context)!.general!,
                   children: [
                     _SwitchSettingsItem(
                       appTheme: appTheme,
-                      title: AppLocalizations.of(context).autoGenerateIdeasTitle,
-                      subtitle: AppLocalizations.of(context).autoGenerateIdeasSubtitle,
+                      title: AppLocalizations.of(context)!.autoGenerateIdeasTitle!,
+                      subtitle: AppLocalizations.of(context)!.autoGenerateIdeasSubtitle!,
                       value: autoGenerateIdeas,
                       onChanged: bloc.onAutoGenerateIdeasChanged,
                     ),
                     autoGenerateIdeas ? _ArrowSettingsItem(
                       isDarkTheme: isDarkTheme,
-                      title: AppLocalizations.of(context).intervalTitle,
-                      subtitle: AppLocalizations.of(context).intervalSubtitle,
+                      title: AppLocalizations.of(context)!.intervalTitle!,
+                      subtitle: AppLocalizations.of(context)!.intervalSubtitle!,
                       onTap: bloc.onIntervalClicked,
-                      value: AppLocalizations.of(context).getIntervalHours(intervalHours),
+                      value: AppLocalizations.of(context)!.getIntervalHours(intervalHours),
                       isSubSettings: true,
                     ) : const SizedBox.shrink(),
                     _SettingsItem(
                       isDarkTheme: isDarkTheme,
-                      title: AppLocalizations.of(context).resetBlockedIdeasTitle,
-                      subtitle: AppLocalizations.of(context).resetBlockedIdeasSubtitle,
+                      title: AppLocalizations.of(context)!.resetBlockedIdeasTitle!,
+                      subtitle: AppLocalizations.of(context)!.resetBlockedIdeasSubtitle!,
                       onTap: bloc.onResetBlockedIdeasClicked,
                     ),
                     _ArrowSettingsItem(
                       isDarkTheme: isDarkTheme,
-                      title: AppLocalizations.of(context).miniBoxTitle,
-                      subtitle: AppLocalizations.of(context).miniBoxSubtitle,
+                      title: AppLocalizations.of(context)!.miniBoxTitle!,
+                      subtitle: AppLocalizations.of(context)!.miniBoxSubtitle!,
                       onTap: bloc.onMiniBoxItemClicked,
                     ),
                   ],
@@ -185,9 +185,9 @@ class _SettingsGroup extends StatelessWidget {
   final List<Widget> children;
 
   _SettingsGroup({
-    @required this.isDarkTheme,
-    @required this.title,
-    @required this.children,
+    required this.isDarkTheme,
+    required this.title,
+    required this.children,
   });
 
   @override
@@ -225,10 +225,10 @@ class _ArrowSettingsItem extends StatelessWidget {
   final bool isSubSettings;
 
   _ArrowSettingsItem({
-    @required this.isDarkTheme,
-    @required this.title,
-    @required this.subtitle,
-    @required this.onTap,
+    required this.isDarkTheme,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
     this.value = '',
     this.isSubSettings = false,
   });
@@ -239,7 +239,7 @@ class _ArrowSettingsItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         InkWell(
-          onTap: onTap,
+          onTap: () => onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24,),
             child: Row(
@@ -324,11 +324,11 @@ class _SwitchSettingsItem extends StatelessWidget {
   final Function(bool) onChanged;
 
   _SwitchSettingsItem({
-    @required this.appTheme,
-    @required this.title,
-    @required this.subtitle,
-    @required this.value,
-    @required this.onChanged,
+    required this.appTheme,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
   });
 
   @override
@@ -406,10 +406,10 @@ class _SettingsItem extends StatelessWidget {
   final Function onTap;
 
   _SettingsItem({
-    @required this.isDarkTheme,
-    @required this.title,
-    @required this.subtitle,
-    @required this.onTap,
+    required this.isDarkTheme,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
   });
 
   @override
@@ -418,7 +418,7 @@ class _SettingsItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         InkWell(
-          onTap: onTap,
+          onTap: () => onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24,),
             child: Row(

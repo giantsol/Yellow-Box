@@ -12,8 +12,8 @@ class MainState {
   });
 
   MainState buildNew({
-    ChildScreenKey currentChildScreenKey,
-    AppTheme appTheme,
+    ChildScreenKey? currentChildScreenKey,
+    AppTheme? appTheme,
   }) {
     return MainState(
       currentChildScreenKey: currentChildScreenKey ?? this.currentChildScreenKey,

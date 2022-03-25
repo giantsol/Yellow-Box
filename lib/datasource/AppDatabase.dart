@@ -59,7 +59,7 @@ class AppDatabase {
     return map.isNotEmpty;
   }
 
-  Future<void> addWord(Word entity) async {
+  Future<int> addWord(Word entity) async {
     final db = await _database.first;
     return db.insert(
       TABLE_WORDS,
@@ -71,7 +71,7 @@ class AppDatabase {
     );
   }
   
-  Future<void> removeWord(Word item) async {
+  Future<int> removeWord(Word item) async {
     final db = await _database.first;
     return db.delete(
       TABLE_WORDS,
@@ -80,7 +80,7 @@ class AppDatabase {
     );
   }
 
-  Future<int> getWordsCount() async {
+  Future<int?> getWordsCount() async {
     final db = await _database.first;
     return Sqflite.firstIntValue(await db.rawQuery(
       'SELECT COUNT(*) FROM $TABLE_WORDS'
@@ -125,7 +125,7 @@ class AppDatabase {
     return map.isNotEmpty;
   }
 
-  Future<void> addIdea(Idea entity) async {
+  Future<int> addIdea(Idea entity) async {
     final db = await _database.first;
     return db.insert(
       TABLE_IDEAS,
@@ -139,7 +139,7 @@ class AppDatabase {
     );
   }
 
-  Future<void> deleteIdea(Idea item) async {
+  Future<int> deleteIdea(Idea item) async {
     final db = await _database.first;
     return db.delete(
       TABLE_IDEAS,
@@ -148,7 +148,7 @@ class AppDatabase {
     );
   }
 
-  Future<void> blockIdea(Idea item) async {
+  Future<int> blockIdea(Idea item) async {
     final db = await _database.first;
     return db.update(
       TABLE_IDEAS,
@@ -172,7 +172,7 @@ class AppDatabase {
     return map.isNotEmpty;
   }
 
-  Future<void> resetBlockedIdeas() async {
+  Future<int> resetBlockedIdeas() async {
     final db = await _database.first;
     return db.delete(
       TABLE_IDEAS,

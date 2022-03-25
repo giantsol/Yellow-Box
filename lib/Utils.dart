@@ -10,10 +10,15 @@ class Utils {
     Fluttertoast.cancel();
 
     final iosLength = toastLength == Toast.LENGTH_SHORT ? 1 : 2;
-    Fluttertoast.showToast(msg: msg, toastLength: toastLength, timeInSecForIos: iosLength);
+    Fluttertoast.showToast(msg: msg, toastLength: toastLength, timeInSecForIosWeb: iosLength);
   }
 
-  static Rect getRect(RenderBox renderBox, {Offset offset = Offset.zero}) {
+  static Rect getRect(RenderObject? renderObject, {Offset offset = Offset.zero}) {
+    if (renderObject == null) {
+      return Rect.zero;
+    }
+
+    final RenderBox renderBox = renderObject as RenderBox;
     if (renderBox == null) {
       return Rect.zero;
     }

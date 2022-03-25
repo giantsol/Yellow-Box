@@ -26,8 +26,8 @@ class Idea {
     );
 
   Idea buildNew({
-    bool isFavorite,
-    bool isBlocked,
+    bool? isFavorite,
+    bool? isBlocked,
   }) {
     return Idea(
       this.title,

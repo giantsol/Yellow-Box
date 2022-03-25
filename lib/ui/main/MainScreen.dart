@@ -23,9 +23,9 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen>
   with SingleTickerProviderStateMixin
   implements MainNavigator {
-  MainBloc _bloc;
+  late MainBloc _bloc;
 
-  PageController _pageController;
+  late PageController _pageController;
   final Map<ChildScreenKey, int> _childScreenKeys = {
     ChildScreenKey.HOME: 0,
     ChildScreenKey.HISTORY: 1,
@@ -39,8 +39,8 @@ class _MainScreenState extends State<MainScreen>
     SettingsScreen(),
   ];
 
-  AnimationController _backgroundDecoInAnimation;
-  AppTheme _prevAppTheme;
+  late AnimationController _backgroundDecoInAnimation;
+  late AppTheme? _prevAppTheme = null;
 
   @override
   void initState() {
@@ -58,7 +58,7 @@ class _MainScreenState extends State<MainScreen>
     return StreamBuilder(
       initialData: _bloc.getInitialState(),
       stream: _bloc.observeState(),
-      builder: (context, snapshot) => _buildUI(snapshot.data),
+      builder: (context, snapshot) => _buildUI(snapshot.data as MainState),
     );
   }
 
@@ -72,9 +72,9 @@ class _MainScreenState extends State<MainScreen>
 
   Widget _buildUI(MainState state) {
     final appTheme = state.appTheme;
-    final int page = _childScreenKeys[state.currentChildScreenKey];
+    final int? page = _childScreenKeys[state.currentChildScreenKey];
     if (_pageController.hasClients && _pageController.page != null && _pageController.page != page) {
-      _pageController.jumpToPage(page);
+      _pageController.jumpToPage(page!);
     }
 
     if (_prevAppTheme != appTheme) {
@@ -116,7 +116,7 @@ class _MainScreenState extends State<MainScreen>
 
   @override
   void showRemainingMiniBoxWordsCount(int count) {
-    Utils.showToast(AppLocalizations.of(context).getRemainingMiniBoxWordsCount(count), toastLength: Toast.LENGTH_LONG);
+    Utils.showToast(AppLocalizations.of(context)!.getRemainingMiniBoxWordsCount(count), toastLength: Toast.LENGTH_LONG);
   }
 
 }
@@ -126,8 +126,8 @@ class _BackgroundDeco extends StatelessWidget {
   final Animation<double> animation;
 
   _BackgroundDeco({
-    @required this.appTheme,
-    @required this.animation,
+    required this.appTheme,
+    required this.animation,
   });
 
   @override

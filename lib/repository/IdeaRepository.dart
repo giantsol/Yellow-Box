@@ -54,7 +54,7 @@ class IdeaRepository {
     return CreateIdeaResult.SUCCESS;
   }
 
-  Future<void> addIdea(String title) async {
+  Future<int> addIdea(String title) async {
     final ideas = await _ideas.first;
 
     final idea = Idea(title, DateTime.now().millisecondsSinceEpoch, false, false);
@@ -69,11 +69,11 @@ class IdeaRepository {
     return _database.addIdea(idea);
   }
 
-  Future<void> deleteIdea(Idea item) async {
+  Future<int> deleteIdea(Idea item) async {
     final ideas = await _ideas.first;
     final index = ideas.indexWhere((it) => it.title == item.title);
     if (index < 0) {
-      return;
+      return 0;
     }
 
     ideas.removeAt(index);
@@ -94,11 +94,11 @@ class IdeaRepository {
     return;
   }
 
-  Future<void> blockIdea(Idea item) async {
+  Future<int> blockIdea(Idea item) async {
     final ideas = await _ideas.first;
     final index = ideas.indexWhere((it) => it.title == item.title);
     if (index < 0) {
-      return;
+      return 0;
     }
 
     ideas.removeAt(index);
@@ -127,9 +127,9 @@ class IdeaRepository {
     return _database.resetBlockedIdeas();
   }
 
-  Future<void> favoriteIdea(Idea item) async {
+  Future<int> favoriteIdea(Idea item) async {
     if (item.isFavorite) {
-      return;
+      return 0;
     }
 
     final ideas = await _ideas.first;
@@ -144,9 +144,9 @@ class IdeaRepository {
     return _database.addIdea(favorited);
   }
 
-  Future<void> unfavoriteIdea(Idea item) async {
+  Future<int> unfavoriteIdea(Idea item) async {
     if (!item.isFavorite) {
-      return;
+      return 0;
     }
 
     final ideas = await _ideas.first;
@@ -171,5 +171,4 @@ class IdeaRepository {
       }
     });
   }
-
 }

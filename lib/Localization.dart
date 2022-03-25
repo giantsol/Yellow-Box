@@ -55,7 +55,7 @@ class AppLocalizations {
   static const NEXT = 'next';
   static const DONE = 'done';
 
-  static AppLocalizations of(BuildContext context) {
+  static AppLocalizations? of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
@@ -172,58 +172,58 @@ class AppLocalizations {
 
   AppLocalizations(this.locale);
 
-  String get cancel => _localizedValues[locale.languageCode][CANCEL];
-  String get add => _localizedValues[locale.languageCode][ADD];
-  String get wordEditorHint => _localizedValues[locale.languageCode][WORD_EDITOR_HINT];
-  String get editingWordEmpty => _localizedValues[locale.languageCode][EDITING_WORD_EMPTY];
-  String get editingWordAlreadyExists => _localizedValues[locale.languageCode][EDITING_WORD_ALREADY_EXISTS];
-  String get wordBoxFull => _localizedValues[locale.languageCode][WORD_BOX_FULL];
-  String get speechToTextNotReady => _localizedValues[locale.languageCode][SPEECH_TO_TEXT_NOT_READY];
-  String get addMoreWordsForIdea => _localizedValues[locale.languageCode][ADD_MORE_WORDS_FOR_IDEA];
-  String get newIdea => _localizedValues[locale.languageCode][NEW_IDEA];
-  String get goodOldOne => _localizedValues[locale.languageCode][GOOD_OLD_ONE];
-  String get close => _localizedValues[locale.languageCode][CLOSE];
-  String get word => _localizedValues[locale.languageCode][WORD];
-  String get idea => _localizedValues[locale.languageCode][IDEA];
-  String get noHistory => _localizedValues[locale.languageCode][NO_HISTORY];
-  String get delete => _localizedValues[locale.languageCode][DELETE];
-  String get general => _localizedValues[locale.languageCode][GENERAL];
-  String get miniBoxTitle => _localizedValues[locale.languageCode][MINI_BOX_TITLE];
-  String get miniBoxSubtitle => _localizedValues[locale.languageCode][MINI_BOX_SUBTITLE];
-  String get miniBoxNotSupported => _localizedValues[locale.languageCode][MINI_BOX_NOT_SUPPORTED];
-  String get ideaBoxFullTitle => _localizedValues[locale.languageCode][IDEA_BOX_FULL_TITLE];
-  String get ideaBoxFullSubtitle => _localizedValues[locale.languageCode][IDEA_BOX_FULL_SUBTITLE];
-  String get history => _localizedValues[locale.languageCode][HISTORY];
-  String get ideaBoxFullToast => _localizedValues[locale.languageCode][IDEA_BOX_FULL_TOAST];
-  String get block => _localizedValues[locale.languageCode][BLOCK];
-  String get blockIdeaSubtitle => _localizedValues[locale.languageCode][BLOCK_IDEA_SUBTITLE];
-  String get pickedBlockedIdea => _localizedValues[locale.languageCode][PICKED_BLOCKED_IDEA];
-  String get autoGenerateIdeasTitle => _localizedValues[locale.languageCode][AUTO_GENERATE_IDEAS_TITLE];
-  String get autoGenerateIdeasSubtitle => _localizedValues[locale.languageCode][AUTO_GENERATE_IDEAS_SUBTITLE];
-  String get resetBlockedIdeasTitle => _localizedValues[locale.languageCode][RESET_BLOCKED_IDEAS_TITLE];
-  String get resetBlockedIdeasSubtitle => _localizedValues[locale.languageCode][RESET_BLOCKED_IDEAS_SUBTITLE];
-  String get resetBlockedIdeasDialogSubtitle => _localizedValues[locale.languageCode][RESET_BLOCKED_IDEAS_DIALOG_SUBTITLE];
-  String get reset => _localizedValues[locale.languageCode][RESET];
-  String get intervalTitle => _localizedValues[locale.languageCode][INTERVAL_TITLE];
-  String get intervalSubtitle => _localizedValues[locale.languageCode][INTERVAL_SUBTITLE];
-  String get tutorialZeroTitle => _localizedValues[locale.languageCode][TUTORIAL_ZERO_TITLE];
-  String get start => _localizedValues[locale.languageCode][START];
-  String get skip => _localizedValues[locale.languageCode][SKIP];
-  String get tutorialFirstWord => _localizedValues[locale.languageCode][TUTORIAL_FIRST_WORD];
-  String get tutorialSecondWord => _localizedValues[locale.languageCode][TUTORIAL_SECOND_WORD];
-  String get tutorialOneTitle => _localizedValues[locale.languageCode][TUTORIAL_ONE_TITLE];
-  String get tutorialTwoTitle => _localizedValues[locale.languageCode][TUTORIAL_TWO_TITLE];
-  String get tutorialThreeTitle => _localizedValues[locale.languageCode][TUTORIAL_THREE_TITLE];
-  String get tutorialFourTitle => _localizedValues[locale.languageCode][TUTORIAL_FOUR_TITLE];
-  String get tutorialFiveTitle => _localizedValues[locale.languageCode][TUTORIAL_FIVE_TITLE];
-  String get howAboutGreen => _localizedValues[locale.languageCode][HOW_ABOUT_GREEN];
-  String get nah => _localizedValues[locale.languageCode][NAH];
-  String get nice => _localizedValues[locale.languageCode][NICE];
-  String get next => _localizedValues[locale.languageCode][NEXT];
-  String get done => _localizedValues[locale.languageCode][DONE];
+  String? get cancel => _localizedValues[locale.languageCode]![CANCEL];
+  String? get add => _localizedValues[locale.languageCode]![ADD];
+  String? get wordEditorHint => _localizedValues[locale.languageCode]![WORD_EDITOR_HINT];
+  String? get editingWordEmpty => _localizedValues[locale.languageCode]![EDITING_WORD_EMPTY];
+  String? get editingWordAlreadyExists => _localizedValues[locale.languageCode]![EDITING_WORD_ALREADY_EXISTS];
+  String? get wordBoxFull => _localizedValues[locale.languageCode]![WORD_BOX_FULL];
+  String? get speechToTextNotReady => _localizedValues[locale.languageCode]![SPEECH_TO_TEXT_NOT_READY];
+  String? get addMoreWordsForIdea => _localizedValues[locale.languageCode]![ADD_MORE_WORDS_FOR_IDEA];
+  String? get newIdea => _localizedValues[locale.languageCode]![NEW_IDEA];
+  String? get goodOldOne => _localizedValues[locale.languageCode]![GOOD_OLD_ONE];
+  String? get close => _localizedValues[locale.languageCode]![CLOSE];
+  String? get word => _localizedValues[locale.languageCode]![WORD];
+  String? get idea => _localizedValues[locale.languageCode]![IDEA];
+  String? get noHistory => _localizedValues[locale.languageCode]![NO_HISTORY];
+  String? get delete => _localizedValues[locale.languageCode]![DELETE];
+  String? get general => _localizedValues[locale.languageCode]![GENERAL];
+  String? get miniBoxTitle => _localizedValues[locale.languageCode]![MINI_BOX_TITLE];
+  String? get miniBoxSubtitle => _localizedValues[locale.languageCode]![MINI_BOX_SUBTITLE];
+  String? get miniBoxNotSupported => _localizedValues[locale.languageCode]![MINI_BOX_NOT_SUPPORTED];
+  String? get ideaBoxFullTitle => _localizedValues[locale.languageCode]![IDEA_BOX_FULL_TITLE];
+  String? get ideaBoxFullSubtitle => _localizedValues[locale.languageCode]![IDEA_BOX_FULL_SUBTITLE];
+  String? get history => _localizedValues[locale.languageCode]![HISTORY];
+  String? get ideaBoxFullToast => _localizedValues[locale.languageCode]![IDEA_BOX_FULL_TOAST];
+  String? get block => _localizedValues[locale.languageCode]![BLOCK];
+  String? get blockIdeaSubtitle => _localizedValues[locale.languageCode]![BLOCK_IDEA_SUBTITLE];
+  String? get pickedBlockedIdea => _localizedValues[locale.languageCode]![PICKED_BLOCKED_IDEA];
+  String? get autoGenerateIdeasTitle => _localizedValues[locale.languageCode]![AUTO_GENERATE_IDEAS_TITLE];
+  String? get autoGenerateIdeasSubtitle => _localizedValues[locale.languageCode]![AUTO_GENERATE_IDEAS_SUBTITLE];
+  String? get resetBlockedIdeasTitle => _localizedValues[locale.languageCode]![RESET_BLOCKED_IDEAS_TITLE];
+  String? get resetBlockedIdeasSubtitle => _localizedValues[locale.languageCode]![RESET_BLOCKED_IDEAS_SUBTITLE];
+  String? get resetBlockedIdeasDialogSubtitle => _localizedValues[locale.languageCode]![RESET_BLOCKED_IDEAS_DIALOG_SUBTITLE];
+  String? get reset => _localizedValues[locale.languageCode]![RESET];
+  String? get intervalTitle => _localizedValues[locale.languageCode]![INTERVAL_TITLE];
+  String? get intervalSubtitle => _localizedValues[locale.languageCode]![INTERVAL_SUBTITLE];
+  String? get tutorialZeroTitle => _localizedValues[locale.languageCode]![TUTORIAL_ZERO_TITLE];
+  String? get start => _localizedValues[locale.languageCode]![START];
+  String? get skip => _localizedValues[locale.languageCode]![SKIP];
+  String? get tutorialFirstWord => _localizedValues[locale.languageCode]![TUTORIAL_FIRST_WORD];
+  String? get tutorialSecondWord => _localizedValues[locale.languageCode]![TUTORIAL_SECOND_WORD];
+  String? get tutorialOneTitle => _localizedValues[locale.languageCode]![TUTORIAL_ONE_TITLE];
+  String? get tutorialTwoTitle => _localizedValues[locale.languageCode]![TUTORIAL_TWO_TITLE];
+  String? get tutorialThreeTitle => _localizedValues[locale.languageCode]![TUTORIAL_THREE_TITLE];
+  String? get tutorialFourTitle => _localizedValues[locale.languageCode]![TUTORIAL_FOUR_TITLE];
+  String? get tutorialFiveTitle => _localizedValues[locale.languageCode]![TUTORIAL_FIVE_TITLE];
+  String? get howAboutGreen => _localizedValues[locale.languageCode]![HOW_ABOUT_GREEN];
+  String? get nah => _localizedValues[locale.languageCode]![NAH];
+  String? get nice => _localizedValues[locale.languageCode]![NICE];
+  String? get next => _localizedValues[locale.languageCode]![NEXT];
+  String? get done => _localizedValues[locale.languageCode]![DONE];
 
-  String get(String key) {
-    return _localizedValues[locale.languageCode][key];
+  String? get(String key) {
+    return _localizedValues[locale.languageCode]![key];
   }
 
   String getConfirmDeleteTitle(String item) {

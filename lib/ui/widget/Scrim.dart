@@ -5,7 +5,7 @@ import 'package:yellow_box/AppColors.dart';
 class Scrim extends StatelessWidget {
   final Function() onTap;
 
-  Scrim({this.onTap});
+  Scrim({required this.onTap});
 
   @override
   Widget build(BuildContext context) {

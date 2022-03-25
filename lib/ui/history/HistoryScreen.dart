@@ -28,7 +28,7 @@ class _HistoryScreenState extends State<HistoryScreen>
   with AutomaticKeepAliveClientMixin<HistoryScreen>
   implements HistoryNavigator {
 
-  HistoryBloc _bloc;
+  late HistoryBloc _bloc;
 
   final GlobalKey _wordListKey = GlobalKey();
 
@@ -44,7 +44,7 @@ class _HistoryScreenState extends State<HistoryScreen>
     return StreamBuilder(
       initialData: _bloc.getInitialState(),
       stream: _bloc.observeState(),
-      builder: (context, snapshot) => _buildUI(snapshot.data),
+      builder: (context, snapshot) => _buildUI(snapshot.data as HistoryState),
     );
   }
 
@@ -90,27 +90,27 @@ class _HistoryScreenState extends State<HistoryScreen>
           ) : const SizedBox.shrink(),
           state.isDeleteWordsDialogShown ? AppAlertDialog(
             appTheme: appTheme,
-            title: AppLocalizations.of(context).getDeleteItemsTitle(state.selectedWords.length),
-            primaryButtonText: AppLocalizations.of(context).delete,
+            title: AppLocalizations.of(context)!.getDeleteItemsTitle(state.selectedWords.length),
+            primaryButtonText: AppLocalizations.of(context)!.delete!,
             onPrimaryButtonClicked: _bloc.onConfirmDeleteWordsClicked,
-            secondaryButtonText: AppLocalizations.of(context).cancel,
+            secondaryButtonText: AppLocalizations.of(context)!.cancel!,
             onSecondaryButtonClicked: _bloc.onCloseDeleteWordsClicked,
           ) : const SizedBox.shrink(),
           state.isDeleteIdeasDialogShown ? AppAlertDialog(
             appTheme: appTheme,
-            title: AppLocalizations.of(context).getDeleteItemsTitle(state.selectedIdeas.length),
-            primaryButtonText: AppLocalizations.of(context).delete,
+            title: AppLocalizations.of(context)!.getDeleteItemsTitle(state.selectedIdeas.length),
+            primaryButtonText: AppLocalizations.of(context)!.delete!,
             onPrimaryButtonClicked: _bloc.onConfirmDeleteIdeasClicked,
-            secondaryButtonText: AppLocalizations.of(context).cancel,
+            secondaryButtonText: AppLocalizations.of(context)!.cancel!,
             onSecondaryButtonClicked: _bloc.onCloseDeleteIdeasClicked,
           ) : const SizedBox.shrink(),
           state.isBlockIdeasDialogShown ? AppAlertDialog(
             appTheme: appTheme,
-            title: AppLocalizations.of(context).getBlockItemsTitle(state.selectedIdeas.length),
-            subtitle: AppLocalizations.of(context).blockIdeaSubtitle,
-            primaryButtonText: AppLocalizations.of(context).block,
+            title: AppLocalizations.of(context)!.getBlockItemsTitle(state.selectedIdeas.length),
+            subtitle: AppLocalizations.of(context)!.blockIdeaSubtitle!,
+            primaryButtonText: AppLocalizations.of(context)!.block!,
             onPrimaryButtonClicked: _bloc.onConfirmBlockIdeasClicked,
-            secondaryButtonText: AppLocalizations.of(context).cancel,
+            secondaryButtonText: AppLocalizations.of(context)!.cancel!,
             onSecondaryButtonClicked: _bloc.onCloseBlockIdeasClicked,
           ) : const SizedBox.shrink(),
           state.isProgressShown ? CenterProgress(
@@ -124,11 +124,11 @@ class _HistoryScreenState extends State<HistoryScreen>
   @override
   void showTutorial(int phase) {
     if (phase == 4) {
-      Tutorial.of(context).showTutorialFour(_wordListRectFinder, () {
+      Tutorial.of(context)?.showTutorialFour(_wordListRectFinder, () {
         _bloc.onTutorialFourFinished();
       });
     } else if (phase == 5) {
-      Tutorial.of(context).showTutorialFive(() {
+      Tutorial.of(context)?.showTutorialFive(() {
         _bloc.onTutorialFiveFinished();
       });
     }
@@ -136,7 +136,7 @@ class _HistoryScreenState extends State<HistoryScreen>
 
   @override
   void hideTutorial() {
-    Tutorial.of(context).hide();
+    Tutorial.of(context)?.hide();
   }
 
   Rect _wordListRectFinder() {
@@ -157,15 +157,15 @@ class _MainUI extends StatefulWidget {
   final Key wordListKey;
 
   _MainUI({
-    @required this.appTheme,
-    @required this.bloc,
-    @required this.isWordTab,
-    @required this.words,
-    @required this.ideas,
-    @required this.selectionMode,
-    @required this.selectedWords,
-    @required this.selectedIdeas,
-    @required this.wordListKey,
+    required this.appTheme,
+    required this.bloc,
+    required this.isWordTab,
+    required this.words,
+    required this.ideas,
+    required this.selectionMode,
+    required this.selectedWords,
+    required this.selectedIdeas,
+    required this.wordListKey,
   });
 
   @override
@@ -175,7 +175,7 @@ class _MainUI extends StatefulWidget {
 
 class _MainUIState extends State<_MainUI> with SingleTickerProviderStateMixin {
 
-  TabController _controller;
+  late TabController _controller;
 
   @override
   void initState() {
@@ -276,9 +276,9 @@ class _TabBar extends StatelessWidget {
   final bool isWordTab;
 
   _TabBar({
-    @required this.bloc,
-    @required this.appTheme,
-    @required this.isWordTab,
+    required this.bloc,
+    required this.appTheme,
+    required this.isWordTab,
   });
 
   @override
@@ -293,13 +293,13 @@ class _TabBar extends StatelessWidget {
         child: Row(
           children: <Widget>[
             _TabBarItem(
-              title: AppLocalizations.of(context).word,
+              title: AppLocalizations.of(context)!.word!,
               onTap: bloc.onWordTabClicked,
               isDarkTheme: isDarkTheme,
               isSelected: isWordTab,
             ),
             _TabBarItem(
-              title: AppLocalizations.of(context).idea,
+              title: AppLocalizations.of(context)!.idea!,
               onTap: bloc.onIdeaTabClicked,
               isDarkTheme: isDarkTheme,
               isSelected: !isWordTab,
@@ -318,10 +318,10 @@ class _TabBarItem extends StatelessWidget {
   final bool isSelected;
 
   _TabBarItem({
-    @required this.title,
-    @required this.onTap,
-    @required this.isDarkTheme,
-    @required this.isSelected,
+    required this.title,
+    required this.onTap,
+    required this.isDarkTheme,
+    required this.isSelected,
   });
 
   @override
@@ -373,9 +373,9 @@ class _WordsSelectionBar extends StatelessWidget {
   final Map<Word, bool> selectedItems;
 
   _WordsSelectionBar({
-    @required this.bloc,
-    @required this.appTheme,
-    @required this.selectedItems,
+    required this.bloc,
+    required this.appTheme,
+    required this.selectedItems,
   });
 
   @override
@@ -401,7 +401,7 @@ class _WordsSelectionBar extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                AppLocalizations.of(context).getSelectionTitle(selectedItems.length),
+                AppLocalizations.of(context)!.getSelectionTitle(selectedItems.length),
                 style: TextStyle(
                   color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
                   fontSize: 20,
@@ -438,9 +438,9 @@ class _IdeasSelectionBar extends StatelessWidget {
   final Map<Idea, bool> selectedItems;
 
   _IdeasSelectionBar({
-    @required this.bloc,
-    @required this.appTheme,
-    @required this.selectedItems,
+    required this.bloc,
+    required this.appTheme,
+    required this.selectedItems,
   });
 
   @override
@@ -465,7 +465,7 @@ class _IdeasSelectionBar extends StatelessWidget {
           ),
           Expanded(
             child: Text(
-              AppLocalizations.of(context).getSelectionTitle(selectedItems.length),
+              AppLocalizations.of(context)!.getSelectionTitle(selectedItems.length),
               style: TextStyle(
                 color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
                 fontSize: 20,
@@ -514,12 +514,12 @@ class _WordList extends StatelessWidget {
   final Map<Word, bool> selectedItems;
 
   _WordList({
-    Key key,
-    @required this.bloc,
-    @required this.items,
-    @required this.appTheme,
-    @required this.isSelectionMode,
-    @required this.selectedItems,
+    Key? key,
+    required this.bloc,
+    required this.items,
+    required this.appTheme,
+    required this.isSelectionMode,
+    required this.selectedItems,
   }): super(key: key);
 
   @override
@@ -547,7 +547,7 @@ class _WordList extends StatelessWidget {
       },
     ) : Center(
       child: Text(
-        AppLocalizations.of(context).noHistory,
+        AppLocalizations.of(context)!.noHistory!,
         style: TextStyle(
           fontSize: 18,
           color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
@@ -567,10 +567,10 @@ class _SelectionWordItem extends StatelessWidget {
   final bool isSelected;
 
   _SelectionWordItem({
-    @required this.bloc,
-    @required this.item,
-    @required this.isDarkTheme,
-    @required this.isSelected,
+    required this.bloc,
+    required this.item,
+    required this.isDarkTheme,
+    required this.isSelected,
   });
 
   @override
@@ -645,9 +645,9 @@ class _WordItem extends StatelessWidget {
   final bool isDarkTheme;
 
   _WordItem({
-    @required this.bloc,
-    @required this.item,
-    @required this.isDarkTheme,
+    required this.bloc,
+    required this.item,
+    required this.isDarkTheme,
   });
 
   @override
@@ -710,11 +710,11 @@ class _IdeaList extends StatelessWidget {
   final Map<Idea, bool> selectedItems;
 
   _IdeaList({
-    @required this.bloc,
-    @required this.items,
-    @required this.appTheme,
-    @required this.isSelectionMode,
-    @required this.selectedItems,
+    required this.bloc,
+    required this.items,
+    required this.appTheme,
+    required this.isSelectionMode,
+    required this.selectedItems,
   });
 
   @override
@@ -742,7 +742,7 @@ class _IdeaList extends StatelessWidget {
       },
     ) : Center(
       child: Text(
-        AppLocalizations.of(context).noHistory,
+        AppLocalizations.of(context)!.noHistory!,
         style: TextStyle(
           fontSize: 18,
           color: isDarkTheme ? AppColors.TEXT_WHITE : AppColors.TEXT_BLACK,
@@ -762,10 +762,10 @@ class _SelectionIdeaItem extends StatelessWidget {
   final bool isSelected;
 
   _SelectionIdeaItem({
-    @required this.bloc,
-    @required this.item,
-    @required this.isDarkTheme,
-    @required this.isSelected,
+    required this.bloc,
+    required this.item,
+    required this.isDarkTheme,
+    required this.isSelected,
   });
 
   @override
@@ -840,9 +840,9 @@ class _IdeaItem extends StatelessWidget {
   final bool isDarkTheme;
 
   _IdeaItem({
-    @required this.bloc,
-    @required this.item,
-    @required this.isDarkTheme,
+    required this.bloc,
+    required this.item,
+    required this.isDarkTheme,
   });
 
   @override
@@ -915,9 +915,9 @@ class _WordItemDialog extends StatelessWidget {
   final WordItemDialog data;
 
   _WordItemDialog({
-    @required this.appTheme,
-    @required this.bloc,
-    @required this.data,
+    required this.appTheme,
+    required this.bloc,
+    required this.data,
   });
 
   @override
@@ -927,11 +927,11 @@ class _WordItemDialog extends StatelessWidget {
         title: data.word.title,
         items: [
           ChoiceItem(
-            AppLocalizations.of(context).delete,
+            AppLocalizations.of(context)!.delete!,
               () => bloc.onWordItemDialogDeleteClicked(data.word),
           ),
           ChoiceItem(
-            AppLocalizations.of(context).close,
+            AppLocalizations.of(context)!.close!,
             bloc.onWordItemDialogCloseClicked,
           ),
         ],
@@ -939,10 +939,10 @@ class _WordItemDialog extends StatelessWidget {
     } else {
       return AppAlertDialog(
         appTheme: appTheme,
-        title: AppLocalizations.of(context).getConfirmDeleteTitle(data.word.title),
-        primaryButtonText: AppLocalizations.of(context).delete,
+        title: AppLocalizations.of(context)!.getConfirmDeleteTitle(data.word.title),
+        primaryButtonText: AppLocalizations.of(context)!.delete!,
         onPrimaryButtonClicked: () => bloc.onConfirmDeleteWordClicked(data.word),
-        secondaryButtonText: AppLocalizations.of(context).cancel,
+        secondaryButtonText: AppLocalizations.of(context)!.cancel!,
         onSecondaryButtonClicked: bloc.onWordItemDialogCloseClicked,
       );
     }
@@ -955,9 +955,9 @@ class _IdeaItemDialog extends StatelessWidget {
   final IdeaItemDialog data;
 
   _IdeaItemDialog({
-    @required this.appTheme,
-    @required this.bloc,
-    @required this.data,
+    required this.appTheme,
+    required this.bloc,
+    required this.data,
   });
 
   @override
@@ -967,15 +967,15 @@ class _IdeaItemDialog extends StatelessWidget {
         title: data.idea.title,
         items: [
           ChoiceItem(
-            AppLocalizations.of(context).delete,
+            AppLocalizations.of(context)!.delete!,
               () => bloc.onIdeaItemDialogDeleteClicked(data.idea),
           ),
           ChoiceItem(
-            AppLocalizations.of(context).block,
+            AppLocalizations.of(context)!.block!,
               () => bloc.onIdeaItemDialogBlockClicked(data.idea),
           ),
           ChoiceItem(
-            AppLocalizations.of(context).close,
+            AppLocalizations.of(context)!.close!,
             bloc.onIdeaItemDialogCloseClicked,
           ),
         ],
@@ -983,20 +983,20 @@ class _IdeaItemDialog extends StatelessWidget {
     } else if (data.type == IdeaItemDialog.TYPE_CONFIRM_DELETE) {
       return AppAlertDialog(
         appTheme: appTheme,
-        title: AppLocalizations.of(context).getConfirmDeleteTitle(data.idea.title),
-        primaryButtonText: AppLocalizations.of(context).delete,
+        title: AppLocalizations.of(context)!.getConfirmDeleteTitle(data.idea.title),
+        primaryButtonText: AppLocalizations.of(context)!.delete!,
         onPrimaryButtonClicked: () => bloc.onConfirmDeleteIdeaClicked(data.idea),
-        secondaryButtonText: AppLocalizations.of(context).cancel,
+        secondaryButtonText: AppLocalizations.of(context)!.cancel!,
         onSecondaryButtonClicked: bloc.onIdeaItemDialogCloseClicked,
       );
     } else {
       return AppAlertDialog(
         appTheme: appTheme,
-        title: AppLocalizations.of(context).getConfirmBlockTitle(data.idea.title),
-        subtitle: AppLocalizations.of(context).blockIdeaSubtitle,
-        primaryButtonText: AppLocalizations.of(context).block,
+        title: AppLocalizations.of(context)!.getConfirmBlockTitle(data.idea.title),
+        subtitle: AppLocalizations.of(context)!.blockIdeaSubtitle!,
+        primaryButtonText: AppLocalizations.of(context)!.block!,
         onPrimaryButtonClicked: () => bloc.onConfirmBlockIdeaClicked(data.idea),
-        secondaryButtonText: AppLocalizations.of(context).cancel,
+        secondaryButtonText: AppLocalizations.of(context)!.cancel!,
         onSecondaryButtonClicked: bloc.onIdeaItemDialogCloseClicked,
       );
     }

@@ -5,35 +5,35 @@ import 'package:yellow_box/AppColors.dart';
 // Wraps framework's TextField because it itself doesn't work very well with Bloc and State pattern.
 // Specifically, we keep track of TextEditingController here.
 class AppTextField extends StatefulWidget {
-  final FocusNode focusNode;
+  FocusNode? focusNode = null;
   final String text;
   final double textSize;
   final Color textColor;
   final String hintText;
   final double hintTextSize;
   final Color hintTextColor;
-  final ValueChanged<String> onChanged;
+  final ValueChanged<String?> onChanged;
   final int minLines;
   final int maxLines;
   final void Function() onEditingComplete;
-  final TextInputType keyboardType;
+  TextInputType? keyboardType = null;
   final Color cursorColor;
   final bool enabled;
   final bool autoFocus;
 
   AppTextField({
-    Key key,
+    Key? key,
     this.focusNode,
-    @required this.text,
-    @required this.textSize,
-    @required this.textColor,
-    @required this.hintText,
-    @required this.hintTextSize,
-    @required this.hintTextColor,
-    this.onChanged,
+    required this.text,
+    required this.textSize,
+    required this.textColor,
+    required this.hintText,
+    required this.hintTextSize,
+    required this.hintTextColor,
+    required this.onChanged,
     this.minLines = 1,
     this.maxLines = 1,
-    this.onEditingComplete,
+    required this.onEditingComplete,
     this.keyboardType,
     this.cursorColor = AppColors.TEXT_BLACK,
     this.enabled = true,
@@ -47,18 +47,18 @@ class AppTextField extends StatefulWidget {
 }
 
 class _AppTextFieldState extends State<AppTextField> {
-  TextEditingValue _value;
+  late TextEditingValue? _value = null;
 
   @override
   Widget build(BuildContext context) {
     final controller = TextEditingController.fromValue(
-      _value?.copyWith(text: widget.text) ?? TextEditingValue(text: widget.text),
+      _value?.copyWith(text: widget.text),
     );
 
     controller.addListener(() {
       _value = controller.value;
       if (widget.onChanged != null) {
-        widget.onChanged(_value.text);
+        widget.onChanged(_value?.text);
       }
     });
 

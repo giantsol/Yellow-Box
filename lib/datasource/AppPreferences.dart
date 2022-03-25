@@ -26,7 +26,7 @@ class AppPreferences {
     return prefs.getBool(KEY_AUTO_GENERATE_IDEAS) ?? DEFAULT_AUTO_GENERATE_IDEAS;
   }
   
-  Future<void> setAutoGenerateIdeas(bool value) async {
+  Future<bool> setAutoGenerateIdeas(bool value) async {
     final prefs = await _prefs.first;
     return prefs.setBool(KEY_AUTO_GENERATE_IDEAS, value);
   }
@@ -36,7 +36,7 @@ class AppPreferences {
     return prefs.getInt(KEY_AUTO_GENERATE_INTERVAL_HOURS) ?? DEFAULT_AUTO_GENERATE_INTERVAL_HOURS;
   }
 
-  Future<void> setAutoGenerateIntervalHours(int value) async {
+  Future<bool> setAutoGenerateIntervalHours(int value) async {
     final prefs = await _prefs.first;
     return prefs.setInt(KEY_AUTO_GENERATE_INTERVAL_HOURS, value);
   }
@@ -46,7 +46,7 @@ class AppPreferences {
     return prefs.getInt(KEY_LAST_ACTIVE_TIME) ?? DateTime.now().millisecondsSinceEpoch;
   }
 
-  Future<void> setLastActiveTime(int value) async {
+  Future<bool> setLastActiveTime(int value) async {
     final prefs = await _prefs.first;
     return prefs.setInt(KEY_LAST_ACTIVE_TIME, value);
   }
@@ -56,7 +56,7 @@ class AppPreferences {
     return prefs.getInt(KEY_TUTORIAL_PHASE) ?? 0;
   }
 
-  Future<void> setTutorialPhase(int value) async {
+  Future<bool> setTutorialPhase(int value) async {
     final prefs = await _prefs.first;
     return prefs.setInt(KEY_TUTORIAL_PHASE, value);
   }

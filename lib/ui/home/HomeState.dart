@@ -27,14 +27,14 @@ class HomeState {
   bool get isScrimVisible => isListeningToSpeech || ideaPopUpData.isValid();
 
   HomeState buildNew({
-    AppTheme appTheme,
-    bool isWordEditorShown,
-    String editingWord,
-    bool isProgressShown,
-    bool isListeningToSpeech,
-    IdeaPopUpData ideaPopUpData,
-    bool isIdeaBoxFull,
-    bool isInTutorial,
+    AppTheme? appTheme,
+    bool? isWordEditorShown,
+    String? editingWord,
+    bool? isProgressShown,
+    bool? isListeningToSpeech,
+    IdeaPopUpData? ideaPopUpData,
+    bool? isIdeaBoxFull,
+    bool? isInTutorial,
   }) {
     return HomeState(
       appTheme: appTheme ?? this.appTheme,

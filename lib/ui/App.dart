@@ -9,13 +9,13 @@ import 'package:yellow_box/Localization.dart';
 import 'package:yellow_box/ui/main/MainScreen.dart';
 
 // static dependency injection
-Dependencies _sharedDependencies;
+late Dependencies _sharedDependencies;
 Dependencies get dependencies => _sharedDependencies;
 
 class App extends StatelessWidget {
   App({
-    Key key,
-    Dependencies dependencies,
+    Key? key,
+    required Dependencies dependencies,
   }): super(key: key) {
     _sharedDependencies = dependencies;
   }
@@ -58,7 +58,7 @@ class App extends StatelessWidget {
             return Container();
           };
         }
-        return widget;
+        return widget!;
       },
       home: MainScreen(),
       debugShowCheckedModeBanner: false,

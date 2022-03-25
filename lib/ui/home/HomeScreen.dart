@@ -30,22 +30,22 @@ class _HomeScreenState extends State<HomeScreen>
   with AutomaticKeepAliveClientMixin, TickerProviderStateMixin
   implements HomeNavigator {
 
-  HomeBloc _bloc;
+  late HomeBloc _bloc;
 
   // one shot flags are not managed in HomeState
   bool _hasShownIdeaBoxFullNoti = false;
   bool _isIdeaBoxFullNotiVisible = false;
 
-  AnimationController _wordAddedAnimation;
-  AnimationController _ideaAddedAnimation;
+  late AnimationController _wordAddedAnimation;
+  late AnimationController _ideaAddedAnimation;
 
   final GlobalKey _penButtonKey = GlobalKey();
   final GlobalKey _logoKey = GlobalKey();
   final GlobalKey _historyButtonKey = GlobalKey();
   
-  AppTheme _prevAppTheme;
-  AnimationController _logoInAnimation;
-  AnimationController _logoIdleAnimation;
+  late AppTheme? _prevAppTheme = null;
+  late AnimationController _logoInAnimation;
+  late AnimationController _logoIdleAnimation;
 
   @override
   void initState() {
@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen>
     return StreamBuilder(
       initialData: _bloc.getInitialState(),
       stream: _bloc.observeState(),
-      builder: (context, snapshot) => _buildUI(snapshot.data),
+      builder: (context, snapshot) => _buildUI(snapshot.data as HomeState),
     );
   }
 
@@ -239,32 +239,32 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void showEditingWordEmptyMessage() {
-    Utils.showToast(AppLocalizations.of(context).editingWordEmpty);
+    Utils.showToast(AppLocalizations.of(context)!.editingWordEmpty!);
   }
 
   @override
   void showEditingWordAlreadyExists() {
-    Utils.showToast(AppLocalizations.of(context).editingWordAlreadyExists);
+    Utils.showToast(AppLocalizations.of(context)!.editingWordAlreadyExists!);
   }
 
   @override
   void showWordBoxFull() {
-    Utils.showToast(AppLocalizations.of(context).wordBoxFull);
+    Utils.showToast(AppLocalizations.of(context)!.wordBoxFull!);
   }
 
   @override
   void showSpeechToTextNotReady() {
-    Utils.showToast(AppLocalizations.of(context).speechToTextNotReady);
+    Utils.showToast(AppLocalizations.of(context)!.speechToTextNotReady!);
   }
 
   @override
   void showAddMoreWordsForIdea() {
-    Utils.showToast(AppLocalizations.of(context).addMoreWordsForIdea);
+    Utils.showToast(AppLocalizations.of(context)!.addMoreWordsForIdea!);
   }
 
   @override
   void showIdeaBoxFull() {
-    Utils.showToast(AppLocalizations.of(context).ideaBoxFullToast);
+    Utils.showToast(AppLocalizations.of(context)!.ideaBoxFullToast!);
   }
 
   @override
@@ -283,23 +283,23 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void showTutorial(int phase) {
     if (phase == 0) {
-      Tutorial.of(context).showTutorialZero(() {
+      Tutorial.of(context)?.showTutorialZero(() {
         _bloc.onSkipTutorialClicked();
       }, () {
         _bloc.onTutorialZeroFinished();
       });
     } else if (phase == 1) {
-      Tutorial.of(context).showTutorialOne(_penRectFinder);
+      Tutorial.of(context)?.showTutorialOne(_penRectFinder);
     } else if (phase == 2) {
-      Tutorial.of(context).showTutorialTwo(_logoRectFinder);
+      Tutorial.of(context)?.showTutorialTwo(_logoRectFinder);
     } else if (phase == 3) {
-      Tutorial.of(context).showTutorialThree(_historyButtonFinder);
+      Tutorial.of(context)?.showTutorialThree(_historyButtonFinder);
     }
   }
 
   @override
   void hideTutorial() {
-    Tutorial.of(context).hide();
+    Tutorial.of(context)?.hide();
   }
 
   Rect _penRectFinder() {
@@ -335,16 +335,16 @@ class _MainUI extends StatelessWidget {
   final Animation<double> ideaAddedAnimation;
 
   _MainUI({
-    @required this.appTheme,
-    @required this.bloc,
-    @required this.isWordEditorShown,
-    @required this.penButtonKey,
-    @required this.logoKey,
-    @required this.historyButtonKey,
-    @required this.logoInAnimation,
-    @required Animation<double> logoIdleAnimation,
-    @required Animation<double> wordAddedAnimation,
-    @required Animation<double> ideaAddedAnimation,
+    required this.appTheme,
+    required this.bloc,
+    required this.isWordEditorShown,
+    required this.penButtonKey,
+    required this.logoKey,
+    required this.historyButtonKey,
+    required this.logoInAnimation,
+    required Animation<double> logoIdleAnimation,
+    required Animation<double> wordAddedAnimation,
+    required Animation<double> ideaAddedAnimation,
   }) : this.logoIdleAnimation = Tween<double>(
     begin: 0,
     end: pi,
@@ -377,7 +377,7 @@ class _MainUI extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    AppLocalizations.of(context).get(appTheme.titleKey),
+                    AppLocalizations.of(context)!.get(appTheme.titleKey)!,
                     style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
@@ -389,7 +389,7 @@ class _MainUI extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    AppLocalizations.of(context).get(appTheme.subtitleKey),
+                    AppLocalizations.of(context)!.get(appTheme.subtitleKey)!,
                     style: TextStyle(
                       fontSize: 18,
                       color: appTheme.darkColor,
@@ -468,10 +468,10 @@ class _WordEditor extends StatelessWidget {
   final bool isInTutorial;
 
   _WordEditor({
-    @required this.bloc,
-    @required this.appTheme,
-    @required this.text,
-    @required this.isInTutorial,
+    required this.bloc,
+    required this.appTheme,
+    required this.text,
+    required this.isInTutorial,
   });
 
   @override
@@ -512,12 +512,12 @@ class _WordEditor extends StatelessWidget {
                       text: text,
                       textSize: 16,
                       textColor: AppColors.TEXT_BLACK,
-                      hintText: isInTutorial ? AppLocalizations.of(context).howAboutGreen : AppLocalizations.of(context).wordEditorHint,
+                      hintText: isInTutorial ? AppLocalizations.of(context)!.howAboutGreen! : AppLocalizations.of(context)!.wordEditorHint!,
                       hintTextSize: 16,
                       hintTextColor: AppColors.TEXT_BLACK_LIGHT,
                       cursorColor: appTheme.darkColor,
                       autoFocus: true,
-                      onChanged: (s) => bloc.onEditingWordChanged(s),
+                      onChanged: (s) => bloc.onEditingWordChanged(s!),
                       onEditingComplete: () => bloc.onWordEditingAddClicked(context),
                     ),
                   ),
@@ -533,7 +533,7 @@ class _WordEditor extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
                       child: Text(
-                        AppLocalizations.of(context).cancel,
+                        AppLocalizations.of(context)!.cancel!,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -558,7 +558,7 @@ class _WordEditor extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
                       child: Text(
-                        AppLocalizations.of(context).add,
+                        AppLocalizations.of(context)!.add!,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -588,8 +588,8 @@ class _ListeningToSpeechView extends StatelessWidget {
   final AppTheme appTheme;
 
   _ListeningToSpeechView({
-    @required this.bloc,
-    @required this.appTheme,
+    required this.bloc,
+    required this.appTheme,
   });
 
   @override
@@ -627,7 +627,7 @@ class _SpeechAnimatingView extends StatefulWidget {
 }
 
 class _SpeechAnimatingViewState extends State<_SpeechAnimatingView> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
   @override
   void initState() {
@@ -713,7 +713,7 @@ class _SpeechAnimatingViewState extends State<_SpeechAnimatingView> with SingleT
 
 class _WhiteDot extends AnimatedWidget {
   _WhiteDot({
-    @required Animation<double> animation,
+    required Animation<double> animation,
   }) : super(listenable: animation);
 
   @override
@@ -739,9 +739,9 @@ class _IdeaPopUpBox extends StatelessWidget {
   final AppTheme appTheme;
 
   _IdeaPopUpBox({
-    @required this.bloc,
-    @required this.data,
-    @required this.appTheme,
+    required this.bloc,
+    required this.data,
+    required this.appTheme,
   });
 
   @override
@@ -777,9 +777,9 @@ class _IdeaPopUpBox extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text(
-                      type == IdeaPopUpData.TYPE_NEW ? AppLocalizations.of(context).newIdea
-                        : type == IdeaPopUpData.TYPE_EXISTS ? AppLocalizations.of(context).goodOldOne
-                        : AppLocalizations.of(context).pickedBlockedIdea,
+                      type == IdeaPopUpData.TYPE_NEW ? AppLocalizations.of(context)!.newIdea!
+                        : type == IdeaPopUpData.TYPE_EXISTS ? AppLocalizations.of(context)!.goodOldOne!
+                        : AppLocalizations.of(context)!.pickedBlockedIdea!,
                       style: TextStyle(
                         color: AppColors.TEXT_BLACK,
                         fontSize: 14,
@@ -824,7 +824,7 @@ class _IdeaPopUpBox extends StatelessWidget {
                                 alignment: Alignment.center,
                                 padding: const EdgeInsets.symmetric(vertical: 11),
                                 child: Text(
-                                  AppLocalizations.of(context).nah,
+                                  AppLocalizations.of(context)!.nah!,
                                   style: TextStyle(
                                     color: AppColors.TEXT_BLACK_LIGHT,
                                     fontSize: 12,
@@ -858,7 +858,7 @@ class _IdeaPopUpBox extends StatelessWidget {
                                 alignment: Alignment.center,
                                 padding: const EdgeInsets.symmetric(vertical: 11),
                                 child: Text(
-                                  AppLocalizations.of(context).nice,
+                                  AppLocalizations.of(context)!.nice!,
                                   style: TextStyle(
                                     color: AppColors.TEXT_WHITE,
                                     fontSize: 12,
@@ -887,7 +887,7 @@ class _IdeaPopUpBox extends StatelessWidget {
                               alignment: Alignment.center,
                               padding: const EdgeInsets.symmetric(vertical: 11),
                               child: Text(
-                                AppLocalizations.of(context).close,
+                                AppLocalizations.of(context)!.close!,
                                 style: TextStyle(
                                   color: AppColors.TEXT_WHITE,
                                   fontSize: 12,
@@ -963,7 +963,7 @@ class _IdeaBoxFullNoti extends StatelessWidget {
   final Function() onTap;
 
   _IdeaBoxFullNoti({
-    @required this.onTap,
+    required this.onTap,
   });
 
   @override
@@ -992,7 +992,7 @@ class _IdeaBoxFullNoti extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            AppLocalizations.of(context).ideaBoxFullTitle,
+                            AppLocalizations.of(context)!.ideaBoxFullTitle!,
                             style: TextStyle(
                               fontSize: 12,
                               color: AppColors.TEXT_BLACK,
@@ -1004,7 +1004,7 @@ class _IdeaBoxFullNoti extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            AppLocalizations.of(context).ideaBoxFullSubtitle,
+                            AppLocalizations.of(context)!.ideaBoxFullSubtitle!,
                             style: TextStyle(
                               fontSize: 12,
                               color: AppColors.TEXT_BLACK,
@@ -1021,7 +1021,7 @@ class _IdeaBoxFullNoti extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    AppLocalizations.of(context).history,
+                    AppLocalizations.of(context)!.history!,
                     style: TextStyle(
                       fontSize: 10,
                       color: AppColors.TEXT_BLACK_LIGHT,
